@@ -1,23 +1,15 @@
-#the mod name as displayed in-game
-displayName: "Java Mod Template"
+displayName: "[red]In bundles!!![]"
 
-#the internal name of your mod
-name: "example-java-mod"
+name: "seq"
 
-#your name
-author: "You"
+author: "Ned-Kelly & LiuDai"
 
-#the fully qualified main class of the mod
-main: "example.ExampleJavaMod"
+main: "Sequence.SeqMod"
 
-#the mod description as seen in the mod dialog
-description: "A Mindustry Java mod template."
+description: "[red]In bundles!!![]"
 
-#the mod version
-version: 1.0
+version: -- alpha --
 
-#the minimum game build required to run this mod
 minGameVersion: 145
 
-#this is a java mod
 java: true
