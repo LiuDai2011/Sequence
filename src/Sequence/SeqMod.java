@@ -2,8 +2,11 @@ package Sequence;
 
 import Sequence.content.SqContent;
 import arc.util.Log;
+import mindustry.content.Blocks;
+import mindustry.content.Items;
 import mindustry.mod.Mod;
 import mindustry.mod.Mods;
+import mindustry.world.blocks.defense.turrets.ItemTurret;
 
 import static mindustry.Vars.mods;
 
@@ -32,7 +35,7 @@ public class SeqMod extends Mod {
 
     @Override
     public void loadContent() {
-        SqLog.info("Loading some example content.");
+        SqLog.info("Loading seq content.");
 
         loadMeta();
         SqContent.load();
