@@ -1,8 +1,12 @@
 package Sequence.content;
 
 import Sequence.SeqElem;
+import Sequence.SqLog;
+import Sequence.SqStat;
 import arc.graphics.Color;
 import mindustry.type.Item;
+import mindustry.world.meta.Stat;
+import mindustry.world.meta.StatValue;
 
 public class SqItems {
     public static SqItem berylliumalAlloy,
@@ -32,7 +36,7 @@ public class SqItems {
             healthScaling = 0.5f;
             cost = 0.65f;
         }};
-        encapsulatedImagineEnergy = new SqItem("encapsulated-imagine-energy") {{
+        encapsulatedImagineEnergy = new EncapsulatedImagineEnergyItem("encapsulated-imagine-energy") {{
             color = Color.valueOf("bf92f9");
             radioactivity = 15;
             charge = 7;
@@ -79,6 +83,27 @@ public class SqItems {
         @Override
         public int order() {
             return ord;
+        }
+
+        @Override
+        public StatValue statValue() {
+            return null;
+        }
+    }
+
+    public static class EncapsulatedImagineEnergyItem extends SqItem {
+        public EncapsulatedImagineEnergyItem(String name) {
+            super(name);
+        }
+
+        @Override
+        public void setStats() {
+            super.setStats();
+            stats.remove(Stat.explosiveness);
+            stats.remove(Stat.radioactivity);
+            stats.remove(Stat.charge);
+            stats.remove(Stat.flammability);
+            stats.addPercent(SqStat.informationAnnihilationFactor, 0.3f);
         }
     }
 }
