@@ -1,26 +1,20 @@
 package Sequence.content;
 
-import Sequence.SeqElem;
-import Sequence.SqBundle;
-import arc.Core;
+import Sequence.core.SeqElem;
+import Sequence.core.SqBundle;
 import arc.graphics.Color;
-import arc.scene.event.ClickListener;
 import arc.scene.ui.Button;
 import arc.scene.ui.Image;
-import arc.scene.ui.ImageButton;
+import arc.struct.Seq;
 import arc.util.Scaling;
 import arc.util.Strings;
-import mindustry.content.Blocks;
 import mindustry.ctype.UnlockableContent;
 import mindustry.type.Liquid;
 import mindustry.ui.Styles;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
-import mindustry.world.blocks.defense.turrets.Turret;
 import mindustry.world.meta.StatValue;
-import mindustry.world.meta.StatValues;
 
-import static mindustry.Vars.content;
-import static mindustry.Vars.ui;
+import static mindustry.Vars.*;
 
 public class SqLiquids {
     public static SqLiquid crystallizedFluid, vectorizedFluid;
@@ -32,7 +26,13 @@ public class SqLiquids {
             boilPoint = 2.3f;
             temperature = 0.3f;
         }};
-        vectorizedFluid = new VectorizedFluid("vectorized-fluid");
+        vectorizedFluid = new VectorizedFluid("vectorized-fluid") {{
+            damageMulti = 1.183f;
+            knockbackMulti = 1.173f;
+            consumeAmount = 8f;
+            color = Color.valueOf("c5d6f2");
+            ord = 3;
+        }};
     }
 
     public static class SqLiquid extends Liquid implements SeqElem {
@@ -54,13 +54,15 @@ public class SqLiquids {
     }
 
     public static class VectorizedFluid extends SqLiquid {
-        public final float damageMulti = 1.183f;
-        public final float knockbackMulti = 1.173f;
+        public static final Seq<VectorizedFluid> all = new Seq<>();
+
+        public float damageMulti = 0;
+        public float knockbackMulti = 0;
+        public float consumeAmount = 0;
 
         public VectorizedFluid(String name) {
             super(name);
-            color = Color.valueOf("c5d6f2");
-            ord = 3;
+            all.add(this);
         }
 
         @Override
@@ -74,7 +76,7 @@ public class SqLiquids {
                             button.table(st -> {
                                 st.row();
                                 st.add(new Image(turret.fullIcon).setScaling(Scaling.fit));
-                            }).size(32);
+                            }).size(iconMed);
                             button.margin(5);
                             button.clicked(() -> ui.content.show(turret));
                             bt.add(button);

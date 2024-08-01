@@ -1,18 +1,17 @@
 package Sequence;
 
 import Sequence.content.SqContent;
+import Sequence.core.SqBundle;
+import Sequence.core.SqLog;
 import arc.util.Log;
-import mindustry.content.Blocks;
-import mindustry.content.Items;
 import mindustry.mod.Mod;
 import mindustry.mod.Mods;
-import mindustry.world.blocks.defense.turrets.ItemTurret;
 
 import static mindustry.Vars.mods;
 
 public class SeqMod extends Mod {
-    public static final boolean dev = false;
-    public static final String repo = "https://github.com/LiuDai2011/Sequence";
+    public static final boolean dev = true;
+    public static final String repo = "LiuDai2011/Sequence";
     public static Mods.LoadedMod MOD;
 
     public SeqMod() {

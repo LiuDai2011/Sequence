@@ -1,4 +1,4 @@
-package Sequence;
+package Sequence.world.meta;
 
 import mindustry.world.meta.Stat;
 import mindustry.world.meta.StatCat;

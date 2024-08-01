@@ -1,6 +1,13 @@
 package Sequence.content;
 
-import Sequence.*;
+import Sequence.core.SeqElem;
+import Sequence.core.SqBundle;
+import Sequence.core.SqEventType;
+import Sequence.core.SqTmp;
+import Sequence.ui.SqContentInfoDialog;
+import Sequence.world.meta.SqStat;
+import Sequence.world.util.Change;
+import Sequence.world.util.Util;
 import arc.Events;
 import arc.struct.ObjectMap;
 import mindustry.ctype.UnlockableContent;
@@ -21,22 +28,30 @@ public class SqOverride {
                 if (content instanceof Turret turret) {
                     if (turret instanceof ItemTurret itemTurret) {
                         itemTurret.buildType = () -> itemTurret.new ItemTurretBuild() {
+                            public boolean consumeLiquidAndMultiShoot(SqLiquids.VectorizedFluid liq, float amount, BulletType type) {
+                                if (liquids.get(liq) > amount) {
+                                    liquids.remove(liq, amount);
+                                    float multi = liq.damageMulti;
+                                    float knockbackMulti = liq.knockbackMulti;
+                                    Util.checkKey(SqTmp.damageMultiMap, type, ObjectMap::new);
+                                    Util.checkKey(SqTmp.damageMultiMap.get(type), multi, ObjectMap::new);
+                                    Util.checkKey(SqTmp.damageMultiMap.get(type).get(multi), knockbackMulti, () -> Change.bulletType(type.copy(), bt -> {
+                                        bt.damage *= multi;
+                                        bt.splashDamage *= multi;
+                                        bt.lightningDamage *= multi;
+                                        bt.knockback *= knockbackMulti;
+                                    }));
+                                    super.shoot(SqTmp.damageMultiMap.get(type).get(multi).get(knockbackMulti));
+                                    return true;
+                                }
+                                return false;
+                            }
+
                             @Override
                             protected void shoot(BulletType type) {
-                                if (liquids.get(SqLiquids.vectorizedFluid) > 5f) {
-                                    liquids.remove(SqLiquids.vectorizedFluid, 5f);
-                                    float multi = ((SqLiquids.VectorizedFluid) SqLiquids.vectorizedFluid).damageMulti;
-                                    float knockbackMulti = ((SqLiquids.VectorizedFluid) SqLiquids.vectorizedFluid).knockbackMulti;
-                                    if (!SqTmp.damageMultiMap.containsKey(type)) {
-                                        SqTmp.damageMultiMap.put(type, new ObjectMap<>());
-                                    }
-                                    if (!SqTmp.damageMultiMap.get(type).containsKey(multi)) {
-                                        SqTmp.damageMultiMap.get(type).put(multi, Change.knockbackMulti(
-                                                Change.damageMulti(type.copy(), multi), knockbackMulti));
-                                    }
-                                    super.shoot(SqTmp.damageMultiMap.get(type).get(multi));
-                                    return;
-                                }
+                                for (SqLiquids.VectorizedFluid fluid : SqLiquids.VectorizedFluid.all)
+                                    if (consumeLiquidAndMultiShoot(fluid, fluid.consumeAmount, type))
+                                        return;
                                 super.shoot(type);
                             }
                         };

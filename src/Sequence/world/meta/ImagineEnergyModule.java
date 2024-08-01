@@ -31,6 +31,7 @@ public class ImagineEnergyModule extends SqBlockModule {
     }
 
     public static class ImagineEnergyRecord {
+        public static final double ln2 = 0.69314718056;
         public static final float activeMultiBase = 1.943f, boostMax = 400, log2a6_633e112 = 374.785608153f;
 
         public float amount;
@@ -61,19 +62,19 @@ public class ImagineEnergyModule extends SqBlockModule {
             active(true);
         }
 
-        public float multi() {
+        public double multi() {
             return active ? Mathf.pow(
                     Math.min(activeMultiBase + amount / 18563f, activeMultiBase * 100) + 1,
                     Math.min(amount / 12000f + 1, 49.3f)
             ) : 1;
         }
 
-        public float energy() {
+        public double energy() {
             return multi() * amount;
         }
 
         public float boost() {
-            return boostMax / log2a6_633e112 * Mathf.log2(multi()) / 100f + 1;
+            return boostMax / log2a6_633e112 * (float) (Math.log(multi()) / ln2 / 100) + 1;
         }
 
         public void update() {

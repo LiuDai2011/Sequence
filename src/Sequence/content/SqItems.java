@@ -1,8 +1,7 @@
 package Sequence.content;
 
-import Sequence.SeqElem;
-import Sequence.SqLog;
-import Sequence.SqStat;
+import Sequence.core.SeqElem;
+import Sequence.world.meta.SqStat;
 import arc.graphics.Color;
 import mindustry.type.Item;
 import mindustry.world.meta.Stat;

@@ -1,19 +1,21 @@
-package Sequence;
+package Sequence.core;
+
+import Sequence.SeqMod;
 
 import static arc.Core.bundle;
 
 public class SqBundle {
     private static final StringBuilder builder = new StringBuilder();
 
-    public static String format(String key, Object ...args) {
+    public static String format(String key, Object... args) {
         return bundle.format(key, args);
     }
 
-    public static String get(String key, String ...def) {
+    public static String get(String key, String... def) {
         return def.length > 0 ? bundle.get(key, def[0]) : bundle.get(key);
     }
 
-    public static String cat(String ...args) {
+    public static String cat(String... args) {
         builder.setLength(0);
         for (String s : args) {
             builder.append(s).append('.');
@@ -22,11 +24,11 @@ public class SqBundle {
         return builder.toString();
     }
 
-    public static String modCat(String ...args) {
+    public static String modCat(String... args) {
         return get(SeqMod.MOD.meta.name + "." + cat(args));
     }
 
-    public static String catGet(String ...args) {
+    public static String catGet(String... args) {
         return get(cat(args));
     }
 }

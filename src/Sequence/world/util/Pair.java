@@ -1,4 +1,4 @@
-package Sequence;
+package Sequence.world.util;
 
 public class Pair<K, V> {
     private K key;
@@ -17,12 +17,12 @@ public class Pair<K, V> {
         return key;
     }
 
-    public V getValue() {
-        return value;
-    }
-
     public void setKey(K key1) {
         key = key1;
+    }
+
+    public V getValue() {
+        return value;
     }
 
     public void setValue(V value1) {

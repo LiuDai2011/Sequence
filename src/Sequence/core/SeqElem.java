@@ -1,4 +1,4 @@
-package Sequence;
+package Sequence.core;
 
 import arc.util.Nullable;
 import mindustry.world.meta.StatValue;
@@ -8,5 +8,6 @@ public interface SeqElem {
         return -1;
     }
 
-    @Nullable StatValue statValue();
+    @Nullable
+    StatValue statValue();
 }

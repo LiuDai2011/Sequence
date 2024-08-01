@@ -1,4 +1,4 @@
-package Sequence;
+package Sequence.core;
 
 import arc.util.Log;
 
