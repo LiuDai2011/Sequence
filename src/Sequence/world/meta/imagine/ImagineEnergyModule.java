@@ -1,5 +1,6 @@
-package Sequence.world.meta;
+package Sequence.world.meta.imagine;
 
+import Sequence.world.meta.SqBlockModule;
 import arc.math.Mathf;
 import arc.util.io.Reads;
 import arc.util.io.Writes;

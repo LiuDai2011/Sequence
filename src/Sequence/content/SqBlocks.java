@@ -48,21 +48,24 @@ public class SqBlocks {
 //            };
 //        }};
         test = new MultiCrafter("test-multi-crafter") {{
-            addFormula(new Formula(
-                    ItemStack.with(Items.thorium, 2),
-                    LiquidStack.with(Liquids.water, 5),
-                    114,
-                    ItemStack.with(SqItems.grainBoundaryAlloy, 11),
-                    LiquidStack.with(Liquids.cryofluid, 7),
-                    6,
-                    90), new Formula(
-                    ItemStack.with(SqItems.berylliumalAlloy, 2, Items.surgeAlloy, 3),
-                    LiquidStack.with(SqLiquids.crystallizedFluid, 3, Liquids.water, 5),
-                    3,
-                    ItemStack.with(SqItems.phaseCore, 5, SqItems.grainBoundaryAlloy, 10),
-                    LiquidStack.with(SqLiquids.vectorizedFluid, 2, Liquids.cryofluid, 7),
-                    5,
-                    8));
+            addFormula(
+                    new Formula(
+                            ItemStack.with(Items.thorium, 2),
+                            LiquidStack.with(Liquids.water, 5),
+                            114, ItemStack.with(SqItems.grainBoundaryAlloy, 11),
+                            LiquidStack.with(Liquids.cryofluid, 7),
+                            6,
+                            90
+                    ),
+                    new Formula(
+                            ItemStack.with(SqItems.berylliumalAlloy, 2, Items.surgeAlloy, 3),
+                            LiquidStack.with(SqLiquids.crystallizedFluid, 3, Liquids.water, 5),
+                            3,
+                            ItemStack.with(SqItems.phaseCore, 5, SqItems.grainBoundaryAlloy, 10),
+                            LiquidStack.with(SqLiquids.vectorizedFluid, 2, Liquids.cryofluid, 7),
+                            5,
+                            8)
+            );
 
             requirements(Category.crafting, ItemStack.empty);
 

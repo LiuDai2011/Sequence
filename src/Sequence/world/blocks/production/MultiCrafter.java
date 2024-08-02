@@ -36,14 +36,13 @@ import mindustry.world.meta.BlockFlag;
 import mindustry.world.meta.StatValue;
 
 public class MultiCrafter extends Block implements SeqElem {
-    public int ord = -1;
     public final Seq<Formula> formulas = new Seq<>();
+    public int ord = -1;
     public int[] liquidOutputDirections = {-1};
 
     public boolean dumpExtraLiquid = true;
     public boolean ignoreLiquidFullness = false;
 
-    public float craftTime = 80;
     public Effect craftEffect = Fx.none;
     public Effect updateEffect = Fx.none;
     public float updateEffectChance = 0.04f;
@@ -164,9 +163,7 @@ public class MultiCrafter extends Block implements SeqElem {
     public StatValue statValue() {
         return table -> {
             table.row();
-            table.table(t -> {
-                t.add(SqBundle.catGet("block", "multi-crafter", "seq")).growX().left().row();
-            }).growX().left().row();
+            table.table(t -> t.add(SqBundle.catGet("block", "multi-crafter", "seq")).growX().left().row()).growX().left().row();
             for (Formula formula : formulas) {
                 SqStatValues.formulaStat(formula).display(table);
             }
@@ -406,8 +403,7 @@ public class MultiCrafter extends Block implements SeqElem {
                                 button1.setChecked(false);
                             }
                             button.setChecked(true);
-                        }
-                        else now = -1;
+                        } else now = -1;
                     });
                     all.add(button);
                     ta.add(button).left().height(56);
