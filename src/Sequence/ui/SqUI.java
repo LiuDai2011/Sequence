@@ -24,24 +24,28 @@ public class SqUI {
     public static Button formula(Formula form) {
         Button button = new Button();
         button.setStyle(Styles.underlineb);
-        button.table(bt -> {
-            uiILP(form.inputItem, form.inputLiquid, form.inputPower, bt);
+        button.table(t -> {
+            t.table(bt -> {
+                bt.left();
+                uiILPFormula(form.inputItem, form.inputLiquid, form.inputPower, bt);
+                bt.left();
 
-            bt.add();
-            bt.table(t -> t.add(new Image(Icon.rightSmall)).grow().fill()).padLeft(10).padRight(10);
-            bt.add();
+                bt.add();
+                bt.table(ct -> ct.add(new Image(Icon.rightSmall)).grow().fill()).padLeft(10).padRight(10);
+                bt.add();
 
-            uiILP(form.outputItem, form.outputLiquid, form.outputPower, bt);
-        }).padLeft(5).margin(0).growX().right().top();
+                uiILPFormula(form.outputItem, form.outputLiquid, form.outputPower, bt);
+            }).left().top();
+        }).padLeft(5).margin(0).growX().left().top();
         return button;
     }
 
-    private static void uiILP(ItemStack[] items, LiquidStack[] liquids, float power, Table bt) {
+    public static void uiILPFormula(ItemStack[] items, LiquidStack[] liquids, float power, Table bt) {
         Table display;
 
         for (ItemStack stack : items) {
             display = new ItemDisplay(stack.item, stack.amount, false);
-            bt.add(display).size(16).right().padLeft(10).padRight(10);
+            bt.add(display).size(16).left().padLeft(10).padRight(10);
             bt.add();
         }
 
@@ -67,7 +71,7 @@ public class SqUI {
                     return this;
                 }
             }.upd();
-            bt.add(display).size(16).right().padLeft(10).padRight(10);
+            bt.add(display).size(16).left().padLeft(10).padRight(10);
             bt.add();
         }
 
