@@ -15,14 +15,13 @@ public class SqStatValues {
             table.table(Styles.grayPanel, t -> {
                 t.table(bt -> {
                     bt.left().top().defaults().padRight(3).left();
-                    SqUI.uiILPFormula(form.inputItem, form.inputLiquid, form.inputPower, bt);
+                    SqUI.uiILPFormula(form.inputItem, form.inputLiquid, form.inputPower, form.inputImagineEnergy, bt, true);
 
                     bt.add();
                     bt.table(ct -> ct.add(new Image(Icon.rightSmall)).grow().fill()).padLeft(10).padRight(10);
                     bt.add();
 
-                    SqUI.uiILPFormula(form.outputItem, form.outputLiquid, form.outputPower, bt);
-
+                    SqUI.uiILPFormula(form.outputItem, form.outputLiquid, form.outputPower, form.outputImagineEnergy, bt, true);
                 }).growX().left().row();
                 t.add(SqBundle.format(SqBundle.cat("stat", "crafttime"),
                         Strings.autoFixed(form.time / 60f, 2))).left();

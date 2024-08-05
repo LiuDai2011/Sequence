@@ -4,6 +4,7 @@ import Sequence.content.SqContent;
 import Sequence.core.SqBundle;
 import Sequence.core.SqLog;
 import arc.util.Log;
+import mindustry.Vars;
 import mindustry.mod.Mod;
 import mindustry.mod.Mods;
 

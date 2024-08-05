@@ -1,4 +1,4 @@
-displayName: "[red]In bundles!!![]"
+displayName: "seq"
 
 name: "seq"
 
@@ -6,10 +6,10 @@ author: "Ned-Kelly & LiuDai"
 
 main: "Sequence.SeqMod"
 
-description: "[red]In bundles!!![]"
+description: "[red]pls turn on the mod to know more about it[]"
 
 version: -- alpha --
 
-minGameVersion: 145
+minGameVersion: 146
 
 java: true

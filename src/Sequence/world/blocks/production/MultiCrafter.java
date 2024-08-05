@@ -5,7 +5,9 @@ import Sequence.core.SqBundle;
 import Sequence.core.SqStatValues;
 import Sequence.ui.SqUI;
 import Sequence.world.meta.Formula;
+import Sequence.world.meta.imagine.ImagineEnergyModule;
 import Sequence.world.util.Util;
+import arc.Core;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
 import arc.scene.ui.Button;
@@ -14,6 +16,7 @@ import arc.struct.EnumSet;
 import arc.struct.Seq;
 import arc.util.Eachable;
 import arc.util.Nullable;
+import arc.util.Strings;
 import arc.util.Time;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
@@ -22,6 +25,7 @@ import mindustry.entities.Effect;
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
 import mindustry.gen.Sounds;
+import mindustry.graphics.Pal;
 import mindustry.logic.LAccess;
 import mindustry.type.Item;
 import mindustry.type.ItemStack;
@@ -30,15 +34,19 @@ import mindustry.type.LiquidStack;
 import mindustry.ui.Bar;
 import mindustry.ui.Styles;
 import mindustry.world.Block;
+import mindustry.world.blocks.power.PowerGenerator;
 import mindustry.world.draw.DrawBlock;
 import mindustry.world.draw.DrawDefault;
-import mindustry.world.meta.BlockFlag;
-import mindustry.world.meta.StatValue;
+import mindustry.world.meta.*;
+
+import static mindustry.Vars.content;
 
 public class MultiCrafter extends Block implements SeqElem {
     public final Seq<Formula> formulas = new Seq<>();
     public int ord = -1;
     public int[] liquidOutputDirections = {-1};
+
+    public boolean onlyOneFormula = false;
 
     public boolean dumpExtraLiquid = true;
     public boolean ignoreLiquidFullness = false;
@@ -63,12 +71,29 @@ public class MultiCrafter extends Block implements SeqElem {
         ambientSoundVolume = 0.03f;
         flags = EnumSet.of(BlockFlag.factory);
         drawArrow = false;
-        consumePowerDynamic((MultiCrafterBuild build) ->
-                build.now == -1 ? 0 : build.getFormula().inputPower);
-        config(Integer.class, (building, integer) -> {
-            ((MultiCrafterBuild) building).now = integer;
-        });
-        configClear(building -> ((MultiCrafterBuild) building).now = -1);
+    }
+
+    @Override
+    public void setStats() {
+        super.setStats();
+        if (!onlyOneFormula) return;
+
+        stats.timePeriod = formulas.get(0).time;
+        if((hasItems && itemCapacity > 0) || formulas.get(0).outputItem.length > 0){
+            stats.add(Stat.productionTime, formulas.get(0).time / 60f, StatUnit.seconds);
+        }
+
+        if(formulas.get(0).outputItem.length > 0){
+            stats.add(Stat.output, StatValues.items(formulas.get(0).time, formulas.get(0).outputItem));
+        }
+
+        if(formulas.get(0).outputLiquid.length > 0){
+            stats.add(Stat.output, StatValues.liquids(1f, formulas.get(0).outputLiquid));
+        }
+
+        if(formulas.get(0).outputPower > 0){
+            stats.add(Stat.basePowerGeneration, formulas.get(0).outputPower * 60f, StatUnit.powerSecond);
+        }
     }
 
     @Override
@@ -98,6 +123,20 @@ public class MultiCrafter extends Block implements SeqElem {
             if (formula.outputLiquid.length > 0) outputsLiquid = true;
             if (formula.outputItem.length > 0 || formula.inputItem.length > 0) hasItems = true;
             if (formula.inputPower > 0 || formula.outputPower > 0) hasPower = true;
+            if (formula.outputPower > 0) outputsPower = true;
+        }
+        if (onlyOneFormula) {
+            configurable = false;
+            consumeItems(formulas.get(0).inputItem);
+            consumeLiquids(formulas.get(0).inputLiquid);
+            consumePower(formulas.get(0).inputPower);
+        } else {
+            consumePowerDynamic((MultiCrafterBuild build) ->
+                    build.now == -1 ? 0 : build.getFormula().inputPower);
+            config(Integer.class, (building, integer) -> {
+                ((MultiCrafterBuild) building).now = integer;
+            });
+            configClear(building -> ((MultiCrafterBuild) building).now = -1);
         }
 
         super.init();
@@ -170,13 +209,14 @@ public class MultiCrafter extends Block implements SeqElem {
         };
     }
 
-    public class MultiCrafterBuild extends Building {
+    public class MultiCrafterBuild extends Building implements ImagineEnergyModule.IEMc {
         private final Seq<Button> all = new Seq<>();
         public int now = -1;
-
         public float progress;
         public float totalProgress;
         public float warmup;
+        private boolean upd = false;
+        private float lastOutputPower = 0f;
 
         @Override
         public boolean acceptItem(Building source, Item item) {
@@ -190,7 +230,7 @@ public class MultiCrafter extends Block implements SeqElem {
 
         @Override
         public float getPowerProduction() {
-            return getFormula().outputPower * efficiency;
+            return now == -1 ? 0 : lastOutputPower;
         }
 
         public @Nullable Formula getFormula() {
@@ -238,18 +278,36 @@ public class MultiCrafter extends Block implements SeqElem {
 
         @Override
         public void updateTile() {
-            if (now == -1) return;
+            IEM().update();
+            dumpOutputs();
+
+            if (now == -1) {
+                if (onlyOneFormula) now = 0;
+                lastOutputPower = 0;
+                return;
+            }
 
             boolean has = true;
+            float fullness = 0f;
+            int count = 0;
+            if (getFormula().inputPower > 0) {
+                fullness += Mathf.clamp(power.status);
+                count++;
+            }
             for (LiquidStack stack : getFormula().inputLiquid) {
                 if (liquids.get(stack.liquid) < stack.amount - 0.001f) has = false;
+                fullness += Mathf.clamp(liquids.get(stack.liquid) / stack.amount);
+                count++;
             }
             for (ItemStack stack : getFormula().inputItem) {
                 if (items.get(stack.item) < stack.amount) has = false;
+                fullness += Mathf.clamp((float) items.get(stack.item) / stack.amount);
+                count++;
             }
-            if (!has) efficiency(0);
+            if (count == 0) efficiency(1);
+            else efficiency(fullness / count);
 
-            if (efficiency > 0) {
+            if (efficiency > 0 && has) {
                 progress += getProgressIncrease(getFormula().time);
                 warmup = Mathf.approachDelta(warmup, warmupTarget(), warmupSpeed);
 
@@ -271,9 +329,8 @@ public class MultiCrafter extends Block implements SeqElem {
 
             if (progress >= 1f) {
                 craft();
+                progress %= 1f;
             }
-
-            dumpOutputs();
         }
 
         @Override
@@ -324,23 +381,35 @@ public class MultiCrafter extends Block implements SeqElem {
             for (var output : getFormula().outputItem) {
                 for (int i = 0; i < output.amount; i++) {
                     offload(output.item);
+                    if (items.get(output.item) > itemCapacity) items.set(output.item, itemCapacity);
                 }
             }
+            dumpOutputs();
+            lastOutputPower = getFormula().outputPower;
 
             if (wasVisible) {
                 craftEffect.at(x, y);
             }
-            progress %= 1f;
         }
 
         public void dumpOutputs() {
             if (timer(timerDump, dumpTime / timeScale)) {
-                for (ItemStack output : getFormula().outputItem) {
-                    dump(output.item);
+                if (now == -1) {
+                    dump();
+                } else {
+                    for (ItemStack output : getFormula().outputItem) {
+                        dump(output.item);
+                    }
                 }
             }
 
-            for (int i = 0; i < getFormula().inputLiquid.length; i++) {
+            if (now == -1) {
+                for (Liquid liquid : content.liquids()) {
+                    dumpLiquid(liquid);
+                }
+                return;
+            }
+            for (int i = 0; i < getFormula().outputLiquid.length; i++) {
                 int dir = liquidOutputDirections.length > i ? liquidOutputDirections[i] : -1;
 
                 dumpLiquid(getFormula().outputLiquid[i].liquid, 2f, dir);
@@ -377,6 +446,7 @@ public class MultiCrafter extends Block implements SeqElem {
             write.f(progress);
             write.f(warmup);
             write.i(now);
+            write.f(lastOutputPower);
         }
 
         @Override
@@ -385,6 +455,7 @@ public class MultiCrafter extends Block implements SeqElem {
             progress = read.f();
             warmup = read.f();
             now = read.i();
+            lastOutputPower = read.f();
         }
 
         @Override
@@ -398,7 +469,9 @@ public class MultiCrafter extends Block implements SeqElem {
                     int finalI = i;
                     button.clicked(() -> {
                         if (button.isChecked()) {
-                            now = finalI;
+                            configure(finalI);
+                            lastOutputPower = 0;
+                            upd = true;
                             for (Button button1 : all) {
                                 button1.setChecked(false);
                             }
@@ -414,9 +487,33 @@ public class MultiCrafter extends Block implements SeqElem {
         }
 
         @Override
+        public Object config() {
+            return now;
+        }
+
+        @Override
         public void displayBars(Table table) {
+            db(table);
+            table.update(() -> {
+                if (upd) {
+                    upd = false;
+                    table.clear();
+                    db(table);
+                }
+            });
+        }
+
+        private void db(Table table) {
             super.displayBars(table);
             if (now == -1) return;
+            if (getFormula().outputPower > 0) {
+                table.add(new Bar(
+                        () ->
+                        Core.bundle.format("bar.poweroutput",
+                                Strings.fixed(this.getPowerProduction() * 60 * this.timeScale(), 1)),
+                        () -> Pal.powerBar,
+                        () -> this.efficiency)).row();
+            }
             for (ItemStack stack : getFormula().inputItem) {
                 table.add(new Bar(
                         stack.item.localizedName,
@@ -431,6 +528,29 @@ public class MultiCrafter extends Block implements SeqElem {
                         () -> liquids.get(stack.liquid) / liquidCapacity
                 )).row();
             }
+
+            for (ItemStack stack : getFormula().outputItem) {
+                if (Util.item(getFormula().inputItem, stack.item) > 0) return;
+                table.add(new Bar(
+                        stack.item.localizedName,
+                        stack.item.color,
+                        () -> (float) items.get(stack.item) / itemCapacity
+                )).row();
+            }
+            for (LiquidStack stack : getFormula().outputLiquid) {
+                if (Util.liquid(getFormula().inputLiquid, stack.liquid) > 0) return;
+                table.add(new Bar(
+                        stack.liquid.localizedName,
+                        stack.liquid.color,
+                        () -> liquids.get(stack.liquid) / liquidCapacity
+                )).row();
+            }
+        }
+
+        public ImagineEnergyModule iem = new ImagineEnergyModule();
+        @Override
+        public ImagineEnergyModule IEM() {
+            return iem;
         }
     }
 }

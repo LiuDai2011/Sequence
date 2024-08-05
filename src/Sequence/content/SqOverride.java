@@ -33,14 +33,24 @@ public class SqOverride {
                                     liquids.remove(liq, amount);
                                     float multi = liq.damageMulti;
                                     float knockbackMulti = liq.knockbackMulti;
-                                    Util.checkKey(SqTmp.damageMultiMap, type, ObjectMap::new);
-                                    Util.checkKey(SqTmp.damageMultiMap.get(type), multi, ObjectMap::new);
-                                    Util.checkKey(SqTmp.damageMultiMap.get(type).get(multi), knockbackMulti, () -> Change.bulletType(type.copy(), bt -> {
-                                        bt.damage *= multi;
-                                        bt.splashDamage *= multi;
-                                        bt.lightningDamage *= multi;
-                                        bt.knockback *= knockbackMulti;
-                                    }));
+                                    Util.checkKey(
+                                            Util.checkKey(
+                                                    Util.checkKey(
+                                                            SqTmp.damageMultiMap,
+                                                            type,
+                                                            ObjectMap::new
+                                                    ),
+                                                    multi,
+                                                    ObjectMap::new
+                                            ),
+                                            knockbackMulti,
+                                            () -> Change.bulletType(type.copy(), bt -> {
+                                                bt.damage *= multi;
+                                                bt.splashDamage *= multi;
+                                                bt.lightningDamage *= multi;
+                                                bt.knockback *= knockbackMulti;
+                                            })
+                                    );
                                     super.shoot(SqTmp.damageMultiMap.get(type).get(multi).get(knockbackMulti));
                                     return true;
                                 }

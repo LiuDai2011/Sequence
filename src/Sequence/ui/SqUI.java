@@ -1,6 +1,11 @@
 package Sequence.ui;
 
+import Sequence.SeqMod;
+import Sequence.content.SqIcon;
+import Sequence.graphic.SqColor;
 import Sequence.world.meta.Formula;
+import Sequence.world.meta.imagine.ImagineEnergyModule;
+import arc.Core;
 import arc.graphics.Color;
 import arc.math.Mathf;
 import arc.scene.ui.Button;
@@ -18,34 +23,40 @@ import mindustry.ui.LiquidDisplay;
 import mindustry.ui.Styles;
 import mindustry.world.meta.StatUnit;
 
-import static mindustry.Vars.iconMed;
+import static mindustry.Vars.*;
 
 public class SqUI {
     public static Button formula(Formula form) {
         Button button = new Button();
         button.setStyle(Styles.underlineb);
-        button.table(t -> {
-            t.table(bt -> {
-                bt.left();
-                uiILPFormula(form.inputItem, form.inputLiquid, form.inputPower, bt);
-                bt.left();
+        button.table(t -> t.table(bt -> {
+            bt.left();
+            uiILPFormula(form.inputItem, form.inputLiquid, form.inputPower, form.inputImagineEnergy, bt, false);
+            bt.left();
 
-                bt.add();
-                bt.table(ct -> ct.add(new Image(Icon.rightSmall)).grow().fill()).padLeft(10).padRight(10);
-                bt.add();
+            bt.add();
+            bt.table(ct -> ct.add(new Image(Icon.rightSmall)).grow().fill()).padLeft(10).padRight(10);
+            bt.add();
 
-                uiILPFormula(form.outputItem, form.outputLiquid, form.outputPower, bt);
-            }).left().top();
-        }).padLeft(5).margin(0).growX().left().top();
+            uiILPFormula(form.outputItem, form.outputLiquid, form.outputPower, form.outputImagineEnergy, bt, false);
+        }).left().top()).padLeft(5).margin(0).growX().left().top();
         return button;
     }
 
-    public static void uiILPFormula(ItemStack[] items, LiquidStack[] liquids, float power, Table bt) {
+    public static void uiILPFormula(ItemStack[] items, LiquidStack[] liquids, float power, ImagineEnergyModule.ImagineEnergyRecord record, Table bt, boolean butt) {
         Table display;
+        Button button;
 
         for (ItemStack stack : items) {
             display = new ItemDisplay(stack.item, stack.amount, false);
-            bt.add(display).size(16).left().padLeft(10).padRight(10);
+            if (butt) {
+                button = new Button(Styles.cleari);
+                button.add(display).size(iconMed);
+                button.clicked(() -> ui.content.show(stack.item));
+                bt.add(button).size(iconMed).left().padLeft(2).padRight(2);
+            } else {
+                bt.add(display).size(iconMed).left().padLeft(2).padRight(2);
+            }
             bt.add();
         }
 
@@ -71,26 +82,64 @@ public class SqUI {
                     return this;
                 }
             }.upd();
-            bt.add(display).size(16).left().padLeft(10).padRight(10);
+            if (butt) {
+                button = new Button(Styles.cleari);
+                button.add(display).size(iconMed);
+                button.clicked(() -> ui.content.show(stack.liquid));
+                bt.add(button).size(iconMed).left().padLeft(2).padRight(2);
+            } else {
+                bt.add(display).size(iconMed).left().padLeft(2).padRight(2);
+            }
             bt.add();
         }
 
         if (!Mathf.zero(power)) {
             bt.add(new Stack() { // fuck
-                public Stack add(float amount) {
+                public Stack upd(float amount) {
                     add(new Table(o -> {
                         o.left();
-                        o.add(new Image(Icon.power)).size(32).scaling(Scaling.fit);
+                        o.add(new Image(Icon.power)).size(iconMed).scaling(Scaling.fit);
                     }));
 
                     add(new Table(t -> {
                         t.left().bottom();
-                        t.add(amount >= 1000 ? UI.formatAmount((long) amount) : Strings.autoFixed(amount, 2)).style(Styles.outlineLabel);
+                        t.add(amount * 60f >= 1000 ? UI.formatAmount((long) (amount * 60f)) : Strings.autoFixed(amount * 60f, 2))
+                                .style(Styles.outlineLabel);
                         t.pack();
                     }));
                     return this;
                 }
-            }.add(power));
+            }.upd(power));
+        }
+
+        if (!record.zero()) {
+            bt.add(new Stack() { // fuck
+                public Stack upd(ImagineEnergyModule.ImagineEnergyRecord ier) {
+                    float amount = ier.amount, act = ier.activity;
+
+                    add(new Table(o -> {
+                        o.left();
+                        o.add(new Image(SqIcon.imagineEnergy)).size(iconMed).scaling(Scaling.fit);
+                    }));
+
+                    add(new Table(t -> {
+                        t.left().bottom();
+                        t.add(amount * 60f >= 1000 ? UI.formatAmount((long) (amount * 60f)) : Strings.autoFixed(amount * 60f, 2))
+                                .style(Styles.outlineLabel);
+                        t.pack();
+                    }));
+
+                    if (ier.active)
+                        add(new Table(t -> {
+                            t.right().top().marginBottom(16);
+                            t.add(act >= 1000 ? UI.formatAmount((long) act) : Strings.autoFixed(act, 2))
+                                    .style(Styles.outlineLabel)
+                                    .color(SqColor.imagineEnergy);
+                            t.pack();
+                        }));
+                    return this;
+                }
+            }.upd(record));
         }
     }
 }

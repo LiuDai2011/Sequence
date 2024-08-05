@@ -8,8 +8,9 @@ import mindustry.type.Liquid;
 import mindustry.type.LiquidStack;
 
 public class Util {
-    public static <K, V> void checkKey(ObjectMap<K, V> map, K key, Prov<V> def) {
+    public static <K, V> V checkKey(ObjectMap<K, V> map, K key, Prov<V> def) {
         if (!map.containsKey(key)) map.put(key, def.get());
+        return map.get(key);
     }
 
     public static int item(ItemStack[] items, Item item) {

@@ -5,10 +5,13 @@ import Sequence.core.SqBundle;
 import arc.graphics.Color;
 import arc.scene.ui.Button;
 import arc.scene.ui.Image;
+import arc.struct.ObjectMap;
 import arc.struct.Seq;
 import arc.util.Scaling;
 import arc.util.Strings;
 import mindustry.ctype.UnlockableContent;
+import mindustry.entities.bullet.BulletType;
+import mindustry.type.Item;
 import mindustry.type.Liquid;
 import mindustry.ui.Styles;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
@@ -27,6 +30,9 @@ public class SqLiquids {
             temperature = 0.3f;
         }};
         vectorizedFluid = new VectorizedFluid("vectorized-fluid") {{
+            heatCapacity = 1f;
+            boilPoint = 2f;
+            temperature = 0.4f;
             damageMulti = 1.183f;
             knockbackMulti = 1.173f;
             consumeAmount = 8f;
@@ -54,6 +60,8 @@ public class SqLiquids {
     }
 
     public static class VectorizedFluid extends SqLiquid {
+        private static final StringBuilder builder = new StringBuilder();
+
         public static final Seq<VectorizedFluid> all = new Seq<>();
 
         public float damageMulti = 0;
@@ -80,15 +88,32 @@ public class SqLiquids {
                             button.margin(5);
                             button.clicked(() -> ui.content.show(turret));
                             bt.add(button);
-                            bt.add(SqBundle.format(SqBundle.cat("stat", "bullet-damage-multi"),
-                                    Strings.autoFixed(damageMulti * 100f - 100f, 2),
-                                    Strings.autoFixed(knockbackMulti * 100f - 100f, 2)));
+                            bt.add(getDesc(turret));
                             bt.row();
                         }).padLeft(0).padTop(5).padBottom(5).growX().margin(10);
                     }
                 }
                 table.row();
             };
+        }
+
+        private String getDesc(ItemTurret it) {
+            builder.setLength(0);
+            builder.append(SqBundle.format(SqBundle.cat("stat", "bullet-damage-multi"),
+                    Strings.autoFixed(damageMulti * 100f - 100f, 2)));
+
+            boolean frag = false;
+            for (ObjectMap.Entry<Item, BulletType> entry : it.ammoTypes)
+                if (entry.value.knockback > 0) {
+                    frag = true;
+                    break;
+                }
+            if (frag) {
+                builder.append("  ");
+                builder.append(SqBundle.format(SqBundle.cat("stat", "bullet-knockback-multi"),
+                        Strings.autoFixed(knockbackMulti * 100f - 100f, 2)));
+            }
+            return builder.toString();
         }
     }
 }

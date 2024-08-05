@@ -7,6 +7,8 @@ import arc.util.io.Writes;
 
 public class ImagineEnergyModule extends SqBlockModule {
     public ImagineEnergyRecord record;
+    public float capacity = 0f;
+    public final ImagineEnergyGraph graph = new ImagineEnergyGraph();
 
     public ImagineEnergyModule() {
         record = new ImagineEnergyRecord();
@@ -27,6 +29,24 @@ public class ImagineEnergyModule extends SqBlockModule {
         record.update();
     }
 
+    public void add(float add) {
+        record.add(add);
+        record.activity += record.multi();
+        checkCapacity();
+    }
+
+    public boolean getFromGraph(float amount) {
+        return true;
+    }
+
+    public float boost() {
+        return record.boost();
+    }
+
+    private void checkCapacity() {
+        record.amount = Math.min(record.amount, capacity);
+    }
+
     public interface IEMc {
         ImagineEnergyModule IEM();
     }
@@ -36,8 +56,19 @@ public class ImagineEnergyModule extends SqBlockModule {
         public static final float activeMultiBase = 1.943f, boostMax = 400, log2a6_633e112 = 374.785608153f;
 
         public float amount;
-        public float activity;
+        public float activity = 1;
+        public float instability = 0f;
         public boolean active;
+
+        public ImagineEnergyRecord() {
+            this(0, 0, false);
+        }
+
+        public ImagineEnergyRecord(float amount, float activity, boolean active) {
+            this.active = active;
+            this.activity = activity;
+            this.amount = amount;
+        }
 
         public void add(float add) {
             amount += add;
@@ -79,7 +110,14 @@ public class ImagineEnergyModule extends SqBlockModule {
         }
 
         public void update() {
-            if (active) activity += amount * multi();
+            if (active) {
+                activity += energy();
+                instability += activity;
+            }
+        }
+
+        public static ImagineEnergyRecord empty() {
+            return new ImagineEnergyRecord();
         }
     }
 }
