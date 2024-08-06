@@ -1,9 +1,9 @@
 package Sequence.world.meta.imagine;
 
 import Sequence.graphic.SqColor;
-import arc.func.Floatp;
-import arc.func.Func;
-import arc.func.Prov;
+import arc.graphics.Color;
+import arc.math.Mathf;
+import arc.util.Time;
 import mindustry.gen.Building;
 import mindustry.ui.Bar;
 import mindustry.world.Block;
@@ -15,23 +15,28 @@ public class ImagineBlocks {
     }
 
     public static void bars(Block block) {
-//        block.addBar("imagine-energy-amount", entity -> new Bar(
-//                "amount",
-//                SqColor.imagineEnergy,
-//                () -> getIEM(entity).record.amount / getIEM(entity).capacity
-//        ));
-        block.addBar("imagine-energy-amount", imagineBar(
-                e -> "amount",
-                e -> getIEM(e).record.amount / getIEM(e).capacity
+        block.addBar("imagine-energy-amount", entity -> new Bar(
+                () -> "amount",
+                () -> getColor(getIEM(entity)),
+                () -> getIEM(entity).record.amount / getIEM(entity).capacity
+        ));
+        block.addBar("imagine-energy-activity", entity -> new Bar(
+                () -> "activity",
+                () -> getColor(getIEM(entity)),
+                () -> getIEM(entity).record.activity / 1e8f
+        ));
+        block.addBar("imagine-energy-instability", entity -> new Bar(
+                () -> "instability",
+                () -> getColor(getIEM(entity)),
+                () -> getIEM(entity).record.instability / 1e6f
         ));
     }
 
-    private static Func<Building, Bar> imagineBar(Func<Building, CharSequence> name, Func<Building, Float> fraction) {
-        return entity -> new Bar(
-                () -> name.get(entity),
-                () -> SqColor.imagineEnergy,
-                () -> fraction.get(entity)
-        );
+    private static Color getColor(ImagineEnergyModule iem) {
+        Color color = SqColor.imagineEnergy.cpy();
+        return iem.record.active ?
+                color.lerp(Color.white, Mathf.sin(Time.time / 15f) * 0.3f) :
+                color.lerp(Color.black, 0.6f);
     }
 
     private static ImagineEnergyModule getIEM(Building building) {

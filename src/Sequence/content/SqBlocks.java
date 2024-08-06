@@ -7,7 +7,10 @@ import Sequence.world.blocks.production.MultiCrafter;
 import Sequence.world.meta.Formula;
 import Sequence.world.meta.imagine.ImagineEnergyModule;
 import arc.graphics.Color;
+import arc.math.geom.Geometry;
 import arc.util.Align;
+import arc.util.Time;
+import mindustry.Vars;
 import mindustry.content.Blocks;
 import mindustry.content.Fx;
 import mindustry.content.Items;
@@ -17,9 +20,11 @@ import mindustry.type.ItemStack;
 import mindustry.type.LiquidStack;
 import mindustry.ui.Fonts;
 import mindustry.world.Block;
+import mindustry.world.Tile;
+import mindustry.world.blocks.defense.Wall;
 
 public class SqBlocks {
-    public static Block test, test1;
+    public static Block test, test1, test2;
 
     public static void load() {
         if (!SeqMod.dev) return;
@@ -141,31 +146,32 @@ public class SqBlocks {
 
             buildType = () -> new MultiCrafterBuild() {
                 @Override
-                public void draw() {
-                    super.draw();
-                    Color color = SqColor.imagineEnergy;
-                    Fonts.def.draw("active " + IEM().record.active, x, y - 12, color, 0.3f, false, Align.center);
-                    Fonts.def.draw("amount " + IEM().record.amount, x, y - 8, color, 0.3f, false, Align.center);
-                    Fonts.def.draw("activity " + IEM().record.activity, x, y - 4, color, 0.3f, false, Align.center);
-                    Fonts.def.draw("instability " + IEM().record.instability, x, y, color, 0.3f, false, Align.center);
-                    Fonts.def.draw("multi " + IEM().record.multi(), x, y + 4, color, 0.3f, false, Align.center);
-                    Fonts.def.draw("energy " + IEM().record.energy(), x, y + 8, color, 0.3f, false, Align.center);
-                    Fonts.def.draw("boost " + IEM().record.boost(), x, y + 12, color, 0.3f, false, Align.center);
-
-                    BlockTile blockTile = new BlockTile(Blocks.arc, 5 + tileX(), 3 + tileY());
-                    if (!blockTile.valid()) blockTile.draw();
-                }
-
-                @Override
                 public void updateTile() {
                     IEM().update();
                     IEM().record.active();
-                    IEM().capacity = 1;
-                    IEM().add(1);
+                    IEM().capacity = 1000;
+                    IEM().add(Time.delta);
                 }
             };
 
 //            ord = 11;
+        }};
+        test2 = new Wall("test2") {{
+            requirements(Category.effect, ItemStack.empty);
+            health = 100;
+            update = true;
+            buildType = () -> new WallBuild() {
+                @Override
+                public void updateTile() {
+                    for (int i = 0; i < 4; i++) {
+                        Tile tile1 = Vars.world.tile(Geometry.d4x(i) + tileX(), Geometry.d4y(i) + tileY());
+                        if (tile1 != null && tile1.build != null && tile1.build instanceof ImagineEnergyModule.IEMc ieMc) {
+                            ieMc.IEM().add(Time.delta);
+                        }
+                    }
+                    super.updateTile();
+                }
+            };
         }};
     }
 }

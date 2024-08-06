@@ -58,7 +58,7 @@ public class ImagineEnergyModule extends SqBlockModule {
 
         public float amount;
         public float activity;
-        public float instability = 0f;
+        public float instability;
         public boolean active;
 
         public ImagineEnergyRecord() {

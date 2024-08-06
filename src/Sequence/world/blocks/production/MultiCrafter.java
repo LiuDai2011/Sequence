@@ -3,24 +3,25 @@ package Sequence.world.blocks.production;
 import Sequence.core.SeqElem;
 import Sequence.core.SqBundle;
 import Sequence.core.SqStatValues;
+import Sequence.graphic.SqColor;
 import Sequence.ui.SqUI;
+import Sequence.world.blocks.BlockTile;
 import Sequence.world.meta.Formula;
 import Sequence.world.meta.imagine.ImagineBlocks;
 import Sequence.world.meta.imagine.ImagineEnergyModule;
 import Sequence.world.util.Util;
 import arc.Core;
+import arc.graphics.Color;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
 import arc.scene.ui.Button;
 import arc.scene.ui.layout.Table;
 import arc.struct.EnumSet;
 import arc.struct.Seq;
-import arc.util.Eachable;
-import arc.util.Nullable;
-import arc.util.Strings;
-import arc.util.Time;
+import arc.util.*;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
+import mindustry.content.Blocks;
 import mindustry.content.Fx;
 import mindustry.entities.Effect;
 import mindustry.entities.units.BuildPlan;
@@ -33,6 +34,7 @@ import mindustry.type.ItemStack;
 import mindustry.type.Liquid;
 import mindustry.type.LiquidStack;
 import mindustry.ui.Bar;
+import mindustry.ui.Fonts;
 import mindustry.ui.Styles;
 import mindustry.world.Block;
 import mindustry.world.blocks.power.PowerGenerator;
@@ -244,6 +246,18 @@ public class MultiCrafter extends Block implements SeqElem {
         @Override
         public void draw() {
             drawer.draw(this);
+            Color color = SqColor.imagineEnergy;
+            Fonts.def.draw("active " + IEM().record.active, x, y - 12, color, 0.3f, false, Align.center);
+            Fonts.def.draw("amount " + IEM().record.amount, x, y - 8, color, 0.3f, false, Align.center);
+            Fonts.def.draw("activity " + IEM().record.activity, x, y - 4, color, 0.3f, false, Align.center);
+            Fonts.def.draw("instability " + IEM().record.instability, x, y, color, 0.3f, false, Align.center);
+            Fonts.def.draw("multi " + IEM().record.multi(), x, y + 4, color, 0.3f, false, Align.center);
+            Fonts.def.draw("energy " + IEM().record.energy(), x, y + 8, color, 0.3f, false, Align.center);
+            Fonts.def.draw("boost " + IEM().record.boost(), x, y + 12, color, 0.3f, false, Align.center);
+            Fonts.def.draw("capacity " + IEM().capacity, x, y + 16, color, 0.3f, false, Align.center);
+
+            BlockTile blockTile = new BlockTile(Blocks.arc, 5 + tileX(), 3 + tileY());
+            if (!blockTile.valid()) blockTile.draw();
         }
 
         @Override
@@ -282,6 +296,7 @@ public class MultiCrafter extends Block implements SeqElem {
 
         @Override
         public void updateTile() {
+            IEM().capacity = 1000;
             IEM().update();
             dumpOutputs();
 
