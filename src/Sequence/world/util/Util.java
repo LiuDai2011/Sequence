@@ -1,6 +1,7 @@
 package Sequence.world.util;
 
 import arc.func.Prov;
+import arc.math.geom.Vec2;
 import arc.struct.ObjectMap;
 import mindustry.type.Item;
 import mindustry.type.ItemStack;
@@ -27,5 +28,13 @@ public class Util {
                 return stack.amount;
         }
         return 0;
+    }
+
+    public static boolean inZone(Vec2 start, Vec2 size, Vec2 point) {
+        return inZone(start.x, start.y, start.x + size.x, start.y + size.y, point.x, point.y);
+    }
+
+    public static <T extends Comparable<T>> boolean inZone(T x, T y, T x1, T y1, T px, T py) {
+        return x.compareTo(px) < 0 && y.compareTo(py) < 0 && x1.compareTo(px) > 0 && y1.compareTo(py) > 0;
     }
 }

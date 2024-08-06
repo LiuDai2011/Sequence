@@ -5,6 +5,7 @@ import Sequence.core.SqBundle;
 import Sequence.core.SqStatValues;
 import Sequence.ui.SqUI;
 import Sequence.world.meta.Formula;
+import Sequence.world.meta.imagine.ImagineBlocks;
 import Sequence.world.meta.imagine.ImagineEnergyModule;
 import Sequence.world.util.Util;
 import arc.Core;
@@ -76,6 +77,8 @@ public class MultiCrafter extends Block implements SeqElem {
     @Override
     public void setStats() {
         super.setStats();
+        ImagineBlocks.stats(this);
+
         if (!onlyOneFormula) return;
 
         stats.timePeriod = formulas.get(0).time;
@@ -101,6 +104,7 @@ public class MultiCrafter extends Block implements SeqElem {
         super.setBars();
         removeBar("items");
         removeBar("liquid");
+        ImagineBlocks.bars(this);
         // in building.displayBars()
     }
 

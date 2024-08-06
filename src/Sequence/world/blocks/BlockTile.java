@@ -1,6 +1,6 @@
 package Sequence.world.blocks;
 
-import Sequence.core.SqLog;
+import Sequence.world.util.Util;
 import arc.Core;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
@@ -15,9 +15,14 @@ import mindustry.ui.Fonts;
 import mindustry.world.Block;
 import mindustry.world.Tile;
 
+import static mindustry.Vars.tilesize;
 import static mindustry.Vars.world;
 
 public class BlockTile {
+    private static final Vec2 mouse = new Vec2(), min = new Vec2(), center = new Vec2();
+    public static Color tipColor = Pal.accent;
+    public static Font tipFont = Fonts.outline;
+
     public Block block;
     public int x;
     public int y;
@@ -34,13 +39,10 @@ public class BlockTile {
         this(block, x, y, 0.4f);
     }
 
-    public boolean valid(int tileX, int tileY) {
-        int offsetX = x + tileX;
-        int offsetY = y + tileY;
-
-        for(int x = 0; x < block.size; ++x) {
-            for(int y = 0; y < block.size; ++y) {
-                Tile tile = world.tile(offsetX + x, offsetY + y);
+    public boolean valid() {
+        for (int x = 0; x < block.size; ++x) {
+            for (int y = 0; y < block.size; ++y) {
+                Tile tile = world.tile(this.x + x, this.y + y);
                 if (tile == null || tile.block() != block) {
                     return false;
                 }
@@ -50,44 +52,40 @@ public class BlockTile {
         return true;
     }
 
-    public void draw(int tileX, int tileY) {
-        int offsetX = x + tileX;
-        int offsetY = y + tileY;
-        Vec2 mouse = Core.input.mouseWorld();//.scl(0.125f);
-        float minX = offsetX - 0.5f;
-        float minY = offsetY - 0.5f;
-        Draw.color(Color.white, 0.4f);
-        float cx = (minX + block.size / 2f) * 8;
-        float cy = (minY + block.size / 2f) * 8;
-        Draw.rect(block.fullIcon, cx, cy);
+    public void draw() {
+        mouse.set(Core.input.mouseWorld()).scl(1f / tilesize);
+        min.set(x - 0.5f, y - 0.5f);
+        center.set(min).add(block.size / 2f, block.size / 2f).scl(tilesize);
+
+        Draw.color(Color.white, alpha);
+        Draw.rect(block.fullIcon, center.x, center.y);
         Draw.flush();
-        SqLog.info("(@, @) - (@, @), (@, @)", minX, minY, minX + block.size, minY + block.size, mouse.x, mouse.y);
-        if (mouse.x > minX && mouse.x < minX + block.size && mouse.y > minY && mouse.y < minY + block.size) {
-            drawName(cx, cy);
+
+        if (Util.inZone(min, new Vec2(block.size, block.size), mouse)) {
+            drawTip(center.x, center.y);
         }
     }
 
-    private void drawName(float offsetX, float offsetY) {
-        Color color = Pal.accent;
-        String text = block.localizedName;
-        Font font = Fonts.outline;
+    public void drawTip(float offsetX, float offsetY) {
         GlyphLayout layout = Pools.obtain(GlyphLayout.class, GlyphLayout::new);
-        boolean ints = font.usesIntegerPositions();
-        font.setUseIntegerPositions(false);
-        font.getData().setScale(0.25f / Scl.scl(1));
-        layout.setText(font, text);
+        boolean ints = tipFont.usesIntegerPositions();
+
+        tipFont.setUseIntegerPositions(false);
+        tipFont.getData().setScale(0.25f / Scl.scl(1));
+        layout.setText(tipFont, block.localizedName);
         float width = layout.width;
-        font.setColor(color);
-        float dy = offsetY + block.size * 4f + 3;
-        font.draw(text, offsetX, dy + layout.height + 1, 1);
+        tipFont.setColor(tipColor);
+        float dy = offsetY + block.size * tilesize / 2f + 3;
+        tipFont.draw(block.localizedName, offsetX, dy + layout.height + 1, 1);
         --dy;
         Lines.stroke(2, Color.darkGray);
         Lines.line(offsetX - width / 2 - 2, dy, offsetX + width / 2 + 1.5f, dy);
-        Lines.stroke(1, color);
+        Lines.stroke(1, tipColor);
         Lines.line(offsetX - width / 2 - 2, dy, offsetX + width / 2 + 1.5f, dy);
-        font.setUseIntegerPositions(ints);
-        font.setColor(Color.white);
-        font.getData().setScale(1);
+
+        tipFont.setUseIntegerPositions(ints);
+        tipFont.setColor(Color.white);
+        tipFont.getData().setScale(1);
         Draw.reset();
         Pools.free(layout);
         Draw.flush();

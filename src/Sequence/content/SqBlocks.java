@@ -144,21 +144,23 @@ public class SqBlocks {
                 public void draw() {
                     super.draw();
                     Color color = SqColor.imagineEnergy;
+                    Fonts.def.draw("active " + IEM().record.active, x, y - 12, color, 0.3f, false, Align.center);
                     Fonts.def.draw("amount " + IEM().record.amount, x, y - 8, color, 0.3f, false, Align.center);
-                    Fonts.def.draw("act " + IEM().record.activity, x, y - 4, color, 0.3f, false, Align.center);
-                    Fonts.def.draw("ins " + IEM().record.instability, x, y, color, 0.3f, false, Align.center);
-                    Fonts.def.draw("mul " + IEM().record.multi(), x, y + 4, color, 0.3f, false, Align.center);
+                    Fonts.def.draw("activity " + IEM().record.activity, x, y - 4, color, 0.3f, false, Align.center);
+                    Fonts.def.draw("instability " + IEM().record.instability, x, y, color, 0.3f, false, Align.center);
+                    Fonts.def.draw("multi " + IEM().record.multi(), x, y + 4, color, 0.3f, false, Align.center);
                     Fonts.def.draw("energy " + IEM().record.energy(), x, y + 8, color, 0.3f, false, Align.center);
                     Fonts.def.draw("boost " + IEM().record.boost(), x, y + 12, color, 0.3f, false, Align.center);
 
-                    BlockTile blockTile = new BlockTile(Blocks.arc, 5, 3);
-                    if (!blockTile.valid(tileX(), tileY())) blockTile.draw(tileX(), tileY());
+                    BlockTile blockTile = new BlockTile(Blocks.arc, 5 + tileX(), 3 + tileY());
+                    if (!blockTile.valid()) blockTile.draw();
                 }
 
                 @Override
                 public void updateTile() {
-                    IEM().capacity += 1;
+                    IEM().update();
                     IEM().record.active();
+                    IEM().capacity = 1;
                     IEM().add(1);
                 }
             };

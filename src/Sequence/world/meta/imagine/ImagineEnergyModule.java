@@ -1,5 +1,6 @@
 package Sequence.world.meta.imagine;
 
+import Sequence.core.SqLog;
 import Sequence.world.meta.SqBlockModule;
 import arc.math.Mathf;
 import arc.util.io.Reads;
@@ -56,7 +57,7 @@ public class ImagineEnergyModule extends SqBlockModule {
         public static final float activeMultiBase = 1.943f, boostMax = 400, log2a6_633e112 = 374.785608153f;
 
         public float amount;
-        public float activity = 1;
+        public float activity;
         public float instability = 0f;
         public boolean active;
 
