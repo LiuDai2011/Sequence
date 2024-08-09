@@ -1,23 +1,29 @@
 package Sequence.content;
 
-import Sequence.core.SeqElem;
-import Sequence.core.SqBundle;
-import Sequence.core.SqEventType;
-import Sequence.core.SqTmp;
+import Sequence.core.*;
 import Sequence.ui.SqContentInfoDialog;
 import Sequence.world.meta.SqStat;
 import Sequence.world.util.Change;
 import Sequence.world.util.Util;
+import arc.Core;
 import arc.Events;
+import arc.func.Floatp;
+import arc.math.Mathf;
 import arc.struct.ObjectMap;
+import arc.util.Time;
+import mindustry.Vars;
+import mindustry.core.GameState;
 import mindustry.ctype.UnlockableContent;
 import mindustry.entities.bullet.BulletType;
 import mindustry.game.EventType;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
 import mindustry.world.blocks.defense.turrets.Turret;
 
+import java.lang.reflect.Field;
+
 import static mindustry.Vars.content;
 import static mindustry.Vars.ui;
+import static mindustry.core.GameState.State.paused;
 
 public class SqOverride {
     public static void setup() {

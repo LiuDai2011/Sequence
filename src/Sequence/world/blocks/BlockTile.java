@@ -27,16 +27,22 @@ public class BlockTile {
     public int x;
     public int y;
     public float alpha;
+    public float rotation;
 
-    public BlockTile(Block block, int x, int y, float alpha) {
+    public BlockTile(Block block, int x, int y, float alpha, float rotation) {
         this.block = block;
         this.x = x;
         this.y = y;
         this.alpha = alpha;
+        this.rotation = rotation;
+    }
+
+    public BlockTile(Block block, int x, int y, float rotation) {
+        this(block, x, y, 0.4f, rotation);
     }
 
     public BlockTile(Block block, int x, int y) {
-        this(block, x, y, 0.4f);
+        this(block, x, y, 0);
     }
 
     public boolean valid() {
@@ -58,7 +64,7 @@ public class BlockTile {
         center.set(min).add(block.size / 2f, block.size / 2f).scl(tilesize);
 
         Draw.color(Color.white, alpha);
-        Draw.rect(block.fullIcon, center.x, center.y);
+        Draw.rect(block.fullIcon, center.x, center.y, rotation);
         Draw.flush();
 
         if (Util.inZone(min, new Vec2(block.size, block.size), mouse)) {

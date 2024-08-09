@@ -7,10 +7,12 @@ import Sequence.graphic.SqColor;
 import Sequence.ui.SqUI;
 import Sequence.world.blocks.BlockTile;
 import Sequence.world.meta.Formula;
-import Sequence.world.meta.imagine.ImagineBlocks;
-import Sequence.world.meta.imagine.ImagineEnergyModule;
+import Sequence.world.meta.imagine.*;
 import Sequence.world.util.Util;
 import arc.Core;
+import arc.func.Cons;
+import arc.func.Func2;
+import arc.func.Func3;
 import arc.graphics.Color;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
@@ -37,7 +39,6 @@ import mindustry.ui.Bar;
 import mindustry.ui.Fonts;
 import mindustry.ui.Styles;
 import mindustry.world.Block;
-import mindustry.world.blocks.power.PowerGenerator;
 import mindustry.world.draw.DrawBlock;
 import mindustry.world.draw.DrawDefault;
 import mindustry.world.meta.*;
@@ -215,7 +216,7 @@ public class MultiCrafter extends Block implements SeqElem {
         };
     }
 
-    public class MultiCrafterBuild extends Building implements ImagineEnergyModule.IEMc {
+    public class MultiCrafterBuild extends Building implements BuildingIEc {
         private final Seq<Button> all = new Seq<>();
         public int now = -1;
         public float progress;
@@ -247,16 +248,17 @@ public class MultiCrafter extends Block implements SeqElem {
         public void draw() {
             drawer.draw(this);
             Color color = SqColor.imagineEnergy;
-            Fonts.def.draw("active " + IEM().record.active, x, y - 12, color, 0.3f, false, Align.center);
-            Fonts.def.draw("amount " + IEM().record.amount, x, y - 8, color, 0.3f, false, Align.center);
-            Fonts.def.draw("activity " + IEM().record.activity, x, y - 4, color, 0.3f, false, Align.center);
-            Fonts.def.draw("instability " + IEM().record.instability, x, y, color, 0.3f, false, Align.center);
-            Fonts.def.draw("multi " + IEM().record.multi(), x, y + 4, color, 0.3f, false, Align.center);
-            Fonts.def.draw("energy " + IEM().record.energy(), x, y + 8, color, 0.3f, false, Align.center);
-            Fonts.def.draw("boost " + IEM().record.boost(), x, y + 12, color, 0.3f, false, Align.center);
-            Fonts.def.draw("capacity " + IEM().capacity, x, y + 16, color, 0.3f, false, Align.center);
+            Func3<String, String, Float, Void> func = (n, a, y) -> {
+                Fonts.def.draw(n + " " + a, x, this.y + y, color, 0.3f, false, Align.center);
+                return null;
+            };
+            func.get("active", String.valueOf(IEG().getModule(this).isActive()), 8f);
+            func.get("amount", String.valueOf(IEG().getModule(this).amount()), 4f);
+            func.get("activity", String.valueOf(IEG().getModule(this).activity()), 0f);
+            func.get("instability", String.valueOf(IEG().getModule(this).instability()), -4f);
+            func.get("capacity", String.valueOf(IEG().getModule(this).capacity()), -8f);
 
-            BlockTile blockTile = new BlockTile(Blocks.arc, 5 + tileX(), 3 + tileY());
+            BlockTile blockTile = new BlockTile(Blocks.arc, 5 + tileX(), 3 + tileY(), Time.time / 5f);
             if (!blockTile.valid()) blockTile.draw();
         }
 
@@ -296,8 +298,7 @@ public class MultiCrafter extends Block implements SeqElem {
 
         @Override
         public void updateTile() {
-            IEM().capacity = 1000;
-            IEM().update();
+            IEG().getModule(this).update();
             dumpOutputs();
 
             if (now == -1) {
@@ -566,10 +567,28 @@ public class MultiCrafter extends Block implements SeqElem {
             }
         }
 
-        public ImagineEnergyModule iem = new ImagineEnergyModule();
         @Override
-        public ImagineEnergyModule IEM() {
-            return iem;
+        public void placed() {
+            super.placed();
+//            Core.app.post(() -> {
+//                ieg.graph().addNode(this);
+//            });
+        }
+
+        public ImagineEnergyGraph ieg = new SingleModuleImagineEnergyGraph();
+
+        @Override
+        public ImagineEnergyGraph IEG() {
+            return ieg;
+        }
+
+        @Override
+        public boolean acceptImagineEnergy(boolean active, float activity, float instability) {
+            return true;
+        }
+
+        @Override
+        public void handleImagineEnergy(Building source, float amount, boolean active, float activity, float instability) {
         }
     }
 }
