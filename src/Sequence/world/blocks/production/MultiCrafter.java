@@ -7,11 +7,12 @@ import Sequence.graphic.SqColor;
 import Sequence.ui.SqUI;
 import Sequence.world.blocks.BlockTile;
 import Sequence.world.meta.Formula;
-import Sequence.world.meta.imagine.*;
+import Sequence.world.meta.imagine.BuildingIEc;
+import Sequence.world.meta.imagine.ImagineBlocks;
+import Sequence.world.meta.imagine.ImagineEnergyGraph;
+import Sequence.world.meta.imagine.SingleModuleImagineEnergyGraph;
 import Sequence.world.util.Util;
 import arc.Core;
-import arc.func.Cons;
-import arc.func.Func2;
 import arc.func.Func3;
 import arc.graphics.Color;
 import arc.graphics.g2d.TextureRegion;
@@ -85,19 +86,19 @@ public class MultiCrafter extends Block implements SeqElem {
         if (!onlyOneFormula) return;
 
         stats.timePeriod = formulas.get(0).time;
-        if((hasItems && itemCapacity > 0) || formulas.get(0).outputItem.length > 0){
+        if ((hasItems && itemCapacity > 0) || formulas.get(0).outputItem.length > 0) {
             stats.add(Stat.productionTime, formulas.get(0).time / 60f, StatUnit.seconds);
         }
 
-        if(formulas.get(0).outputItem.length > 0){
+        if (formulas.get(0).outputItem.length > 0) {
             stats.add(Stat.output, StatValues.items(formulas.get(0).time, formulas.get(0).outputItem));
         }
 
-        if(formulas.get(0).outputLiquid.length > 0){
+        if (formulas.get(0).outputLiquid.length > 0) {
             stats.add(Stat.output, StatValues.liquids(1f, formulas.get(0).outputLiquid));
         }
 
-        if(formulas.get(0).outputPower > 0){
+        if (formulas.get(0).outputPower > 0) {
             stats.add(Stat.basePowerGeneration, formulas.get(0).outputPower * 60f, StatUnit.powerSecond);
         }
     }
@@ -222,6 +223,7 @@ public class MultiCrafter extends Block implements SeqElem {
         public float progress;
         public float totalProgress;
         public float warmup;
+        public ImagineEnergyGraph ieg = new SingleModuleImagineEnergyGraph();
         private boolean upd = false;
         private float lastOutputPower = 0f;
 
@@ -529,8 +531,8 @@ public class MultiCrafter extends Block implements SeqElem {
             if (getFormula().outputPower > 0) {
                 table.add(new Bar(
                         () ->
-                        Core.bundle.format("bar.poweroutput",
-                                Strings.fixed(this.getPowerProduction() * 60 * this.timeScale(), 1)),
+                                Core.bundle.format("bar.poweroutput",
+                                        Strings.fixed(this.getPowerProduction() * 60 * this.timeScale(), 1)),
                         () -> Pal.powerBar,
                         () -> this.efficiency)).row();
             }
@@ -574,8 +576,6 @@ public class MultiCrafter extends Block implements SeqElem {
 //                ieg.graph().addNode(this);
 //            });
         }
-
-        public ImagineEnergyGraph ieg = new SingleModuleImagineEnergyGraph();
 
         @Override
         public ImagineEnergyGraph IEG() {

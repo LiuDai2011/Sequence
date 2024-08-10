@@ -13,11 +13,11 @@ public class ImagineEnergyRecord {
         this.active = active;
     }
 
-    public boolean zero() {
-        return Mathf.zero(amount);
-    }
-
     public static ImagineEnergyRecord empty() {
         return new ImagineEnergyRecord(0, 0, 0, false);
+    }
+
+    public boolean zero() {
+        return Mathf.zero(amount);
     }
 }

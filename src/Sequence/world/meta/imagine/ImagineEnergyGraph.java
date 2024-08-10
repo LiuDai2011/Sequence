@@ -11,9 +11,6 @@ import mindustry.gen.Building;
 public abstract class ImagineEnergyGraph implements IO {
     public static final Seq<ImagineEnergyGraph> all = new Seq<>();
 
-    public abstract ImagineEnergyModule getModule(Building build);
-    public abstract void update();
-
     static {
         Events.run(EventType.Trigger.update, () -> {
             if (Vars.state.is(GameState.State.paused)) return;
@@ -26,4 +23,8 @@ public abstract class ImagineEnergyGraph implements IO {
     public ImagineEnergyGraph() {
         all.add(this);
     }
+
+    public abstract ImagineEnergyModule getModule(Building build);
+
+    public abstract void update();
 }

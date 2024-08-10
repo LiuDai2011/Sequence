@@ -9,10 +9,15 @@ import arc.util.io.Reads;
 import arc.util.io.Writes;
 
 public class Graph<T extends IO> implements IO {
-    protected int nodeCount = 0;
     protected final IntMap<T> nodes = new IntMap<>();
     protected final ObjectIntMap<T> nodesId = new ObjectIntMap<>();
     protected final IntMap<IntSeq> graph = new IntMap<>();
+    protected int nodeCount = 0;
+
+    protected static <V> V checkKey(IntMap<V> map, int key, Prov<V> def) {
+        if (!map.containsKey(key)) map.put(key, def.get());
+        return map.get(key);
+    }
 
     public T get(int key) {
         return nodes.get(key);
@@ -30,7 +35,8 @@ public class Graph<T extends IO> implements IO {
     }
 
     public IntSeq outs(T from) {
-        if (!nodesId.containsKey(from)) throw new IllegalArgumentException("The graph doesn't have a node valued " + from + ".");
+        if (!nodesId.containsKey(from))
+            throw new IllegalArgumentException("The graph doesn't have a node valued " + from + ".");
         checkKey(graph, nodesId.get(from), IntSeq::new);
         return graph.get(nodesId.get(from));
     }
@@ -46,11 +52,6 @@ public class Graph<T extends IO> implements IO {
         if (!nodes.containsValue(node, false)) {
             addNode(node);
         }
-    }
-
-    protected static <V> V checkKey(IntMap<V> map, int key, Prov<V> def) {
-        if (!map.containsKey(key)) map.put(key, def.get());
-        return map.get(key);
     }
 
     @Override

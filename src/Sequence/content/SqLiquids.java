@@ -60,10 +60,8 @@ public class SqLiquids {
     }
 
     public static class VectorizedFluid extends SqLiquid {
-        private static final StringBuilder builder = new StringBuilder();
-
         public static final Seq<VectorizedFluid> all = new Seq<>();
-
+        private static final StringBuilder builder = new StringBuilder();
         public float damageMulti = 0;
         public float knockbackMulti = 0;
         public float consumeAmount = 0;

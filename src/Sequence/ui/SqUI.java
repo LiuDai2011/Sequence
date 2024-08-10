@@ -1,36 +1,26 @@
 package Sequence.ui;
 
-import Sequence.SeqMod;
 import Sequence.content.SqIcon;
 import Sequence.core.SqBundle;
 import Sequence.core.SqLog;
-import Sequence.graphic.SqColor;
 import Sequence.world.meta.Formula;
-import Sequence.world.meta.imagine.ImagineEnergyModule;
 import Sequence.world.meta.imagine.ImagineEnergyRecord;
-import arc.Core;
 import arc.Events;
-import arc.graphics.Color;
 import arc.math.Mathf;
 import arc.scene.ui.Button;
 import arc.scene.ui.Image;
-import arc.scene.ui.layout.Stack;
 import arc.scene.ui.layout.Table;
-import arc.util.Scaling;
-import arc.util.Strings;
-import mindustry.core.UI;
 import mindustry.game.EventType;
 import mindustry.gen.Icon;
 import mindustry.type.ItemStack;
 import mindustry.type.LiquidStack;
 import mindustry.ui.ItemDisplay;
-import mindustry.ui.LiquidDisplay;
 import mindustry.ui.Styles;
 import mindustry.ui.dialogs.BaseDialog;
 import mindustry.ui.fragments.MenuFragment;
-import mindustry.world.meta.StatUnit;
 
-import static mindustry.Vars.*;
+import static mindustry.Vars.iconMed;
+import static mindustry.Vars.ui;
 
 public class SqUI {
     public static BaseDialog dialog;
@@ -93,7 +83,6 @@ public class SqUI {
     public static void load() {
         Events.on(EventType.ClientLoadEvent.class, e -> {
             dialog = new MobileMainmenuDialog();
-            dialog.addCloseButton();
             ui.menufrag.addButton(
                     new MenuFragment.MenuButton(
                             SqBundle.modCat("mainmenu", "text"),

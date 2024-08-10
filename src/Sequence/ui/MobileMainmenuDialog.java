@@ -6,5 +6,6 @@ import mindustry.ui.dialogs.BaseDialog;
 public class MobileMainmenuDialog extends BaseDialog {
     public MobileMainmenuDialog() {
         super(SqBundle.modCat("mainmenu", "mobile", "title"));
+        addCloseButton();
     }
 }

@@ -5,13 +5,11 @@ import Sequence.graphic.SqColor;
 import Sequence.world.blocks.production.MultiCrafter;
 import Sequence.world.meta.Formula;
 import Sequence.world.meta.imagine.BuildingIEc;
-import Sequence.world.meta.imagine.IEc;
 import Sequence.world.meta.imagine.Test;
 import arc.math.Mathf;
 import arc.math.geom.Geometry;
 import arc.util.Time;
 import mindustry.Vars;
-import mindustry.content.Blocks;
 import mindustry.content.Fx;
 import mindustry.content.Items;
 import mindustry.content.Liquids;
@@ -21,8 +19,6 @@ import mindustry.type.LiquidStack;
 import mindustry.world.Block;
 import mindustry.world.Tile;
 import mindustry.world.blocks.defense.Wall;
-
-import static mindustry.Vars.tilesize;
 
 public class SqBlocks {
     public static Block test, test1, test2;
@@ -163,7 +159,8 @@ public class SqBlocks {
                             Tile tile1 = Vars.world.tile(Geometry.d4x(i) * len + tileX(), Geometry.d4y(i) * len + tileY());
                             if (tile1 != null && tile1.build != null && tile1.build instanceof BuildingIEc icc && icc.acceptImagineEnergy(false, 0, 0)) {
                                 icc.IEG().getModule(tile1.build).add(Time.delta);
-                                if (Mathf.chanceDelta(tile1.block().size * 0.1f / len)) Fx.healBlockFull.at(tile1.build.x, tile1.build.y, 0, SqColor.LiuDai.cpy().a(0.3f), tile1.build.block);
+                                if (Mathf.chanceDelta(tile1.block().size * 0.1f / len))
+                                    Fx.healBlockFull.at(tile1.build.x, tile1.build.y, 0, SqColor.LiuDai.cpy().a(0.3f), tile1.build.block);
                             }
                         }
                     }

@@ -6,8 +6,8 @@ import arc.util.io.Writes;
 import mindustry.gen.Building;
 
 public class SingleModuleImagineEnergyGraph extends ImagineEnergyGraph {
-    private final BuildingGraph graph = new BuildingGraph();
     private static final ImagineEnergyModule module = new ImagineEnergyModule(null);
+    private final BuildingGraph graph = new BuildingGraph();
 
     @Override
     public ImagineEnergyModule getModule(Building build) {
