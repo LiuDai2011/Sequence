@@ -30,14 +30,21 @@ public class SqUI {
         button.setStyle(Styles.underlineb);
         button.table(t -> t.table(bt -> {
             bt.left();
-            uiILPFormula(form.inputItem, form.inputLiquid, form.inputPower, form.inputImagine, bt, false);
+            uiILPFormula(form.inputItem, form.inputLiquid, form.inputPower * form.time, form.inputImagine, bt, false);
             bt.left();
 
             bt.add();
             bt.table(ct -> ct.add(new Image(Icon.rightSmall)).grow().fill()).padLeft(10).padRight(10);
             bt.add();
 
-            uiILPFormula(form.outputItem, form.outputLiquid, form.outputPower, form.outputImagine, bt, false);
+            if (form.liquidSecond) {
+                LiquidStack[] liquidStacks = new LiquidStack[form.outputLiquid.length];
+                for (int i = 0; i < form.outputLiquid.length; i++) {
+                    liquidStacks[i] = new LiquidStack(form.outputLiquid[i].liquid, form.outputLiquid[i].amount * form.time);
+                }
+                uiILPFormula(form.outputItem, liquidStacks, form.outputPower, form.outputImagine, bt, false);
+            } else
+                uiILPFormula(form.outputItem, form.outputLiquid, form.outputPower * form.time, form.outputImagine, bt, false);
         }).left().top()).padLeft(5).margin(0).growX().left().top();
         return button;
     }

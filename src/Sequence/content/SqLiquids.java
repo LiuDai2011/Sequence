@@ -39,6 +39,16 @@ public class SqLiquids {
             color = Color.valueOf("c5d6f2");
             ord = 3;
         }};
+        new VectorizedFluid("aac") {{
+            heatCapacity = 100f;
+            boilPoint = 100f;
+            temperature = -50f;
+            damageMulti = 10000f;
+            knockbackMulti = 10000f;
+            consumeAmount = 1f;
+            color = Color.valueOf("000000");
+            ord = 3;
+        }};
     }
 
     public static class SqLiquid extends Liquid implements SeqElem {

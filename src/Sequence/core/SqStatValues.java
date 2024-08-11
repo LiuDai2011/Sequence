@@ -5,6 +5,7 @@ import Sequence.world.meta.Formula;
 import arc.scene.ui.Image;
 import arc.util.Strings;
 import mindustry.gen.Icon;
+import mindustry.type.LiquidStack;
 import mindustry.ui.Styles;
 import mindustry.world.meta.StatValue;
 
@@ -15,13 +16,20 @@ public class SqStatValues {
             table.table(Styles.grayPanel, t -> {
                 t.table(bt -> {
                     bt.left().top().defaults().padRight(3).left();
-                    SqUI.uiILPFormula(form.inputItem, form.inputLiquid, form.inputPower, form.inputImagine, bt, true);
+                    SqUI.uiILPFormula(form.inputItem, form.inputLiquid, form.inputPower * form.time, form.inputImagine, bt, true);
 
                     bt.add();
                     bt.table(ct -> ct.add(new Image(Icon.rightSmall)).grow().fill()).padLeft(10).padRight(10);
                     bt.add();
 
-                    SqUI.uiILPFormula(form.outputItem, form.outputLiquid, form.outputPower, form.outputImagine, bt, true);
+                    if (form.liquidSecond) {
+                        LiquidStack[] liquidStacks = new LiquidStack[form.outputLiquid.length];
+                        for (int i = 0; i < form.outputLiquid.length; i++) {
+                            liquidStacks[i] = new LiquidStack(form.outputLiquid[i].liquid, form.outputLiquid[i].amount * form.time);
+                        }
+                        SqUI.uiILPFormula(form.outputItem, liquidStacks, form.outputPower, form.outputImagine, bt, false);
+                    } else
+                        SqUI.uiILPFormula(form.outputItem, form.outputLiquid, form.outputPower * form.time, form.outputImagine, bt, true);
                 }).growX().left().row();
                 t.add(SqBundle.format(SqBundle.cat("stat", "crafttime"),
                         Strings.autoFixed(form.time / 60f, 2))).left();

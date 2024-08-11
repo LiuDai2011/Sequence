@@ -3,8 +3,12 @@ package Sequence.content;
 import Sequence.SeqMod;
 import Sequence.graphic.SqColor;
 import Sequence.world.blocks.production.MultiCrafter;
+import Sequence.world.drawer.DrawBottom;
+import Sequence.world.drawer.DrawEfficiency;
+import Sequence.world.drawer.NoCheckDrawLiquidRegion;
 import Sequence.world.meta.Formula;
 import Sequence.world.meta.imagine.BuildingIEc;
+import Sequence.world.meta.imagine.ImagineEnergyRecord;
 import Sequence.world.meta.imagine.Test;
 import arc.math.Mathf;
 import arc.math.geom.Geometry;
@@ -19,43 +23,85 @@ import mindustry.type.LiquidStack;
 import mindustry.world.Block;
 import mindustry.world.Tile;
 import mindustry.world.blocks.defense.Wall;
+import mindustry.world.draw.DrawDefault;
+import mindustry.world.draw.DrawMulti;
 
 public class SqBlocks {
-    public static Block test, test1, test2;
+    public static Block multiFluidMixer, berylliumCrystallizer, test, test1, test2;
 
     public static void load() {
+        multiFluidMixer = new MultiCrafter("multi-fluid-mixer") {{
+            addFormula(
+                    new Formula(
+                            ItemStack.with(SqItems.crystallizedBeryllium, 1),
+                            LiquidStack.with(Liquids.water, 6),
+                            2,
+                            ItemStack.empty,
+                            LiquidStack.with(SqLiquids.crystallizedFluid, 5),
+                            0,
+                            0.5f * 60f,
+                            false),
+                    new Formula(
+                            ItemStack.with(SqItems.grainBoundaryAlloy, 1),
+                            LiquidStack.with(SqLiquids.crystallizedFluid, 6),
+                            3,
+                            ItemStack.empty,
+                            LiquidStack.with(SqLiquids.vectorizedFluid, 4.5),
+                            0,
+                            1.2f * 60f,
+                            false)
+            );
+
+            requirements(Category.crafting, ItemStack.with(
+                    Items.graphite, 60,
+                    SqItems.pureSilicon, 30,
+                    SqItems.crystallizedBeryllium, 120,
+                    Items.tungsten, 80));
+
+            drawer = new DrawMulti(
+                    new DrawBottom(),
+                    new NoCheckDrawLiquidRegion(),
+                    new DrawDefault()
+            );
+
+            scaledHealth = 65;
+
+            craftEffect = Fx.pulverizeMedium;
+            size = 2;
+
+            itemCapacity = 20;
+            liquidCapacity = 60;
+
+            ord = 34;
+        }};
+
+        berylliumCrystallizer = new MultiCrafter("beryllium-crystallizer") {{
+            addFormula(new Formula(ItemStack.with(Items.beryllium, 4),
+                    LiquidStack.empty,
+                    1,
+                    ItemStack.with(SqItems.crystallizedBeryllium, 3),
+                    LiquidStack.empty,
+                    0,
+                    0.83f * 60f));
+            onlyOneFormula = true;
+
+            requirements(Category.crafting, ItemStack.with(Items.graphite, 80,
+                    Items.tungsten, 20,
+                    Items.beryllium, 60));
+
+            drawer = new DrawMulti(
+                    new DrawBottom(),
+                    new DrawEfficiency(),
+                    new DrawDefault()
+            );
+
+            scaledHealth = 73;
+            size = 3;
+
+            itemCapacity = 30;
+        }};
+
         if (!SeqMod.dev) return;
-//        test = new Wall("test-wall") {{
-//            requirements(Category.effect, ItemStack.empty);
-//            health = 100;
-//            configurable = true;
-//
-//            buildType = () -> new WallBuild() {
-//                @Override
-//                public void buildConfiguration(Table table) {
-//                    table.table(Styles.black6, ta -> {
-//                        ta.add(SqUI.formula(new Formula(
-//                                ItemStack.with(SqItems.berylliumalAlloy, 2, Items.surgeAlloy, 3),
-//                                LiquidStack.with(SqLiquids.crystallizedFluid, 3, Liquids.water, 5),
-//                                3,
-//                                ItemStack.with(SqItems.phaseCore, 5, SqItems.grainBoundaryAlloy, 10),
-//                                LiquidStack.with(SqLiquids.vectorizedFluid, 2, Liquids.cryofluid, 7),
-//                                5,
-//                                8)
-//                        )).left().row();
-//                        ta.add(SqUI.formula(new Formula(
-//                                ItemStack.with(Items.thorium, 2),
-//                                LiquidStack.with(Liquids.water, 5),
-//                                114,
-//                                ItemStack.with(SqItems.grainBoundaryAlloy, 1145),
-//                                LiquidStack.with(Liquids.cryofluid, 7),
-//                                6,
-//                                9)
-//                        )).left().row();
-//                    }).margin(5).fillX().grow();
-//                }
-//            };
-//        }};
         test = new MultiCrafter("test-multi-crafter") {{
             addFormula(
                     new Formula(
@@ -64,7 +110,7 @@ public class SqBlocks {
                             114, ItemStack.with(SqItems.grainBoundaryAlloy, 11),
                             LiquidStack.with(Liquids.cryofluid, 7),
                             6,
-                            90),
+                            90, false),
                     new Formula(
                             ItemStack.with(SqItems.berylliumalAlloy, 2, Items.surgeAlloy, 3),
                             LiquidStack.with(SqLiquids.crystallizedFluid, 3, Liquids.water, 5),
@@ -72,16 +118,17 @@ public class SqBlocks {
                             ItemStack.with(SqItems.phaseCore, 5, SqItems.grainBoundaryAlloy, 10),
                             LiquidStack.with(SqLiquids.vectorizedFluid, 2, Liquids.cryofluid, 7),
                             5,
-                            8),
+                            8, false),
                     new Formula(
                             ItemStack.empty,
                             LiquidStack.empty,
                             3,
+                            new ImagineEnergyRecord(5, 10, 0, true),
                             ItemStack.empty,
                             LiquidStack.empty,
                             5,
-                            8
-                    )
+                            new ImagineEnergyRecord(3, 1, 2, false),
+                            8, false)
             );
 
             requirements(Category.crafting, ItemStack.empty);
@@ -106,7 +153,7 @@ public class SqBlocks {
                             ItemStack.with(SqItems.grainBoundaryAlloy, 11),
                             LiquidStack.with(Liquids.cryofluid, 7),
                             6,
-                            90),
+                            90, false),
                     new Formula(
                             ItemStack.with(SqItems.berylliumalAlloy, 2, Items.surgeAlloy, 3),
                             LiquidStack.with(SqLiquids.crystallizedFluid, 3, Liquids.water, 5),
@@ -114,15 +161,17 @@ public class SqBlocks {
                             ItemStack.with(SqItems.phaseCore, 5, SqItems.grainBoundaryAlloy, 10),
                             LiquidStack.with(SqLiquids.vectorizedFluid, 2, Liquids.cryofluid, 7),
                             5,
-                            8),
+                            8, false),
                     new Formula(
                             ItemStack.empty,
                             LiquidStack.empty,
                             3,
+                            new ImagineEnergyRecord(5, 10, 0, true),
                             ItemStack.empty,
                             LiquidStack.empty,
                             5,
-                            8)
+                            new ImagineEnergyRecord(3, 1, 2, false),
+                            8, false)
             );
             onlyOneFormula = true;
 

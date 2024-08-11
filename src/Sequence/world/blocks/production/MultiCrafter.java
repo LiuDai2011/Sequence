@@ -3,28 +3,23 @@ package Sequence.world.blocks.production;
 import Sequence.core.SeqElem;
 import Sequence.core.SqBundle;
 import Sequence.core.SqStatValues;
-import Sequence.graphic.SqColor;
 import Sequence.ui.SqUI;
-import Sequence.world.blocks.BlockTile;
 import Sequence.world.meta.Formula;
-import Sequence.world.meta.imagine.BuildingIEc;
-import Sequence.world.meta.imagine.ImagineBlocks;
-import Sequence.world.meta.imagine.ImagineEnergyGraph;
-import Sequence.world.meta.imagine.SingleModuleImagineEnergyGraph;
+import Sequence.world.meta.imagine.*;
 import Sequence.world.util.Util;
 import arc.Core;
-import arc.func.Func3;
-import arc.graphics.Color;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
 import arc.scene.ui.Button;
 import arc.scene.ui.layout.Table;
 import arc.struct.EnumSet;
 import arc.struct.Seq;
-import arc.util.*;
+import arc.util.Eachable;
+import arc.util.Nullable;
+import arc.util.Strings;
+import arc.util.Time;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
-import mindustry.content.Blocks;
 import mindustry.content.Fx;
 import mindustry.entities.Effect;
 import mindustry.entities.units.BuildPlan;
@@ -37,7 +32,6 @@ import mindustry.type.ItemStack;
 import mindustry.type.Liquid;
 import mindustry.type.LiquidStack;
 import mindustry.ui.Bar;
-import mindustry.ui.Fonts;
 import mindustry.ui.Styles;
 import mindustry.world.Block;
 import mindustry.world.draw.DrawBlock;
@@ -46,7 +40,7 @@ import mindustry.world.meta.*;
 
 import static mindustry.Vars.content;
 
-public class MultiCrafter extends Block implements SeqElem {
+public class MultiCrafter extends Block implements SeqElem, BlockIEc {
     public final Seq<Formula> formulas = new Seq<>();
     public int ord = -1;
     public int[] liquidOutputDirections = {-1};
@@ -55,6 +49,8 @@ public class MultiCrafter extends Block implements SeqElem {
 
     public boolean dumpExtraLiquid = true;
     public boolean ignoreLiquidFullness = false;
+
+    public boolean hasImagineEnergy = false;
 
     public Effect craftEffect = Fx.none;
     public Effect updateEffect = Fx.none;
@@ -132,6 +128,7 @@ public class MultiCrafter extends Block implements SeqElem {
             if (formula.outputItem.length > 0 || formula.inputItem.length > 0) hasItems = true;
             if (formula.inputPower > 0 || formula.outputPower > 0) hasPower = true;
             if (formula.outputPower > 0) outputsPower = true;
+            if (!formula.inputImagine.zero() || !formula.outputImagine.zero()) hasImagineEnergy = true;
         }
         if (onlyOneFormula) {
             configurable = false;
@@ -217,6 +214,11 @@ public class MultiCrafter extends Block implements SeqElem {
         };
     }
 
+    @Override
+    public boolean hasImagineEnergy() {
+        return hasImagineEnergy;
+    }
+
     public class MultiCrafterBuild extends Building implements BuildingIEc {
         private final Seq<Button> all = new Seq<>();
         public int now = -1;
@@ -249,19 +251,6 @@ public class MultiCrafter extends Block implements SeqElem {
         @Override
         public void draw() {
             drawer.draw(this);
-            Color color = SqColor.imagineEnergy;
-            Func3<String, String, Float, Void> func = (n, a, y) -> {
-                Fonts.def.draw(n + " " + a, x, this.y + y, color, 0.3f, false, Align.center);
-                return null;
-            };
-            func.get("active", String.valueOf(IEG().getModule(this).isActive()), 8f);
-            func.get("amount", String.valueOf(IEG().getModule(this).amount()), 4f);
-            func.get("activity", String.valueOf(IEG().getModule(this).activity()), 0f);
-            func.get("instability", String.valueOf(IEG().getModule(this).instability()), -4f);
-            func.get("capacity", String.valueOf(IEG().getModule(this).capacity()), -8f);
-
-            BlockTile blockTile = new BlockTile(Blocks.arc, 5 + tileX(), 3 + tileY(), Time.time / 5f);
-            if (!blockTile.valid()) blockTile.draw();
         }
 
         @Override
@@ -333,10 +322,12 @@ public class MultiCrafter extends Block implements SeqElem {
                 progress += getProgressIncrease(getFormula().time);
                 warmup = Mathf.approachDelta(warmup, warmupTarget(), warmupSpeed);
 
-                if (getFormula().outputLiquid.length > 0) {
-                    float inc = getProgressIncrease(1f);
-                    for (var output : getFormula().outputLiquid) {
-                        handleLiquid(this, output.liquid, Math.min(output.amount * inc, liquidCapacity - liquids.get(output.liquid)));
+                if (getFormula().liquidSecond) {
+                    if (getFormula().outputLiquid.length > 0) {
+                        float inc = getProgressIncrease(1f);
+                        for (var output : getFormula().outputLiquid) {
+                            handleLiquid(this, output.liquid, Math.min(output.amount * inc, liquidCapacity - liquids.get(output.liquid)));
+                        }
                     }
                 }
 
@@ -404,6 +395,12 @@ public class MultiCrafter extends Block implements SeqElem {
                 for (int i = 0; i < output.amount; i++) {
                     offload(output.item);
                     if (items.get(output.item) > itemCapacity) items.set(output.item, itemCapacity);
+                }
+            }
+            if (!getFormula().liquidSecond) {
+                for (var output : getFormula().outputLiquid) {
+                    handleLiquid(this, output.liquid, output.amount);
+                    if (liquids.get(output.liquid) > liquidCapacity) liquids.set(output.liquid, liquidCapacity);
                 }
             }
             dumpOutputs();

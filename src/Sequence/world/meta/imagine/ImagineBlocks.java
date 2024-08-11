@@ -14,21 +14,23 @@ public class ImagineBlocks {
     }
 
     public static void bars(Block block) {
-        block.addBar("imagine-energy-amount", entity -> new Bar(
-                () -> "amount",
-                () -> getColor(getIEM(entity)),
-                () -> getIEM(entity).amount() / getIEM(entity).capacity()
-        ));
-        block.addBar("imagine-energy-activity", entity -> new Bar(
-                () -> "activity",
-                () -> getColor(getIEM(entity)),
-                () -> getIEM(entity).activity() / 1e6f
-        ));
-        block.addBar("imagine-energy-instability", entity -> new Bar(
-                () -> "instability",
-                () -> getColor(getIEM(entity)),
-                () -> getIEM(entity).instability() / 1e8f
-        ));
+        if (block instanceof BlockIEc iec && iec.hasImagineEnergy()) {
+            block.addBar("imagine-energy-amount", entity -> new Bar(
+                    () -> "amount",
+                    () -> getColor(getIEM(entity)),
+                    () -> getIEM(entity).amount() / getIEM(entity).capacity()
+            ));
+            block.addBar("imagine-energy-activity", entity -> new Bar(
+                    () -> "activity",
+                    () -> getColor(getIEM(entity)),
+                    () -> getIEM(entity).activity() / 1e6f
+            ));
+            block.addBar("imagine-energy-instability", entity -> new Bar(
+                    () -> "instability",
+                    () -> getColor(getIEM(entity)),
+                    () -> getIEM(entity).instability() / 1e8f
+            ));
+        }
     }
 
     private static Color getColor(ImagineEnergyModule iem) {
