@@ -92,15 +92,21 @@ public class Graph<T extends IO> implements IO, Cloneable {
         }
         ids.remove(nodes.get(nodeId));
         nodes.remove(nodeId);
-        nodeCount--;
         return checkConnected();
     }
 
     private Seq<Graph<T>> checkConnected() {
         DisjointSetUnion dsu = new DisjointSetUnion(nodeCount);
         Seq<Graph<T>> res = new Seq<>();
+        for (IntMap.Entry<IntSet> entry : graph) {
+            IntSet.IntSetIterator iter = entry.value.iterator();
+            while(iter.hasNext){
+                int v = iter.next();
+                dsu.unite(entry.key, v);
+            }
+        }
         for (IntMap.Entry<T> entry : nodes) {
-//            entry.key
+            // TODO aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh 23.8.16
         }
         return res;
     }

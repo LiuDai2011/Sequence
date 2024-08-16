@@ -6,8 +6,8 @@ package Sequence.world.util;
  */
 public class DisjointSetUnion {
     public final int size;
-    protected final int[] father;
-    protected final int[] _size;
+    final int[] father;
+    final int[] _size;
     public DisjointSetUnion(int size) {
         this.size = size;
         father = new int[size];
