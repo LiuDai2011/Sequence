@@ -6,23 +6,33 @@ import Sequence.world.blocks.production.MultiCrafter;
 import Sequence.world.drawer.DrawBottom;
 import Sequence.world.drawer.DrawEfficiency;
 import Sequence.world.drawer.NoCheckDrawLiquidRegion;
+import Sequence.world.entities.SpreadPointBulletType;
 import Sequence.world.meta.Formula;
 import Sequence.world.meta.imagine.BuildingIEc;
 import Sequence.world.meta.imagine.ImagineEnergyRecord;
 import Sequence.world.meta.imagine.Test;
+import arc.graphics.Color;
 import arc.math.Mathf;
 import arc.math.geom.Geometry;
 import arc.util.Time;
+import arc.util.pooling.Pools;
 import mindustry.Vars;
 import mindustry.content.Fx;
 import mindustry.content.Items;
 import mindustry.content.Liquids;
+import mindustry.entities.bullet.BasicBulletType;
+import mindustry.entities.bullet.PointBulletType;
+import mindustry.entities.effect.MultiEffect;
+import mindustry.entities.pattern.ShootAlternate;
+import mindustry.graphics.Pal;
 import mindustry.type.Category;
 import mindustry.type.ItemStack;
 import mindustry.type.LiquidStack;
 import mindustry.world.Block;
 import mindustry.world.Tile;
 import mindustry.world.blocks.defense.Wall;
+import mindustry.world.blocks.defense.turrets.ItemTurret;
+import mindustry.world.draw.DrawArcSmelt;
 import mindustry.world.draw.DrawDefault;
 import mindustry.world.draw.DrawMulti;
 
@@ -35,7 +45,7 @@ public class SqBlocks {
                     new Formula(
                             ItemStack.with(SqItems.crystallizedBeryllium, 1),
                             LiquidStack.with(Liquids.water, 6),
-                            2,
+                            1.5f,
                             ItemStack.empty,
                             LiquidStack.with(SqLiquids.crystallizedFluid, 5),
                             0,
@@ -44,7 +54,7 @@ public class SqBlocks {
                     new Formula(
                             ItemStack.with(SqItems.grainBoundaryAlloy, 1),
                             LiquidStack.with(SqLiquids.crystallizedFluid, 6),
-                            3,
+                            2,
                             ItemStack.empty,
                             LiquidStack.with(SqLiquids.vectorizedFluid, 4.5),
                             0,
@@ -82,7 +92,7 @@ public class SqBlocks {
                     ItemStack.with(SqItems.crystallizedBeryllium, 3),
                     LiquidStack.empty,
                     0,
-                    0.83f * 60f));
+                    1.57f * 60f));
             onlyOneFormula = true;
 
             requirements(Category.crafting, ItemStack.with(Items.graphite, 80,
@@ -91,7 +101,8 @@ public class SqBlocks {
 
             drawer = new DrawMulti(
                     new DrawBottom(),
-                    new DrawEfficiency(),
+//                    new DrawEfficiency(),
+                    new DrawArcSmelt(),
                     new DrawDefault()
             );
 
@@ -99,6 +110,213 @@ public class SqBlocks {
             size = 3;
 
             itemCapacity = 30;
+        }};
+
+        new ItemTurret("acacac") {{
+            requirements(Category.turret, ItemStack.empty);
+            ammo(
+                    Items.copper, new SpreadPointBulletType() {{
+                        shootEffect = Fx.instShoot;
+                        hitEffect = Fx.instHit;
+                        smokeEffect = Fx.smokeCloud;
+                        trailEffect = Fx.instTrail;
+                        despawnEffect = Fx.instBomb;
+                        trailSpacing = 20f;
+                        splashDamage = 1350;
+                        splashDamageRadius = 18f;
+                        buildingDamageMultiplier = 0.2f;
+                        speed = 600;
+                        hitShake = 6f;
+                        ammoMultiplier = 1f;
+
+                        fragBullet = new SpreadPointBulletType() {{
+                            shootEffect = Fx.instShoot;
+                            hitEffect = Fx.instHit;
+                            smokeEffect = Fx.smokeCloud;
+                            trailEffect = Fx.instTrail;
+                            despawnEffect = Fx.instBomb;
+                            trailSpacing = 20f;
+                            splashDamage = 1350;
+                            splashDamageRadius = 18f;
+                            buildingDamageMultiplier = 0.2f;
+                            speed = 300;
+                            hitShake = 6f;
+                            ammoMultiplier = 1f;
+                            lifetime = 1;
+
+                            fragBullet = new PointBulletType() {{
+                                shootEffect = Fx.instShoot;
+                                hitEffect = Fx.instHit;
+                                smokeEffect = Fx.smokeCloud;
+                                trailEffect = Fx.instTrail;
+                                despawnEffect = Fx.instBomb;
+                                trailSpacing = 20f;
+                                splashDamage = 1350;
+                                splashDamageRadius = 18f;
+                                buildingDamageMultiplier = 0.2f;
+                                speed = 300;
+                                hitShake = 6f;
+                                ammoMultiplier = 1f;
+                                lifetime = 1;
+
+                                fragBullets = 3;
+                                fragBullet = new BasicBulletType(16, 0, "shell"){{
+                                    lifetime = 999;
+                                    splashDamage = 1350;
+                                    splashDamageRadius = 27;
+                                    homingPower = 0.3f;
+                                    homingRange = 8000;
+                                    width = 13f;
+                                    height = 19f;
+                                    hitSize = 27f;
+                                    shootEffect = new MultiEffect(Fx.shootBigColor, Fx.colorSparkBig);
+                                    smokeEffect = Fx.shootBigSmoke;
+                                    ammoMultiplier = 1;
+                                    pierce = true;
+                                    pierceBuilding = true;
+                                    hitColor = backColor = trailColor = Pal.tungstenShot;
+                                    frontColor = Color.white;
+                                    trailWidth = 2.2f;
+                                    trailLength = 11;
+                                    hitEffect = despawnEffect = Fx.hitBulletColor;
+                                    rangeChange = 40f;
+                                    buildingDamageMultiplier = 0.3f;
+                                }};
+                            }};
+                            fragBullets = 5;
+
+                            radius = 300;
+                            minRadius = 80;
+                        }};
+
+                        fragBullets = 5;
+
+                        radius = 300;
+                        minRadius = 80;
+                    }},
+                    Items.lead, new SpreadPointBulletType() {{
+                        shootEffect = Fx.instShoot;
+                        hitEffect = Fx.instHit;
+                        smokeEffect = Fx.smokeCloud;
+                        trailEffect = Fx.instTrail;
+                        despawnEffect = Fx.instBomb;
+                        trailSpacing = 20f;
+                        splashDamage = 1350;
+                        splashDamageRadius = 18f;
+                        buildingDamageMultiplier = 0.2f;
+                        speed = 600;
+                        hitShake = 6f;
+                        ammoMultiplier = 1f;
+
+                        fragBullet = new SpreadPointBulletType() {{
+                            shootEffect = Fx.instShoot;
+                            hitEffect = Fx.instHit;
+                            smokeEffect = Fx.smokeCloud;
+                            trailEffect = Fx.instTrail;
+                            despawnEffect = Fx.instBomb;
+                            trailSpacing = 20f;
+                            splashDamage = 1350;
+                            splashDamageRadius = 18f;
+                            buildingDamageMultiplier = 0.2f;
+                            speed = 300;
+                            hitShake = 6f;
+                            ammoMultiplier = 1f;
+                            lifetime = 1;
+
+                            fragBullet = new PointBulletType() {{
+                                shootEffect = Fx.instShoot;
+                                hitEffect = Fx.instHit;
+                                smokeEffect = Fx.smokeCloud;
+                                trailEffect = Fx.instTrail;
+                                despawnEffect = Fx.instBomb;
+                                trailSpacing = 20f;
+                                splashDamage = 1350;
+                                splashDamageRadius = 18f;
+                                buildingDamageMultiplier = 0.2f;
+                                speed = 300;
+                                hitShake = 6f;
+                                ammoMultiplier = 1f;
+                                lifetime = 1;
+                            }};
+                            fragBullets = 5;
+
+                            radius = 300;
+                            minRadius = 80;
+                        }};
+
+                        fragBullets = 5;
+
+                        radius = 300;
+                        minRadius = 80;
+                    }},
+                    Items.metaglass, new SpreadPointBulletType() {{
+                        shootEffect = Fx.instShoot;
+                        hitEffect = Fx.instHit;
+                        smokeEffect = Fx.smokeCloud;
+                        trailEffect = Fx.instTrail;
+                        despawnEffect = Fx.instBomb;
+                        trailSpacing = 20f;
+                        splashDamage = 1350;
+                        splashDamageRadius = 18f;
+                        buildingDamageMultiplier = 0.2f;
+                        speed = 600;
+                        hitShake = 6f;
+                        ammoMultiplier = 1f;
+
+                        fragBullet = new PointBulletType() {{
+                            shootEffect = Fx.instShoot;
+                            hitEffect = Fx.instHit;
+                            smokeEffect = Fx.smokeCloud;
+                            trailEffect = Fx.instTrail;
+                            despawnEffect = Fx.instBomb;
+                            trailSpacing = 20f;
+                            splashDamage = 1350;
+                            splashDamageRadius = 18f;
+                            buildingDamageMultiplier = 0.2f;
+                            speed = 300;
+                            hitShake = 6f;
+                            ammoMultiplier = 1f;
+                            lifetime = 1;
+                        }};
+
+                        fragBullets = 5;
+
+                        radius = 300;
+                        minRadius = 80;
+                    }},
+                    Items.graphite, new PointBulletType() {{
+                        shootEffect = Fx.instShoot;
+                        hitEffect = Fx.instHit;
+                        smokeEffect = Fx.smokeCloud;
+                        trailEffect = Fx.instTrail;
+                        despawnEffect = Fx.instBomb;
+                        trailSpacing = 20f;
+                        splashDamage = 1350;
+                        splashDamageRadius = 18f;
+                        buildingDamageMultiplier = 0.2f;
+                        speed = 600;
+                        hitShake = 6f;
+                        ammoMultiplier = 1f;
+                    }}
+            );
+
+            shoot = new ShootAlternate(3.5f);
+
+            recoils = 2;
+
+            recoil = 0.5f;
+            shootY = 3f;
+            reload = 20f;
+            range = 600;
+            shootCone = 15f;
+            ammoUseEffect = Fx.casing1;
+            health = Integer.MAX_VALUE;
+            inaccuracy = 2f;
+            rotateSpeed = 10f;
+            coolant = consumeCoolant(0.1f);
+            researchCostMultiplier = 0.05f;
+
+            limitRange();
         }};
 
         if (!SeqMod.dev) return;
@@ -203,8 +421,8 @@ public class SqBlocks {
             buildType = () -> new WallBuild() {
                 @Override
                 public void updateTile() {
-                    for (int len = 1; len < 15; len++) {
-                        for (int i = 0; i < 4; i++) {
+                    for (int len = 1; len < 15; ++len) {
+                        for (int i = 0; i < 4; ++i) {
                             Tile tile1 = Vars.world.tile(Geometry.d4x(i) * len + tileX(), Geometry.d4y(i) * len + tileY());
                             if (tile1 != null && tile1.build != null && tile1.build instanceof BuildingIEc icc && icc.acceptImagineEnergy(false, 0, 0)) {
                                 icc.IEG().getModule(tile1.build).add(Time.delta);

@@ -20,7 +20,7 @@ public class PowerDisplay extends Stack {
 
         add(new Table(t -> {
             t.left().bottom();
-            t.add(amount * 60f >= 1000 ? UI.formatAmount((long) (amount * 60f)) : Strings.autoFixed(amount * 60f, 2))
+            t.add(amount >= 1000 ? UI.formatAmount((long) amount) : Strings.autoFixed(amount, 2))
                     .style(Styles.outlineLabel);
             t.pack();
         }));

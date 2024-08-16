@@ -39,7 +39,7 @@ public class SqUI {
 
             if (form.liquidSecond) {
                 LiquidStack[] liquidStacks = new LiquidStack[form.outputLiquid.length];
-                for (int i = 0; i < form.outputLiquid.length; i++) {
+                for (int i = 0; i < form.outputLiquid.length; ++i) {
                     liquidStacks[i] = new LiquidStack(form.outputLiquid[i].liquid, form.outputLiquid[i].amount * form.time);
                 }
                 uiILPFormula(form.outputItem, liquidStacks, form.outputPower, form.outputImagine, bt, false);

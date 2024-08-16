@@ -34,9 +34,15 @@ import mindustry.type.LiquidStack;
 import mindustry.ui.Bar;
 import mindustry.ui.Styles;
 import mindustry.world.Block;
+import mindustry.world.consumers.ConsumeItems;
+import mindustry.world.consumers.ConsumeLiquids;
+import mindustry.world.consumers.ConsumePower;
 import mindustry.world.draw.DrawBlock;
 import mindustry.world.draw.DrawDefault;
 import mindustry.world.meta.*;
+import mindustry.world.modules.ItemModule;
+import mindustry.world.modules.LiquidModule;
+import mindustry.world.modules.PowerModule;
 
 import static mindustry.Vars.content;
 
@@ -97,6 +103,10 @@ public class MultiCrafter extends Block implements SeqElem, BlockIEc {
         if (formulas.get(0).outputPower > 0) {
             stats.add(Stat.basePowerGeneration, formulas.get(0).outputPower * 60f, StatUnit.powerSecond);
         }
+
+        new ConsumeItems(formulas.get(0).inputItem).display(stats);
+        new ConsumeLiquids(formulas.get(0).inputLiquid).display(stats);
+        new ConsumePower(formulas.get(0).inputPower, 0, false).display(stats);
     }
 
     @Override
@@ -105,7 +115,6 @@ public class MultiCrafter extends Block implements SeqElem, BlockIEc {
         removeBar("items");
         removeBar("liquid");
         ImagineBlocks.bars(this);
-        // in building.displayBars()
     }
 
     @Override
@@ -130,14 +139,11 @@ public class MultiCrafter extends Block implements SeqElem, BlockIEc {
             if (formula.outputPower > 0) outputsPower = true;
             if (!formula.inputImagine.zero() || !formula.outputImagine.zero()) hasImagineEnergy = true;
         }
+        consumePowerDynamic((MultiCrafterBuild build) ->
+                build.now == -1 ? 0 : build.getFormula().inputPower);
         if (onlyOneFormula) {
             configurable = false;
-            consumeItems(formulas.get(0).inputItem);
-            consumeLiquids(formulas.get(0).inputLiquid);
-            consumePower(formulas.get(0).inputPower);
         } else {
-            consumePowerDynamic((MultiCrafterBuild build) ->
-                    build.now == -1 ? 0 : build.getFormula().inputPower);
             config(Integer.class, (building, integer) -> {
                 ((MultiCrafterBuild) building).now = integer;
             });
@@ -179,7 +185,7 @@ public class MultiCrafter extends Block implements SeqElem, BlockIEc {
 //    @Override
 //    public void drawOverlay(float x, float y, int rotation) {
 //        if (outputLiquids != null) {
-//            for (int i = 0; i < outputLiquids.length; i++) {
+//            for (int i = 0; i < outputLiquids.length; ++i) {
 //                int dir = liquidOutputDirections.length > i ? liquidOutputDirections[i] : -1;
 //
 //                if (dir != -1) {
@@ -289,6 +295,10 @@ public class MultiCrafter extends Block implements SeqElem, BlockIEc {
 
         @Override
         public void updateTile() {
+            if (items == null) items = new ItemModule();
+            if (liquids == null) liquids = new LiquidModule();
+            if (power == null) power = new PowerModule();
+
             IEG().getModule(this).update();
             dumpOutputs();
 
@@ -302,6 +312,10 @@ public class MultiCrafter extends Block implements SeqElem, BlockIEc {
             float fullness = 0f;
             int count = 0;
             if (getFormula().inputPower > 0) {
+                if (Mathf.zero(power.status)) {
+                    has = false;
+                    count = 0x3f3f3f3f;
+                }
                 fullness += Mathf.clamp(power.status);
                 count++;
             }
@@ -392,7 +406,7 @@ public class MultiCrafter extends Block implements SeqElem, BlockIEc {
             consume();
 
             for (var output : getFormula().outputItem) {
-                for (int i = 0; i < output.amount; i++) {
+                for (int i = 0; i < output.amount; ++i) {
                     offload(output.item);
                     if (items.get(output.item) > itemCapacity) items.set(output.item, itemCapacity);
                 }
@@ -428,7 +442,7 @@ public class MultiCrafter extends Block implements SeqElem, BlockIEc {
                 }
                 return;
             }
-            for (int i = 0; i < getFormula().outputLiquid.length; i++) {
+            for (int i = 0; i < getFormula().outputLiquid.length; ++i) {
                 int dir = liquidOutputDirections.length > i ? liquidOutputDirections[i] : -1;
 
                 dumpLiquid(getFormula().outputLiquid[i].liquid, 2f, dir);

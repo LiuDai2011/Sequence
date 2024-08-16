@@ -34,7 +34,7 @@ public class Unzipper {
         if (!fi.exists()) fi.mkdirs();
         if (fi.child("version").exists()) {
             if (fi.child("version").readString().equals(version)) {
-                SqLog.info("Version valid: @ (@)", fi.absolutePath(), version);
+                SqLog.info("Version valid: @ (version @)", fi.absolutePath(), version);
                 return fi.child(file.name());
             } else {
                 for (Fi fi1 : fi.list()) {

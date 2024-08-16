@@ -28,4 +28,12 @@ public class Pair<K, V> {
     public void setValue(V value1) {
         value = value1;
     }
+
+    @Override
+    public String toString() {
+        return "Pair{" +
+                "key=" + key +
+                ", value=" + value +
+                '}';
+    }
 }

@@ -6,25 +6,45 @@ import arc.files.Fi;
 import arc.freetype.FreeTypeFontGenerator;
 import arc.freetype.FreeTypeFontGenerator.FreeTypeFontData;
 import arc.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import arc.func.Cons;
+import arc.graphics.Texture;
 import arc.graphics.g2d.Font;
 import arc.graphics.g2d.TextureRegion;
+import arc.scene.ui.layout.Scl;
 import arc.struct.Seq;
 import arc.util.Reflect;
+import mindustry.core.UI;
 
 public class SqFonts {
-    public static Font seqIcon;
+    public static Font seqIcon, seq;
+    protected static Cons<FreeTypeFontParameter> cons = param -> {
+        param.size = (int)(Scl.scl(param.size));
+        param.magFilter = Texture.TextureFilter.linear;
+        param.minFilter = Texture.TextureFilter.linear;
+//        param.packer = UI.packer;
+    };
 
     public static void loadFonts() {
-        String name = "seqicon";
-        Fi fontFi = Unzipper.unzip(Unzipper.find(name + ".ttf"), Unzipper.version.get(name + ".ttf"));
-        SqFonts.seqIcon = loadFont(fontFi, new FreeTypeFontParameter() {{
-            size = 42;
-            incremental = false;
-            characters = "\0" + SqIcon.all;
-        }});
+        Fi iconFile = Unzipper.unzip(
+                Unzipper.find("seqicon.ttf"),
+                Unzipper.version.get("seqicon.ttf"));
+        SqFonts.seq = loadFont(iconFile,
+                new FreeTypeFontParameter() {{
+                    size = 48;
+                    incremental = false;
+                    characters = "\0" + SqIcon.all;
+                }});
+        SqFonts.seqIcon = loadFont(iconFile,
+                new FreeTypeFontParameter(){{
+                    size = 30;
+                    incremental = true;
+                    characters = "\0" + SqIcon.all;
+                }});
     }
 
     public static Font loadFont(Fi file, FreeTypeFontParameter parameter) {
+        cons.get(parameter);
+
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(file);
         FreeTypeFontData data = new FreeTypeFontData();
         generator.generateData(parameter, data);

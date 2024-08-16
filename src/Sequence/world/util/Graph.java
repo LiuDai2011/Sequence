@@ -2,21 +2,36 @@ package Sequence.world.util;
 
 import Sequence.world.meta.IO;
 import arc.func.Prov;
-import arc.struct.IntMap;
-import arc.struct.IntSeq;
-import arc.struct.ObjectIntMap;
-import arc.util.io.Reads;
-import arc.util.io.Writes;
+import arc.struct.*;
 
-public class Graph<T extends IO> implements IO {
+public class Graph<T extends IO> implements IO, Cloneable {
+    protected final Class<T> clazz;
     protected final IntMap<T> nodes = new IntMap<>();
-    protected final ObjectIntMap<T> nodesId = new ObjectIntMap<>();
-    protected final IntMap<IntSeq> graph = new IntMap<>();
+    protected final ObjectIntMap<T> ids = new ObjectIntMap<>();
+    protected final IntMap<IntSet> graph = new IntMap<>();
     protected int nodeCount = 0;
+
+    public Graph(Class<T> clazz) {
+        this.clazz = clazz;
+    }
+
+    public Graph<T> copy() {
+        try {
+            return (Graph<T>) clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     protected static <V> V checkKey(IntMap<V> map, int key, Prov<V> def) {
         if (!map.containsKey(key)) map.put(key, def.get());
         return map.get(key);
+    }
+
+    protected void checkNode(T node) {
+        if (!nodes.containsValue(node, false)) {
+            addNode(node);
+        }
     }
 
     public T get(int key) {
@@ -26,67 +41,78 @@ public class Graph<T extends IO> implements IO {
     public void addEdge(T from, T to, boolean d) {
         checkNode(from);
         checkNode(to);
-        checkKey(graph, nodesId.get(from), IntSeq::new).add(nodesId.get(to));
-        if (d) checkKey(graph, nodesId.get(to), IntSeq::new).add(nodesId.get(from));
+        checkKey(graph, ids.get(from), IntSet::new).add(ids.get(to));
+        if (d) checkKey(graph, ids.get(to), IntSet::new).add(ids.get(from));
     }
 
     public IntSeq all() {
-        return nodesId.values().toArray();
+        return ids.values().toArray();
     }
 
-    public IntSeq outs(T from) {
-        if (!nodesId.containsKey(from))
+    public IntSet outs(T from) {
+        if (!ids.containsKey(from))
             throw new IllegalArgumentException("The graph doesn't have a node valued " + from + ".");
-        checkKey(graph, nodesId.get(from), IntSeq::new);
-        return graph.get(nodesId.get(from));
+        checkKey(graph, ids.get(from), IntSet::new);
+        return graph.get(ids.get(from));
     }
 
     public T addNode(T node) {
         if (nodes.containsValue(node, false)) throw new RuntimeException("The node " + node + " exists.");
-        nodes.put(nodeCount++, node);
-        nodesId.put(node, nodeCount++);
+        nodes.put(nodeCount, node);
+        ids.put(node, nodeCount);
+        nodeCount++;
         return node;
     }
 
-    protected void checkNode(T node) {
-        if (!nodes.containsValue(node, false)) {
-            addNode(node);
-        }
-    }
-
-    @Override
-    public void read(Reads read) {
-        int size;
-
-        nodeCount = read.i();
-        size = read.i();
-        for (int i = 0; i < size; i++) {
-            int key = read.i();
-//            T value = ;
-            // TODO
-        }
-    }
-
-    @Override
-    public void write(Writes write) {
-        write.i(nodeCount);
-        write.i(nodes.size);
-        for (IntMap.Entry<T> entry : nodes) {
-            write.i(entry.key);
-            entry.value.write(write);
-        }
-        write.i(nodesId.size);
-        for (ObjectIntMap.Entry<T> entry : nodesId) {
-            entry.key.write(write);
-            write.i(entry.value);
-        }
-        write.i(graph.size);
-        for (IntMap.Entry<IntSeq> entry : graph) {
-            write.i(entry.key);
-            write.i(entry.value.size);
-            for (int i : entry.value.toArray()) {
-                write.i(entry.value.get(i));
+    public Graph<T> merge(Graph<T> other) {
+        for (IntMap.Entry<T> node : other.nodes) {
+            if (!ids.containsKey(node.value)) {
+                addNode(node.value);
             }
         }
+        for (IntMap.Entry<IntSet> entry : other.graph) {
+            IntSet value = entry.value;
+            int size = value.size;
+            IntSet.IntSetIterator iterator = value.iterator();
+            while (iterator.hasNext) {
+                addEdge(other.get(entry.key), other.get(iterator.next()), false);
+            }
+        }
+        return this;
+    }
+
+    public Seq<Graph<T>> delete(int nodeId) {
+        graph.remove(nodeId);
+        for (IntMap.Entry<IntSet> entry : graph) {
+            IntSet.IntSetIterator iter = entry.value.iterator();
+            while(iter.hasNext){
+                int v = iter.next();
+                if (v == nodeId) iter.remove();
+            }
+        }
+        ids.remove(nodes.get(nodeId));
+        nodes.remove(nodeId);
+        nodeCount--;
+        return checkConnected();
+    }
+
+    private Seq<Graph<T>> checkConnected() {
+        DisjointSetUnion dsu = new DisjointSetUnion(nodeCount);
+        Seq<Graph<T>> res = new Seq<>();
+        for (IntMap.Entry<T> entry : nodes) {
+//            entry.key
+        }
+        return res;
+    }
+
+    @Override
+    public String toString() {
+        return "Graph{" +
+                "clazz=" + clazz +
+                ", nodes=" + nodes +
+                ", nodesId=" + ids +
+                ", graph=" + graph +
+                ", nodeCount=" + nodeCount +
+                '}';
     }
 }
