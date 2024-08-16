@@ -13,7 +13,7 @@ public class DrawEfficiency extends DrawBlock {
 
     @Override
     public void draw(Building build) {
-        Draw.alpha(build.efficiency);
+        Draw.alpha(build.efficiency * build.warmup());
         Draw.rect(region, build.x, build.y);
         Draw.color();
     }

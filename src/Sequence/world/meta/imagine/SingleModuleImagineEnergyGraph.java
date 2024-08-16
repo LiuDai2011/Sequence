@@ -1,6 +1,8 @@
 package Sequence.world.meta.imagine;
 
+import Sequence.world.meta.IO;
 import Sequence.world.util.BuildingGraph;
+import Sequence.world.util.Graph;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import mindustry.gen.Building;
@@ -17,17 +19,5 @@ public class SingleModuleImagineEnergyGraph extends ImagineEnergyGraph {
     @Override
     public void update() {
         module.update();
-    }
-
-    @Override
-    public void read(Reads read) {
-        module.read(read);
-        graph.read(read);
-    }
-
-    @Override
-    public void write(Writes write) {
-        module.write(write);
-        graph.write(write);
     }
 }

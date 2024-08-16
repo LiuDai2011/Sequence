@@ -10,11 +10,14 @@ import Sequence.world.util.Change;
 import Sequence.world.util.Util;
 import arc.Events;
 import arc.struct.ObjectMap;
+import mindustry.content.Blocks;
 import mindustry.ctype.UnlockableContent;
 import mindustry.entities.bullet.BulletType;
 import mindustry.game.EventType;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
 import mindustry.world.blocks.defense.turrets.Turret;
+
+import java.math.BigInteger;
 
 import static mindustry.Vars.content;
 import static mindustry.Vars.ui;
@@ -78,6 +81,16 @@ public class SqOverride {
                     }
                 }
             });
+
+            Blocks.itemSource.health = Integer.MAX_VALUE;
+            Blocks.liquidSource.health = Integer.MAX_VALUE;
+            Blocks.powerSource.health = Integer.MAX_VALUE;
+            Blocks.payloadSource.health = Integer.MAX_VALUE;
+            Blocks.heatSource.health = Integer.MAX_VALUE;
+            Blocks.itemVoid.health = Integer.MAX_VALUE;
+            Blocks.liquidVoid.health = Integer.MAX_VALUE;
+            Blocks.powerVoid.health = Integer.MAX_VALUE;
+            Blocks.payloadVoid.health = Integer.MAX_VALUE;
         });
     }
 }
