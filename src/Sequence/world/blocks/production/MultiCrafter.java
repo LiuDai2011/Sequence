@@ -2,6 +2,7 @@ package Sequence.world.blocks.production;
 
 import Sequence.core.SeqElem;
 import Sequence.core.SqBundle;
+import Sequence.core.SqLog;
 import Sequence.core.SqStatValues;
 import Sequence.ui.SqUI;
 import Sequence.world.meta.Formula;
@@ -295,6 +296,13 @@ public class MultiCrafter extends Block implements SeqElem, BlockIEc {
 
         @Override
         public void updateTile() {
+            for (Building building : proximity) {
+                if (building instanceof BuildingIEc iec) {
+                    if (iec.IEG() instanceof SingleModuleImagineEnergyGraph og)
+                        ((SingleModuleImagineEnergyGraph) IEG()).merge(og);
+                }
+            }
+
             if (items == null) items = new ItemModule();
             if (liquids == null) liquids = new LiquidModule();
             if (power == null) power = new PowerModule();
@@ -583,9 +591,15 @@ public class MultiCrafter extends Block implements SeqElem, BlockIEc {
         @Override
         public void placed() {
             super.placed();
-//            Core.app.post(() -> {
-//                ieg.graph().addNode(this);
-//            });
+            Core.app.post(() -> {
+                ((SingleModuleImagineEnergyGraph) IEG()).graph.addNode(this);
+            });
+        }
+
+        @Override
+        public void onRemoved() {
+            super.onRemoved();
+            ((SingleModuleImagineEnergyGraph) IEG()).delete(this);
         }
 
         @Override
@@ -600,6 +614,9 @@ public class MultiCrafter extends Block implements SeqElem, BlockIEc {
 
         @Override
         public void handleImagineEnergy(Building source, float amount, boolean active, float activity, float instability) {
+            if (source instanceof BuildingIEc iec && iec.IEG() instanceof SingleModuleImagineEnergyGraph og)
+                ((SingleModuleImagineEnergyGraph) IEG()).merge(og);
+            IEG().getModule(this).add(amount, activity, instability);
         }
     }
 }

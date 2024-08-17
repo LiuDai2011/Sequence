@@ -1,6 +1,5 @@
 package Sequence.world.meta.imagine;
 
-import Sequence.world.meta.IO;
 import arc.Events;
 import arc.struct.Seq;
 import mindustry.Vars;
@@ -8,7 +7,7 @@ import mindustry.core.GameState;
 import mindustry.game.EventType;
 import mindustry.gen.Building;
 
-public abstract class ImagineEnergyGraph implements IO {
+public abstract class ImagineEnergyGraph {
     public static final Seq<ImagineEnergyGraph> all = new Seq<>();
 
     static {

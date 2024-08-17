@@ -1,6 +1,7 @@
 package Sequence.world.meta.imagine;
 
 import Sequence.world.meta.SqBlockModule;
+import arc.struct.Seq;
 import arc.util.Nullable;
 import arc.util.Time;
 import arc.util.io.Reads;
@@ -8,7 +9,7 @@ import arc.util.io.Writes;
 import mindustry.gen.Building;
 
 public class ImagineEnergyModule extends SqBlockModule {
-    protected float capacity;
+    protected float capacity=1000;
     protected float amount, activity, instability;
     protected boolean active;
 
@@ -106,5 +107,24 @@ public class ImagineEnergyModule extends SqBlockModule {
 
     protected void checkCapacity() {
         amount = Math.min(amount, capacity);
+    }
+
+    public ImagineEnergyModule merge(ImagineEnergyModule other) {
+        active = active || other.active;
+        capacity += other.capacity;
+        add(other.amount, other.activity, other.instability);
+        return this;
+    }
+
+    public Seq<ImagineEnergyModule> split(int amount) {
+        Seq<ImagineEnergyModule> res = new Seq<>(amount);
+        for (int i = 0; i < amount; ++i) {
+            ImagineEnergyModule module = new ImagineEnergyModule(null);
+            module.active = active;
+            module.capacity = capacity / amount;
+            module.add(this.amount, activity, instability);
+            res.set(i, module);
+        }
+        return res;
     }
 }

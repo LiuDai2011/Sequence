@@ -1,10 +1,11 @@
 package Sequence.world.util;
 
-import Sequence.world.meta.IO;
 import arc.func.Prov;
 import arc.struct.*;
+import arc.util.io.Reads;
+import arc.util.io.Writes;
 
-public class Graph<T extends IO> implements IO, Cloneable {
+public class Graph<T> implements Cloneable {
     protected final Class<T> clazz;
     protected final IntMap<T> nodes = new IntMap<>();
     protected final ObjectIntMap<T> ids = new ObjectIntMap<>();
@@ -36,6 +37,10 @@ public class Graph<T extends IO> implements IO, Cloneable {
 
     public T get(int key) {
         return nodes.get(key);
+    }
+
+    public int get(T key) {
+        return ids.get(key);
     }
 
     public void addEdge(T from, T to, boolean d) {
@@ -97,7 +102,7 @@ public class Graph<T extends IO> implements IO, Cloneable {
 
     private Seq<Graph<T>> checkConnected() {
         DisjointSetUnion dsu = new DisjointSetUnion(nodeCount);
-        Seq<Graph<T>> res = new Seq<>();
+        IntMap<Graph<T>> res = new IntMap<>();
         for (IntMap.Entry<IntSet> entry : graph) {
             IntSet.IntSetIterator iter = entry.value.iterator();
             while(iter.hasNext){
@@ -106,9 +111,14 @@ public class Graph<T extends IO> implements IO, Cloneable {
             }
         }
         for (IntMap.Entry<T> entry : nodes) {
-            // TODO aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh 23.8.16
+            Graph<T> tg = res.get(dsu.find(entry.key), () -> new Graph<>(clazz));
+            IntSet.IntSetIterator iter = graph.get(entry.key, IntSet::new).iterator();
+            while(iter.hasNext){
+                int v = iter.next();
+                tg.addEdge(get(entry.key), get(v), false);
+            }
         }
-        return res;
+        return res.values().toArray();
     }
 
     @Override
@@ -116,9 +126,11 @@ public class Graph<T extends IO> implements IO, Cloneable {
         return "Graph{" +
                 "clazz=" + clazz +
                 ", nodes=" + nodes +
-                ", nodesId=" + ids +
                 ", graph=" + graph +
                 ", nodeCount=" + nodeCount +
                 '}';
     }
+
+    public void read(Reads read) {}
+    public void write(Writes write) {}
 }

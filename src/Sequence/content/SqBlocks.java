@@ -441,6 +441,7 @@ public class SqBlocks {
             buildType = () -> new WB() {
                 @Override
                 public void updateTile() {
+                    super.updateTile();
                     IEG().getModule(this).active(false);
 //                    tile.setBlock(Blocks.air);
                 }
@@ -452,6 +453,7 @@ public class SqBlocks {
             buildType = () -> new WB() {
                 @Override
                 public void updateTile() {
+                    super.updateTile();
                     IEG().getModule(this).active();
 //                    tile.setBlock(Blocks.air);
                 }
