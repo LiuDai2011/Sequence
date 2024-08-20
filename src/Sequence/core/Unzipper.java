@@ -76,7 +76,7 @@ public class Unzipper {
                 String[] str = string.split("=");
                 String key = str[0], value = str[1];
                 versions.put(key, value);
-                SqLog.info("@;@", key, value);
+                SqLog.debug("@;@", key, value);
             }
         }
 

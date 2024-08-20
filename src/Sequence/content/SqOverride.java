@@ -17,8 +17,6 @@ import mindustry.game.EventType;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
 import mindustry.world.blocks.defense.turrets.Turret;
 
-import java.math.BigInteger;
-
 import static mindustry.Vars.content;
 import static mindustry.Vars.ui;
 

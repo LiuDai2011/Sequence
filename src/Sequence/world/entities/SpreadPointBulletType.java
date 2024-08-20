@@ -17,11 +17,11 @@ public class SpreadPointBulletType extends OnHitRunPointBulletType {
                     by = b.y;
             Seq<Posc> res = new Seq<>();
             Units.nearby(null, bx, by, radius, e -> {
-                if(e.team == b.team || e.dead() || !e.hittable()) return;
+                if (e.team == b.team || e.dead() || !e.hittable()) return;
                 res.add(e);
             });
             Units.nearbyBuildings(bx, by, radius, build -> {
-                if(build.dead() || build.team == b.team) return;
+                if (build.dead() || build.team == b.team) return;
                 res.add(build);
             });
             res.sort(e -> e.dst(bx, by));
