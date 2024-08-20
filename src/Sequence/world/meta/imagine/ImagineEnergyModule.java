@@ -1,6 +1,7 @@
 package Sequence.world.meta.imagine;
 
 import Sequence.world.meta.SqBlockModule;
+import arc.math.Mathf;
 import arc.struct.Seq;
 import arc.util.Nullable;
 import arc.util.Time;
@@ -9,12 +10,15 @@ import arc.util.io.Writes;
 import mindustry.gen.Building;
 
 public class ImagineEnergyModule extends SqBlockModule {
-    protected float capacity=1000;
+    protected float capacity;
     protected float amount, activity, instability;
     protected boolean active;
 
     public ImagineEnergyModule(@Nullable Building build) {
         super(build);
+        if (build instanceof BuildingIEc iec) {
+            capacity += iec.capacity();
+        }
     }
 
     @Override
@@ -26,6 +30,11 @@ public class ImagineEnergyModule extends SqBlockModule {
             instability -= instability * 0.000012f * Time.delta;
             activity -= activity * 0.0000075f * Time.delta;
         }
+    }
+
+    public void remove(float amount) {
+        this.amount -= amount;
+        checkCapacity();
     }
 
     @Override
@@ -82,6 +91,10 @@ public class ImagineEnergyModule extends SqBlockModule {
         this.instability = instability;
     }
 
+    public void addCapacity(float capacity) {
+        capacity(capacity + this.capacity);
+    }
+
     public float capacity() {
         return capacity;
     }
@@ -106,7 +119,7 @@ public class ImagineEnergyModule extends SqBlockModule {
     }
 
     protected void checkCapacity() {
-        amount = Math.min(amount, capacity);
+        amount = Mathf.clamp(amount, 0, capacity);
     }
 
     public ImagineEnergyModule merge(ImagineEnergyModule other) {
@@ -121,10 +134,18 @@ public class ImagineEnergyModule extends SqBlockModule {
         for (int i = 0; i < amount; ++i) {
             ImagineEnergyModule module = new ImagineEnergyModule(null);
             module.active = active;
-            module.capacity = capacity / amount;
-            module.add(this.amount, activity, instability);
+            module.capacity = Float.MAX_VALUE;
             res.set(i, module);
         }
         return res;
+    }
+
+    public void clear() {
+        capacity = amount = activity = instability = 0;
+        active = false;
+    }
+
+    public boolean full() {
+        return Mathf.zero(capacity - amount);
     }
 }

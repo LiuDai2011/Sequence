@@ -15,9 +15,10 @@ public class OnHitRunPointBulletType extends BulletType {
     private static Unit result;
 
     public float trailSpacing = 10f;
-    public Cons<Bullet> onHit = bullet -> {};
+    public Cons<Bullet> onHit = bullet -> {
+    };
 
-    public OnHitRunPointBulletType(){
+    public OnHitRunPointBulletType() {
         scaleLife = true;
         lifetime = 100f;
         collides = false;
@@ -27,7 +28,7 @@ public class OnHitRunPointBulletType extends BulletType {
     }
 
     @Override
-    public void init(Bullet b){
+    public void init(Bullet b) {
         super.init(b);
 
         float px = b.x + b.lifetime * b.vel.x,
@@ -43,24 +44,24 @@ public class OnHitRunPointBulletType extends BulletType {
         result = null;
         float range = 1f;
 
-        Units.nearbyEnemies(b.team, px - range, py - range, range*2f, range*2f, e -> {
-            if(e.dead() || !e.checkTarget(collidesAir, collidesGround) || !e.hittable()) return;
+        Units.nearbyEnemies(b.team, px - range, py - range, range * 2f, range * 2f, e -> {
+            if (e.dead() || !e.checkTarget(collidesAir, collidesGround) || !e.hittable()) return;
 
             e.hitbox(Tmp.r1);
-            if(!Tmp.r1.contains(px, py)) return;
+            if (!Tmp.r1.contains(px, py)) return;
 
             float dst = e.dst(px, py) - e.hitSize;
-            if((result == null || dst < cdist)){
+            if ((result == null || dst < cdist)) {
                 result = e;
                 cdist = dst;
             }
         });
 
-        if(result != null){
+        if (result != null) {
             b.collision(result, px, py);
-        }else if(collidesTiles){
+        } else if (collidesTiles) {
             Building build = Vars.world.buildWorld(px, py);
-            if(build != null && build.team != b.team){
+            if (build != null && build.team != b.team) {
                 build.collision(b);
             }
         }

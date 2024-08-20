@@ -41,6 +41,6 @@ public class ImagineBlocks {
     }
 
     private static ImagineEnergyModule getIEM(Building building) {
-        return ((IEc) building).IEG().getModule(building);
+        return ((BuildingIEc) building).getIEM();
     }
 }

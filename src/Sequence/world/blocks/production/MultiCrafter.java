@@ -2,23 +2,22 @@ package Sequence.world.blocks.production;
 
 import Sequence.core.SeqElem;
 import Sequence.core.SqBundle;
-import Sequence.core.SqLog;
 import Sequence.core.SqStatValues;
+import Sequence.graphic.SqColor;
 import Sequence.ui.SqUI;
+import Sequence.world.blocks.imagine.ImagineBlock;
 import Sequence.world.meta.Formula;
 import Sequence.world.meta.imagine.*;
 import Sequence.world.util.Util;
 import arc.Core;
+import arc.graphics.Color;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
 import arc.scene.ui.Button;
 import arc.scene.ui.layout.Table;
 import arc.struct.EnumSet;
 import arc.struct.Seq;
-import arc.util.Eachable;
-import arc.util.Nullable;
-import arc.util.Strings;
-import arc.util.Time;
+import arc.util.*;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import mindustry.content.Fx;
@@ -33,6 +32,7 @@ import mindustry.type.ItemStack;
 import mindustry.type.Liquid;
 import mindustry.type.LiquidStack;
 import mindustry.ui.Bar;
+import mindustry.ui.Fonts;
 import mindustry.ui.Styles;
 import mindustry.world.Block;
 import mindustry.world.consumers.ConsumeItems;
@@ -47,7 +47,7 @@ import mindustry.world.modules.PowerModule;
 
 import static mindustry.Vars.content;
 
-public class MultiCrafter extends Block implements SeqElem, BlockIEc {
+public class MultiCrafter extends ImagineBlock implements SeqElem {
     public final Seq<Formula> formulas = new Seq<>();
     public int ord = -1;
     public int[] liquidOutputDirections = {-1};
@@ -56,8 +56,6 @@ public class MultiCrafter extends Block implements SeqElem, BlockIEc {
 
     public boolean dumpExtraLiquid = true;
     public boolean ignoreLiquidFullness = false;
-
-    public boolean hasImagineEnergy = false;
 
     public Effect craftEffect = Fx.none;
     public Effect updateEffect = Fx.none;
@@ -79,6 +77,7 @@ public class MultiCrafter extends Block implements SeqElem, BlockIEc {
         ambientSoundVolume = 0.03f;
         flags = EnumSet.of(BlockFlag.factory);
         drawArrow = false;
+        hasImagine = false;
     }
 
     @Override
@@ -138,7 +137,7 @@ public class MultiCrafter extends Block implements SeqElem, BlockIEc {
             if (formula.outputItem.length > 0 || formula.inputItem.length > 0) hasItems = true;
             if (formula.inputPower > 0 || formula.outputPower > 0) hasPower = true;
             if (formula.outputPower > 0) outputsPower = true;
-            if (!formula.inputImagine.zero() || !formula.outputImagine.zero()) hasImagineEnergy = true;
+            if (!formula.inputImagine.zero() || !formula.outputImagine.zero()) hasImagine = true;
         }
         consumePowerDynamic((MultiCrafterBuild build) ->
                 build.now == -1 ? 0 : build.getFormula().inputPower);
@@ -221,20 +220,17 @@ public class MultiCrafter extends Block implements SeqElem, BlockIEc {
         };
     }
 
-    @Override
-    public boolean hasImagineEnergy() {
-        return hasImagineEnergy;
-    }
-
     public class MultiCrafterBuild extends Building implements BuildingIEc {
         private final Seq<Button> all = new Seq<>();
         public int now = -1;
         public float progress;
         public float totalProgress;
         public float warmup;
-        public ImagineEnergyGraph ieg = new SingleModuleImagineEnergyGraph();
         private boolean upd = false;
         private float lastOutputPower = 0f;
+        public Building core = this;
+        public ImagineEnergyModule iem = new ImagineEnergyModule(this);
+        public Seq<Building> links = new Seq<>(new Building[]{this});
 
         @Override
         public boolean acceptItem(Building source, Item item) {
@@ -258,6 +254,12 @@ public class MultiCrafter extends Block implements SeqElem, BlockIEc {
         @Override
         public void draw() {
             drawer.draw(this);
+            Color color = SqColor.imagineEnergy;
+            Fonts.def.draw("capacity " + getIEM().capacity(), x, y + 8, color, 0.3f, false, Align.center);
+            Fonts.def.draw("activity " + getIEM().activity(), x, y + 4, color, 0.3f, false, Align.center);
+            Fonts.def.draw("active " + getIEM().isActive(), x, y + 0, color, 0.3f, false, Align.center);
+            Fonts.def.draw("instability " + getIEM().instability(), x, y + -4, color, 0.3f, false, Align.center);
+            Fonts.def.draw("amount " + getIEM().amount(), x, y + -8, color, 0.3f, false, Align.center);
         }
 
         @Override
@@ -296,18 +298,10 @@ public class MultiCrafter extends Block implements SeqElem, BlockIEc {
 
         @Override
         public void updateTile() {
-            for (Building building : proximity) {
-                if (building instanceof BuildingIEc iec) {
-                    if (iec.IEG() instanceof SingleModuleImagineEnergyGraph og)
-                        ((SingleModuleImagineEnergyGraph) IEG()).merge(og);
-                }
-            }
-
             if (items == null) items = new ItemModule();
             if (liquids == null) liquids = new LiquidModule();
             if (power == null) power = new PowerModule();
 
-            IEG().getModule(this).update();
             dumpOutputs();
 
             if (now == -1) {
@@ -589,34 +583,58 @@ public class MultiCrafter extends Block implements SeqElem, BlockIEc {
         }
 
         @Override
-        public void placed() {
-            super.placed();
-            Core.app.post(() -> {
-                ((SingleModuleImagineEnergyGraph) IEG()).graph.addNode(this);
-            });
-        }
-
-        @Override
         public void onRemoved() {
             super.onRemoved();
-            ((SingleModuleImagineEnergyGraph) IEG()).delete(this);
+            ((BuildingIEc) getCore()).removeLink(this);
         }
 
         @Override
-        public ImagineEnergyGraph IEG() {
-            return ieg;
+        public float capacity() {
+            return 1000;
         }
 
         @Override
-        public boolean acceptImagineEnergy(boolean active, float activity, float instability) {
+        public boolean coreAcceptImagineEnergy(boolean active, float activity, float instability) {
             return true;
         }
 
         @Override
-        public void handleImagineEnergy(Building source, float amount, boolean active, float activity, float instability) {
-            if (source instanceof BuildingIEc iec && iec.IEG() instanceof SingleModuleImagineEnergyGraph og)
-                ((SingleModuleImagineEnergyGraph) IEG()).merge(og);
-            IEG().getModule(this).add(amount, activity, instability);
+        public void coreHandleImagineEnergy(Building source, float amount, boolean active, float activity, float instability) {
+            iem.active(iem.isActive() || active);
+            iem.add(amount, activity, instability);
+        }
+
+        @Override
+        public boolean isCore() {
+            return core == this;
+        }
+
+        @Override
+        public Seq<Building> linkedIEMBuilding() {
+            return links;
+        }
+
+        @Override
+        public void clear() {
+            links.clear();
+            iem.clear();
+        }
+
+        @Override
+        public ImagineEnergyModule coreGetIEM() {
+            return iem;
+        }
+
+        @Override
+        public Building getCore() {
+            return core;
+        }
+
+        @Override
+        public Building setCore(Building core) {
+            ((BuildingIEc) core).linkedIEMBuilding().add(links);
+            ((BuildingIEc) core).getIEM().merge(iem);
+            return this.core = core;
         }
     }
 }

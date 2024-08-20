@@ -1,4 +1,4 @@
-package Sequence.world.util;
+package Sequence.world.util.struct;
 
 public class Pair<K, V> {
     private K key;

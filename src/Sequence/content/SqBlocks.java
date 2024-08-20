@@ -2,9 +2,9 @@ package Sequence.content;
 
 import Sequence.SeqMod;
 import Sequence.graphic.SqColor;
+import Sequence.world.blocks.imagine.ImagineDuct;
 import Sequence.world.blocks.production.MultiCrafter;
 import Sequence.world.drawer.DrawBottom;
-import Sequence.world.drawer.DrawEfficiency;
 import Sequence.world.drawer.NoCheckDrawLiquidRegion;
 import Sequence.world.entities.SpreadPointBulletType;
 import Sequence.world.meta.Formula;
@@ -15,7 +15,6 @@ import arc.graphics.Color;
 import arc.math.Mathf;
 import arc.math.geom.Geometry;
 import arc.util.Time;
-import arc.util.pooling.Pools;
 import mindustry.Vars;
 import mindustry.content.Fx;
 import mindustry.content.Items;
@@ -160,7 +159,7 @@ public class SqBlocks {
                                 lifetime = 1;
 
                                 fragBullets = 3;
-                                fragBullet = new BasicBulletType(16, 0, "shell"){{
+                                fragBullet = new BasicBulletType(16, 0, "shell") {{
                                     lifetime = 999;
                                     splashDamage = 1350;
                                     splashDamageRadius = 27;
@@ -407,8 +406,7 @@ public class SqBlocks {
             buildType = () -> new MultiCrafterBuild() {
                 @Override
                 public void updateTile() {
-                    IEG().getModule(this).update();
-                    IEG().getModule(this).capacity(1e8f);
+                    getIEM().update();
                 }
             };
 
@@ -425,7 +423,7 @@ public class SqBlocks {
                         for (int i = 0; i < 4; ++i) {
                             Tile tile1 = Vars.world.tile(Geometry.d4x(i) * len + tileX(), Geometry.d4y(i) * len + tileY());
                             if (tile1 != null && tile1.build != null && tile1.build instanceof BuildingIEc icc && icc.acceptImagineEnergy(false, 0, 0)) {
-                                icc.IEG().getModule(tile1.build).add(Time.delta);
+                                icc.getIEM().add(Time.delta);
                                 if (Mathf.chanceDelta(tile1.block().size * 0.1f / len))
                                     Fx.healBlockFull.at(tile1.build.x, tile1.build.y, 0, SqColor.LiuDai.cpy().a(0.3f), tile1.build.block);
                             }
@@ -442,7 +440,7 @@ public class SqBlocks {
                 @Override
                 public void updateTile() {
                     super.updateTile();
-                    IEG().getModule(this).active(false);
+                    getIEM().active(false);
 //                    tile.setBlock(Blocks.air);
                 }
             };
@@ -454,10 +452,15 @@ public class SqBlocks {
                 @Override
                 public void updateTile() {
                     super.updateTile();
-                    IEG().getModule(this).active();
+                    getIEM().active();
 //                    tile.setBlock(Blocks.air);
                 }
             };
+        }};
+        new ImagineDuct("imagine-duct") {{
+            requirements(Category.distribution, ItemStack.empty);
+            health = 100;
+            imagineCapacity = 10;
         }};
     }
 }

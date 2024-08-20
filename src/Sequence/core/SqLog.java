@@ -28,4 +28,12 @@ public class SqLog {
     public static void warn(Object object) {
         info(String.valueOf(object), SqConst.emptyObjArr);
     }
+
+    public static void debug(String text, Object... args) {
+        Log.debug(modPrefix + text, args);
+    }
+
+    public static void debug(Object object) {
+        debug(String.valueOf(object), SqConst.emptyObjArr);
+    }
 }
