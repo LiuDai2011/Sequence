@@ -32,9 +32,7 @@ import mindustry.type.ItemStack;
 import mindustry.type.Liquid;
 import mindustry.type.LiquidStack;
 import mindustry.ui.Bar;
-import mindustry.ui.Fonts;
 import mindustry.ui.Styles;
-import mindustry.world.Block;
 import mindustry.world.consumers.ConsumeItems;
 import mindustry.world.consumers.ConsumeLiquids;
 import mindustry.world.consumers.ConsumePower;
@@ -220,7 +218,7 @@ public class MultiCrafter extends ImagineBlock implements SeqElem {
         };
     }
 
-    public class MultiCrafterBuild extends Building implements BuildingIEc {
+    public class MultiCrafterBuild extends Building {
         private final Seq<Button> all = new Seq<>();
         public int now = -1;
         public float progress;
@@ -229,8 +227,6 @@ public class MultiCrafter extends ImagineBlock implements SeqElem {
         private boolean upd = false;
         private float lastOutputPower = 0f;
         public Building core = this;
-        public ImagineEnergyModule iem = new ImagineEnergyModule(this);
-        public Seq<Building> links = new Seq<>(new Building[]{this});
 
         @Override
         public boolean acceptItem(Building source, Item item) {
@@ -254,12 +250,6 @@ public class MultiCrafter extends ImagineBlock implements SeqElem {
         @Override
         public void draw() {
             drawer.draw(this);
-            Color color = SqColor.imagineEnergy;
-            Fonts.def.draw("capacity " + getIEM().capacity(), x, y + 8, color, 0.3f, false, Align.center);
-            Fonts.def.draw("activity " + getIEM().activity(), x, y + 4, color, 0.3f, false, Align.center);
-            Fonts.def.draw("active " + getIEM().isActive(), x, y + 0, color, 0.3f, false, Align.center);
-            Fonts.def.draw("instability " + getIEM().instability(), x, y + -4, color, 0.3f, false, Align.center);
-            Fonts.def.draw("amount " + getIEM().amount(), x, y + -8, color, 0.3f, false, Align.center);
         }
 
         @Override
@@ -582,59 +572,5 @@ public class MultiCrafter extends ImagineBlock implements SeqElem {
             }
         }
 
-        @Override
-        public void onRemoved() {
-            super.onRemoved();
-            ((BuildingIEc) getCore()).removeLink(this);
-        }
-
-        @Override
-        public float capacity() {
-            return 1000;
-        }
-
-        @Override
-        public boolean coreAcceptImagineEnergy(boolean active, float activity, float instability) {
-            return true;
-        }
-
-        @Override
-        public void coreHandleImagineEnergy(Building source, float amount, boolean active, float activity, float instability) {
-            iem.active(iem.isActive() || active);
-            iem.add(amount, activity, instability);
-        }
-
-        @Override
-        public boolean isCore() {
-            return core == this;
-        }
-
-        @Override
-        public Seq<Building> linkedIEMBuilding() {
-            return links;
-        }
-
-        @Override
-        public void clear() {
-            links.clear();
-            iem.clear();
-        }
-
-        @Override
-        public ImagineEnergyModule coreGetIEM() {
-            return iem;
-        }
-
-        @Override
-        public Building getCore() {
-            return core;
-        }
-
-        @Override
-        public Building setCore(Building core) {
-            ((BuildingIEc) core).linkedIEMBuilding().add(links);
-            ((BuildingIEc) core).getIEM().merge(iem);
-            return this.core = core;
-        }
     }
 }

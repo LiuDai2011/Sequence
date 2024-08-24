@@ -6,6 +6,7 @@ import mindustry.world.Block;
 
 public class ImagineBlock extends Block implements BlockIEc {
     public boolean hasImagine = true;
+    public float imagineCapacity = 10f;
 
     public ImagineBlock(String name) {
         super(name);

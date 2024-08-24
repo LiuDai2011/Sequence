@@ -11,8 +11,8 @@ import mindustry.gen.Bullet;
 import mindustry.gen.Unit;
 
 public class OnHitRunPointBulletType extends BulletType {
-    private static float cdist = 0f;
-    private static Unit result;
+    static float cdist = 0f;
+    static Unit result;
 
     public float trailSpacing = 10f;
     public Cons<Bullet> onHit = bullet -> {

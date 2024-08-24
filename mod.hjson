@@ -13,3 +13,5 @@ version: -- alpha --
 minGameVersion: 146
 
 java: true
+
+hideBrowser: false

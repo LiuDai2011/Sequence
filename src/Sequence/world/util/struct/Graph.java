@@ -6,9 +6,6 @@ import arc.struct.IntSet;
 import arc.struct.Seq;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Iterator;
 
 public class Graph<T> implements Cloneable {
     protected final Class<T> clazz;
@@ -146,5 +143,6 @@ public class Graph<T> implements Cloneable {
     public void read(Reads read) {
     }
 
-    public void write(Writes write) {}
+    public void write(Writes write) {
+    }
 }

@@ -91,10 +91,6 @@ public class ImagineEnergyModule extends SqBlockModule {
         this.instability = instability;
     }
 
-    public void addCapacity(float capacity) {
-        capacity(capacity + this.capacity);
-    }
-
     public float capacity() {
         return capacity;
     }
@@ -127,17 +123,6 @@ public class ImagineEnergyModule extends SqBlockModule {
         capacity += other.capacity;
         add(other.amount, other.activity, other.instability);
         return this;
-    }
-
-    public Seq<ImagineEnergyModule> split(int amount) {
-        Seq<ImagineEnergyModule> res = new Seq<>(amount);
-        for (int i = 0; i < amount; ++i) {
-            ImagineEnergyModule module = new ImagineEnergyModule(null);
-            module.active = active;
-            module.capacity = Float.MAX_VALUE;
-            res.set(i, module);
-        }
-        return res;
     }
 
     public void clear() {

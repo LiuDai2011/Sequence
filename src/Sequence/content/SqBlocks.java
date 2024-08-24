@@ -2,7 +2,8 @@ package Sequence.content;
 
 import Sequence.SeqMod;
 import Sequence.graphic.SqColor;
-import Sequence.world.blocks.imagine.ImagineDuct;
+import Sequence.world.blocks.imagine.ImagineCenter;
+import Sequence.world.blocks.imagine.ImagineNode;
 import Sequence.world.blocks.production.MultiCrafter;
 import Sequence.world.drawer.DrawBottom;
 import Sequence.world.drawer.NoCheckDrawLiquidRegion;
@@ -10,7 +11,6 @@ import Sequence.world.entities.SpreadPointBulletType;
 import Sequence.world.meta.Formula;
 import Sequence.world.meta.imagine.BuildingIEc;
 import Sequence.world.meta.imagine.ImagineEnergyRecord;
-import Sequence.world.meta.imagine.Test;
 import arc.graphics.Color;
 import arc.math.Mathf;
 import arc.math.geom.Geometry;
@@ -402,15 +402,6 @@ public class SqBlocks {
 
             itemCapacity = 100;
             liquidCapacity = 100;
-
-            buildType = () -> new MultiCrafterBuild() {
-                @Override
-                public void updateTile() {
-                    getIEM().update();
-                }
-            };
-
-//            ord = 11;
         }};
         test2 = new Wall("test2") {{
             requirements(Category.effect, ItemStack.empty);
@@ -422,8 +413,8 @@ public class SqBlocks {
                     for (int len = 1; len < 15; ++len) {
                         for (int i = 0; i < 4; ++i) {
                             Tile tile1 = Vars.world.tile(Geometry.d4x(i) * len + tileX(), Geometry.d4y(i) * len + tileY());
-                            if (tile1 != null && tile1.build != null && tile1.build instanceof BuildingIEc icc && icc.acceptImagineEnergy(false, 0, 0)) {
-                                icc.getIEM().add(Time.delta);
+                            if (tile1 != null && tile1.build != null && tile1.build instanceof BuildingIEc icc) {
+//                                icc.getIEM().add(Time.delta);
                                 if (Mathf.chanceDelta(tile1.block().size * 0.1f / len))
                                     Fx.healBlockFull.at(tile1.build.x, tile1.build.y, 0, SqColor.LiuDai.cpy().a(0.3f), tile1.build.block);
                             }
@@ -433,34 +424,11 @@ public class SqBlocks {
                 }
             };
         }};
-        new Test("test3") {{
+        new ImagineNode("imagine-node") {{
             requirements(Category.effect, ItemStack.empty);
-            health = 100;
-            buildType = () -> new WB() {
-                @Override
-                public void updateTile() {
-                    super.updateTile();
-                    getIEM().active(false);
-//                    tile.setBlock(Blocks.air);
-                }
-            };
         }};
-        new Test("test4") {{
+        new ImagineCenter("imagine-center") {{
             requirements(Category.effect, ItemStack.empty);
-            health = 100;
-            buildType = () -> new WB() {
-                @Override
-                public void updateTile() {
-                    super.updateTile();
-                    getIEM().active();
-//                    tile.setBlock(Blocks.air);
-                }
-            };
-        }};
-        new ImagineDuct("imagine-duct") {{
-            requirements(Category.distribution, ItemStack.empty);
-            health = 100;
-            imagineCapacity = 10;
         }};
     }
 }
