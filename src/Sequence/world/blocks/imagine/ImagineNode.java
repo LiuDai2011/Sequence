@@ -112,6 +112,9 @@ public class ImagineNode extends ImagineBlock {
                     found = true;
                     findCenter();
                 }
+            } else if (!center.valid) {
+                found = false;
+                center = null;
             }
             super.updateTile();
         }

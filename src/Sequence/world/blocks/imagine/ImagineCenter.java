@@ -16,6 +16,7 @@ public class ImagineCenter extends ImagineBlock {
     public class ImagineCenterBuild extends Building implements BuildingIEc {
         public ImagineEnergyModule iem = new ImagineEnergyModule(this);
         public final Seq<Building> linkedIE = new Seq<>();
+        public boolean valid = true;
 
         @Override
         public float capacity() {
@@ -33,6 +34,10 @@ public class ImagineCenter extends ImagineBlock {
             iem.capacity(cap);
         }
 
-        public void checkLink() {}
+        @Override
+        public void onRemoved() {
+            super.onRemoved();
+            valid = false;
+        }
     }
 }
