@@ -8,10 +8,12 @@ main: "Sequence.SeqMod"
 
 description: "[red]pls turn on the mod to know more about it[]"
 
-version: -- alpha --
+version: "-- alpha --"
 
-minGameVersion: 146
+minGameVersion: "146"
 
 java: true
 
-hideBrowser: false
+dependencies: []
+
+hidden: false
