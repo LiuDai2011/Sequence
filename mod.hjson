@@ -1,10 +1,10 @@
-displayName: "Sequence"
+displayName: "sequence"
 
 name: "seq"
 
 author: "Ned-Kelly & LiuDai"
 
-main: "Sequence.SeqMod"
+main: "sequence.SeqMod"
 
 description: "[red]pls turn on the mod to know more about it[]"
 
