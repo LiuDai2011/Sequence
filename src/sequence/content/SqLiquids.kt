@@ -3,7 +3,6 @@ package sequence.content
 import arc.graphics.Color
 import arc.scene.ui.Button
 import arc.scene.ui.Image
-import arc.scene.ui.layout.Table
 import arc.struct.Seq
 import arc.util.Scaling
 import arc.util.Strings
@@ -14,6 +13,7 @@ import mindustry.world.blocks.defense.turrets.ItemTurret
 import mindustry.world.meta.StatValue
 import sequence.core.SeqElem
 import sequence.core.SqBundle
+import sequence.util.classEq
 
 object SqLiquids {
     lateinit var crystallizedFluid: SqLiquid
@@ -64,7 +64,10 @@ object SqLiquids {
         override fun statValue(): StatValue {
             return StatValue { table ->
                 for (content in Vars.content.blocks()) {
-                    if (content is ItemTurret && content.consumesLiquid(this)) {
+                    if (content is ItemTurret &&
+                        content.consumesLiquid(this) &&
+                        content classEq ItemTurret::class
+                        ) {
                         table.row().table(Styles.grayPanel) {
                             it.left().top().defaults().padRight(3f).left()
                             val button = Button(Styles.cleari)
@@ -88,20 +91,20 @@ object SqLiquids {
             builder.setLength(0)
             builder.append(
                 SqBundle.format(
-                    SqBundle.cat("stat", "bullet-damage-multi"),
+                    "stat.bullet-damage-multi",
                     Strings.autoFixed(damageMulti * 100f - 100f, 2)
                 )
             )
-            var frag = false
+            var flag = false
             for (entry in it.ammoTypes) if (entry.value.knockback > 0) {
-                frag = true
+                flag = true
                 break
             }
-            if (frag) {
+            if (flag) {
                 builder.append("  ")
                 builder.append(
                     SqBundle.format(
-                        SqBundle.cat("stat", "bullet-knockback-multi"),
+                        "stat.bullet-knockback-multi",
                         Strings.autoFixed(knockbackMulti * 100f - 100f, 2)
                     )
                 )

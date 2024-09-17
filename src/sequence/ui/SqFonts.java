@@ -24,9 +24,9 @@ public class SqFonts {
     };
 
     public static void loadFonts() {
-        Fi iconFile = Unzipper.unzip(
-                Unzipper.find("seqicon.ttf"),
-                Unzipper.version.get("seqicon.ttf"));
+        Fi iconFile = Unzipper.INSTANCE.unzip(
+                Unzipper.INSTANCE.find("seqicon.ttf"),
+                Unzipper.INSTANCE.getVersion().get("seqicon.ttf"));
         SqFonts.seq = loadFont(iconFile,
                 new FreeTypeFontParameter() {{
                     size = 48;

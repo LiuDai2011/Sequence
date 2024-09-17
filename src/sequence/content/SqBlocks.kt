@@ -22,7 +22,9 @@ import mindustry.world.blocks.defense.turrets.ItemTurret
 import mindustry.world.draw.DrawArcSmelt
 import mindustry.world.draw.DrawDefault
 import mindustry.world.draw.DrawMulti
+import mindustry.world.meta.StatValue
 import sequence.SeqMod
+import sequence.core.SeqElem
 import sequence.graphic.SqColor
 import sequence.world.blocks.defense.BatteryWall
 import sequence.world.blocks.defense.SqShieldWall
@@ -78,7 +80,7 @@ object SqBlocks {
                 requirements(Category.defense, ItemStack.with(SqItems.grainBoundaryAlloy, 24))
                 size = 2
                 health = 280 * 4
-                apportionedSpeed = 0.12f
+                apportionedSpeed = 0.0017f
             }
         }
         pureCapacitanceWall = object : BatteryWall("pure-capacitance-wall") {
@@ -211,7 +213,7 @@ object SqBlocks {
                 itemCapacity = 30
             }
         }
-        object : ItemTurret("acacac") {
+        object : ItemTurret("acacac"), SeqElem {
             init {
                 requirements(Category.turret, ItemStack.empty)
                 ammo(
@@ -423,6 +425,8 @@ object SqBlocks {
                 researchCostMultiplier = 0.05f
                 limitRange()
             }
+
+            override fun statValue() = null
         }
         if (!SeqMod.dev) return
         object : MultiCrafter("test-multi-crafter") {

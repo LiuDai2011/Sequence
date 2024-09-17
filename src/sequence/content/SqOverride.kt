@@ -12,6 +12,8 @@ import sequence.core.SeqElem
 import sequence.core.SqBundle
 import sequence.core.SqEventType.ContentStatInitEvent
 import sequence.ui.SqContentInfoDialog
+import sequence.util.IgnoredLocalName
+import sequence.util.classEq
 import sequence.world.meta.SqStat
 
 object SqOverride {
@@ -21,13 +23,22 @@ object SqOverride {
             for (content in Vars.content.blocks()) {
                 if (content is Turret) {
                     if (content is ItemTurret) {
-                        content.buildType = JavaWrappers.wrapItemTurretBuild(content)
+                        if (content classEq ItemTurret::class) {
+                            content.buildType = JavaWrappers.wrapItemTurretBuild(content)
+                        }
                     }
                 }
             }
             Events.on(ContentStatInitEvent::class.java) { e ->
                 e.apply {
-                    if (content.minfo.mod.name == SeqMod.MOD?.name && content !is SeqElem) TODO("Not yet implemented")
+                    if (content.minfo.mod.name == SeqMod.MOD?.name) {
+                        if (content !is SeqElem) {
+                            TODO("Not yet implemented: content ${content.name}\nPlease give the information to LiuDai")
+                        }
+                        if (!content::class.annotations.any { it classEq IgnoredLocalName::class }) {
+                            ;
+                        }
+                    }
                     if (content is SeqElem) {
                         content.stats.useCategories = true
                         content.stats.add(

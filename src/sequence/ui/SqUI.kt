@@ -142,7 +142,7 @@ object SqUI {
                     MenuButton(
                         SqBundle.modCat("mainmenu", "wiki", "text"),
                         Icon.book
-                    ) { SqLog.info("aaaa") }
+                    ) {  }
                 )
             )
         }

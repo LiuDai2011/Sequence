@@ -5,8 +5,11 @@ import sequence.core.SqBundle
 import sequence.core.SqLog
 import arc.util.Log
 import mindustry.Vars
+import mindustry.content.Blocks
 import mindustry.mod.Mod
 import mindustry.mod.Mods.LoadedMod
+import mindustry.world.blocks.defense.turrets.ItemTurret
+import sequence.util.classEq
 
 class SeqMod : Mod() {
     init {
@@ -31,6 +34,8 @@ class SeqMod : Mod() {
 
     override fun loadContent() {
         SqLog.info("Loading seq content.")
+        println(Blocks.duo::class)
+        println(Blocks.duo classEq ItemTurret::class)
         loadMeta()
         SqContent.loadContent()
     }
@@ -38,7 +43,6 @@ class SeqMod : Mod() {
     companion object {
         const val dev = true
         const val repo = "LiuDai2011/Sequence"
-        @JvmField
         var MOD: LoadedMod? = null
         var MOD_PREFIX = ""
     }

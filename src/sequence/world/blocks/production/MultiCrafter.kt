@@ -120,10 +120,8 @@ open class MultiCrafter(name: String?) : ImagineBlock(name), SeqElem {
         if (onlyOneFormula) {
             configurable = false
         } else {
-            config(Int::class.javaObjectType) { building: Building, integer: Int ->
-                (building as MultiCrafterBuild).now = integer
-                SqLog.info("config called: $building, $integer")
-            }
+            config(Int::class.javaObjectType)
+                { building: Building, integer: Int -> (building as MultiCrafterBuild).now = integer }
             configClear { building: Building -> (building as MultiCrafterBuild).now = -1 }
         }
         super.init()

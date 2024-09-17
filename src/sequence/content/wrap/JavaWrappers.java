@@ -14,6 +14,7 @@ public class JavaWrappers {
     public static Prov<Building> wrapItemTurretBuild(ItemTurret itemTurret) {
         return () -> itemTurret.new ItemTurretBuild() {
             public boolean consumeLiquidAndMultiShoot(SqLiquids.VectorizedFluid liq, float amount, BulletType type) {
+                if (liquids == null) return false;
                 if (liquids.get(liq) > amount) {
                     liquids.remove(liq, amount);
                     float multi = liq.getDamageMulti();

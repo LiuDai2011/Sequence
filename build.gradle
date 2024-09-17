@@ -36,6 +36,7 @@ dependencies {
 
     annotationProcessor "com.github.Anuken:jabel:$jabelVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.9.0"
 }
 
 //force arc version
