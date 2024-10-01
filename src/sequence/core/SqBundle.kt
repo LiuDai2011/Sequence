@@ -23,7 +23,7 @@ object SqBundle {
     }
 
     fun modCat(vararg args: String): String {
-        return SqBundle[SeqMod.MOD!!.meta.name + "." + cat(*args)]
+        return SqBundle[SeqMod.MOD.meta.name + "." + cat(*args)]
     }
 
     fun catGet(vararg args: String): String {

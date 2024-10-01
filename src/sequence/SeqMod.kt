@@ -22,7 +22,7 @@ class SeqMod : Mod() {
 
     private fun loadMeta() {
         MOD = Vars.mods.getMod(javaClass)
-        MOD?.apply {
+        MOD.apply {
             meta.version = SqBundle.modCat("meta", "version")
             meta.author = SqBundle.modCat("meta", "author")
             meta.displayName = SqBundle.modCat("meta", "display-name")
@@ -42,8 +42,9 @@ class SeqMod : Mod() {
 
     companion object {
         const val dev = true
+        const val skipChk = true
         const val repo = "LiuDai2011/Sequence"
-        var MOD: LoadedMod? = null
+        lateinit var MOD: LoadedMod
         var MOD_PREFIX = ""
     }
 }

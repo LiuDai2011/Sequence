@@ -17,7 +17,7 @@ object Unzipper {
 
     fun find(name: String): Fi? {
         return try {
-            SeqMod.MOD!!.root.findAll { f: Fi -> f.name() == name }.first()
+            SeqMod.MOD.root.findAll { f: Fi -> f.name() == name }.first()
         } catch (e: IllegalStateException) {
             null
         }

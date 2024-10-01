@@ -1,9 +1,9 @@
 package sequence.util
 
 import kotlin.reflect.KClass
+import kotlin.reflect.full.hasAnnotation
 
 infix fun KClass<*>.eq(other: KClass<*>): Boolean {
-    println("${javaObjectType.name}, ${other.javaObjectType.name}")
     if (javaObjectType.name.contains("$") ||
         other.javaObjectType.name.contains("$"))
         return javaObjectType.isNestmateOf(other.javaObjectType) ||
@@ -12,3 +12,6 @@ infix fun KClass<*>.eq(other: KClass<*>): Boolean {
 }
 infix fun Any.classEq(other: Any) = this::class eq other::class
 infix fun Any.classEq(other: KClass<*>) = this::class eq other
+
+inline fun <reified T : Annotation> Any.hasAnnotation() = this::class.hasAnnotation<T>()
+inline fun <reified T : SignBase> Any.hasSign() = this is T

@@ -26,6 +26,8 @@ import mindustry.world.meta.StatValue
 import sequence.SeqMod
 import sequence.core.SeqElem
 import sequence.graphic.SqColor
+import sequence.util.IgnoredLocalName
+import sequence.util.IgnoredSequenceElementImpl
 import sequence.world.blocks.defense.BatteryWall
 import sequence.world.blocks.defense.SqShieldWall
 import sequence.world.blocks.defense.SqWall
@@ -213,7 +215,7 @@ object SqBlocks {
                 itemCapacity = 30
             }
         }
-        object : ItemTurret("acacac"), SeqElem {
+        object : ItemTurret("acacac"), SeqElem, IgnoredLocalName {
             init {
                 requirements(Category.turret, ItemStack.empty)
                 ammo(
@@ -429,7 +431,7 @@ object SqBlocks {
             override fun statValue() = null
         }
         if (!SeqMod.dev) return
-        object : MultiCrafter("test-multi-crafter") {
+        object : MultiCrafter("test-multi-crafter"), IgnoredLocalName {
             init {
                 addFormula(
                     Formula(
@@ -472,7 +474,7 @@ object SqBlocks {
                 ord = 11
             }
         }
-        object : MultiCrafter("test-one-formula-crafter") {
+        object : MultiCrafter("test-one-formula-crafter"), IgnoredLocalName {
             init {
                 addFormula(
                     Formula(
@@ -516,7 +518,7 @@ object SqBlocks {
                 liquidCapacity = 100f
             }
         }
-        object : Wall("test2") {
+        object : Wall("test2"), IgnoredLocalName, IgnoredSequenceElementImpl {
             init {
                 requirements(Category.effect, ItemStack.empty)
                 health = 100
