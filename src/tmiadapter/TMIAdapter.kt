@@ -4,9 +4,10 @@ import sequence.core.SqLog
 import tmi.RecipeEntry
 import tmi.TooManyItems
 
-class TMIAdapter : RecipeEntry() {
+class TMIAdapter : RecipeEntry {
     override fun afterInit() {
         SqLog.info("TMI Adapter: After Init")
+
     }
 
     override fun init() {

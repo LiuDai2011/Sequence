@@ -5,6 +5,7 @@ import mindustry.type.Item
 import mindustry.world.meta.Stat
 import mindustry.world.meta.StatValue
 import sequence.core.SeqElem
+import sequence.util.register
 import sequence.world.meta.SqStat
 
 object SqItems {
@@ -18,29 +19,23 @@ object SqItems {
     lateinit var vectorizedChip: SqItem
 
     fun load() {
-        berylliumalAlloy = object : SqItem("berylliumal-alloy") {
-            init {
-                color = Color.valueOf("989aa4")
-                cost = 0.95f
-                healthScaling = 1.3f
-            }
+        berylliumalAlloy = SqItem("berylliumal-alloy").register {
+            color = Color.valueOf("989aa4")
+            cost = 0.95f
+            healthScaling = 1.3f
         }
-        crystallizedBeryllium = object : SqItem("crystallized-beryllium") {
-            init {
-                color = Color.valueOf("d1eeee")
-                healthScaling = 0.5f
-                cost = 0.65f
-            }
+        crystallizedBeryllium = SqItem("crystallized-beryllium").register {
+            color = Color.valueOf("d1eeee")
+            healthScaling = 0.5f
+            cost = 0.65f
         }
-        encapsulatedImagineEnergy = object : EncapsulatedImagineEnergyItem("encapsulated-imagine-energy") {
-            init {
-                color = Color.valueOf("bf92f9")
-                radioactivity = 15f
-                charge = 7f
-                cost = 4.5f
-                healthScaling = 0.01f
-                explosiveness = 2f
-            }
+        encapsulatedImagineEnergy = EncapsulatedImagineEnergyItem("encapsulated-imagine-energy").register {
+            color = Color.valueOf("bf92f9")
+            radioactivity = 15f
+            charge = 7f
+            cost = 4.5f
+            healthScaling = 0.01f
+            explosiveness = 2f
         }
         grainBoundaryAlloy = object : SqItem("grain-boundary-alloy") {
             init {
@@ -81,7 +76,7 @@ object SqItems {
         }
     }
 
-    open class SqItem(name: String?) : Item(name), SeqElem {
+    open class SqItem(name: String) : Item(name), SeqElem {
         var ord = -1
         override fun order(): Int {
             return ord
@@ -92,7 +87,7 @@ object SqItems {
         }
     }
 
-    open class EncapsulatedImagineEnergyItem(name: String?) : SqItem(name) {
+    open class EncapsulatedImagineEnergyItem(name: String) : SqItem(name) {
         override fun setStats() {
             super.setStats()
             stats.remove(Stat.explosiveness)

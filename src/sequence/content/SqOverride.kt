@@ -15,7 +15,11 @@ import sequence.SeqMod.Companion.skipChk
 import sequence.content.wrap.JavaWrappers
 import sequence.core.SeqElem
 import sequence.core.SqBundle
-import sequence.util.*
+import sequence.core.SqLog
+import sequence.util.IgnoredLocalName
+import sequence.util.IgnoredSequenceElementImpl
+import sequence.util.classEq
+import sequence.util.hasSign
 import sequence.world.meta.SqStat
 
 object SqOverride {
@@ -34,24 +38,28 @@ object SqOverride {
             Vars.content.each { content ->
                 if (content.minfo.mod == null) return@each
                 if (content is MappableContent && content.minfo.mod.name == SeqMod.MOD.name) {
-                    if (!skipChk) {
-                        if (!content.hasSign<IgnoredSequenceElementImpl>()) {
-                            if (content !is SeqElem)
-                                uninitiatedContent.add("Not yet implemented(seqstat): content ${content.name}\nPlease give the information to LiuDai")
-                        }
-                        if (!content.hasSign<IgnoredLocalName>()) {
-                            if (!Core.bundle.has("${content.contentType}.${content.name}.name") ||
-                                !Core.bundle.has("${content.contentType}.${content.name}.description") ||
-                                !Core.bundle.has("${content.contentType}.${content.name}.details")
-                            )
-                                uninitiatedContent.add("Not yet implemented(bundle): content ${content.name}\nPlease give the information to LiuDai")
-                        } else println("$content has sign iln")
+                    if (!content.hasSign<IgnoredSequenceElementImpl>()) {
+                        if (content !is SeqElem)
+                            uninitiatedContent.add("Not yet implemented(seqstat): content ${content.name}\nPlease give the information to LiuDai")
                     }
+                    if (!content.hasSign<IgnoredLocalName>()) {
+                        val prefix = "${content.contentType}.${content.name}"
+                        if (!Core.bundle.has("$prefix.name") ||
+                            !Core.bundle.has("$prefix.description") ||
+                            !Core.bundle.has("$prefix.details")
+                        )
+                            uninitiatedContent.add(
+                                "Not yet implemented(bundle): content ${content.name}\nPlease give the information to LiuDai" +
+                                        (if (!Core.bundle.has("$prefix.name")) "\n$prefix.name=" else "") +
+                                        (if (!Core.bundle.has("$prefix.description")) "\n$prefix.description=" else "") +
+                                        (if (!Core.bundle.has("$prefix.details")) "\n$prefix.details=" else "")
+                            )
+                    } else SqLog.warn("$content has sign iln")
                     if (content is SeqElem && content is UnlockableContent) {
                         content.stats.useCategories = true
                         content.stats.add(
                             SqStat.sequenceOrder,
-                            if (content.order() == -1) SqBundle.modCat("seq-null") else content.order().toString()
+                            if (content.order() == -1) SqBundle.mod("seq-null") else content.order().toString()
                         )
                         if (content.order() != -1 && content.statValue() != null) {
                             content.stats.add(SqStat.sequenceEffect, content.statValue())
@@ -60,7 +68,11 @@ object SqOverride {
                 }
             }
             if (!uninitiatedContent.isEmpty) {
-                TODO("\n${uninitiatedContent.joinToString("\n\n")}\n\n")
+                if (!skipChk) {
+                    TODO("\n${uninitiatedContent.joinToString("\n\n")}\n\n")
+                } else {
+                    SqLog.warn("\n${uninitiatedContent.joinToString("\n\n")}\n\n")
+                }
             }
             Blocks.itemSource.health = Int.MAX_VALUE
             Blocks.liquidSource.health = Int.MAX_VALUE

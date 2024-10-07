@@ -1,23 +1,34 @@
 package sequence.core
 
 import arc.files.Fi
+import arc.struct.Seq
 import arc.struct.StringMap
 import sequence.SeqMod
 import sequence.core.SqLog.debug
-import sequence.core.SqLog.info
+import java.io.FileNotFoundException
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 
 object Unzipper {
-    var version: VersionController? = null
+    val version by lazy { VersionController() }
 
-    init {
-        version = VersionController()
+    fun find(name: String, predicate: (Fi) -> Boolean = { f: Fi -> f.name() == name }): Fi? =
+        findAll(name, predicate)?.first()
+
+    fun find(predicate: (Fi) -> Boolean = { false }): Fi? =
+        findAll(predicate)?.first()
+
+    fun findAll(name: String, predicate: (Fi) -> Boolean = { f: Fi -> f.name() == name }): Seq<Fi>? {
+        return try {
+            SeqMod.MOD.root.findAll(predicate)
+        } catch (e: IllegalStateException) {
+            null
+        }
     }
 
-    fun find(name: String): Fi? {
+    fun findAll(predicate: (Fi) -> Boolean = { false }): Seq<Fi>? {
         return try {
-            SeqMod.MOD.root.findAll { f: Fi -> f.name() == name }.first()
+            SeqMod.MOD.root.findAll(predicate)
         } catch (e: IllegalStateException) {
             null
         }
@@ -60,13 +71,13 @@ object Unzipper {
     }
 
     class VersionController {
-        protected var versions = StringMap()
+        val versions = StringMap()
 
         init {
             check(!init) { "Cannot invoke 'public VersionController()' again." }
             init = true
-            version = find("version.properties")
-            val strings = version!!.readString().split("\\n".toRegex()).dropLastWhile { it.isEmpty() }
+            version = find("version.properties") ?: throw FileNotFoundException("version.properties")
+            val strings = version.readString().split("\\n".toRegex()).dropLastWhile { it.isEmpty() }
                 .toTypedArray()
             for (string in strings) {
                 val str = string.split("=".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -83,7 +94,7 @@ object Unzipper {
         }
 
         companion object {
-            var version: Fi? = null
+            lateinit var version: Fi
             private var init = false
         }
     }

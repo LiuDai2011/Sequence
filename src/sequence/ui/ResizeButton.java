@@ -1,21 +1,20 @@
 package sequence.ui;
 
-import arc.math.geom.Vec2;
-import sequence.util.Util;
 import arc.Core;
 import arc.math.Interp;
 import arc.math.Mathf;
+import arc.math.geom.Vec2;
 import arc.scene.ui.Button;
 import arc.util.Align;
+import sequence.util.Util;
 
 public class ResizeButton extends Button {
-    private float oX, oY;
-
     public float originWidth, originHeight, sclWidth, sclHeight;
     public float progress = 0;
     public Interp inter = Interp.linear;
     public float speed = 0.05f;
     public int align = Align.topRight;
+    private float oX, oY;
 
     public ResizeButton(ButtonStyle style, float originWidth, float originHeight, float sclWidth, float sclHeight) {
         super(style);
@@ -52,10 +51,9 @@ public class ResizeButton extends Button {
             Vec2 vec2 = localToStageCoordinates(new Vec2(x, y));
             float x1 = vec2.x;
             float y1 = vec2.y;
-            boolean in = Util.inZone(x1, y1, x1 + getWidth(), y1 + getHeight(), mouseX, mouseY);
+            boolean in = Util.INSTANCE.inZone(x1, y1, x1 + getWidth(), y1 + getHeight(), mouseX, mouseY);
 
-            boolean notZero = false;
-            if (!Mathf.zero(progress)) notZero = true;
+            boolean notZero = !Mathf.zero(progress);
 
             if (in) progress += speed;
             else progress -= speed;

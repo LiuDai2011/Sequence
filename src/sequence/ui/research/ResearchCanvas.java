@@ -1,6 +1,5 @@
 package sequence.ui.research;
 
-import sequence.ui.ResizeButton;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Lines;
 import arc.input.KeyCode;
@@ -15,6 +14,7 @@ import arc.scene.ui.layout.WidgetGroup;
 import arc.util.Align;
 import mindustry.graphics.Pal;
 import org.jetbrains.annotations.NotNull;
+import sequence.ui.ResizeButton;
 
 public class ResearchCanvas extends WidgetGroup {
     public static final int

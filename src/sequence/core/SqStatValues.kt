@@ -30,10 +30,8 @@ object SqStatValues {
                         .padLeft(10f).padRight(10f)
                     bt.add()
                     if (form.liquidSecond) {
-                        val liquidStacks = arrayOfNulls<LiquidStack>(form.outputLiquid.size)
-                        for (i in form.outputLiquid.indices) {
-                            liquidStacks[i] =
-                                LiquidStack(form.outputLiquid[i].liquid, form.outputLiquid[i].amount * form.time)
+                        val liquidStacks = Array(form.outputLiquid.size) {
+                            LiquidStack(form.outputLiquid[it].liquid, form.outputLiquid[it].amount * form.time)
                         }
                         uiILPFormula(form.outputItem, liquidStacks, form.outputPower, form.outputImagine, bt, false)
                     } else uiILPFormula(
@@ -47,7 +45,7 @@ object SqStatValues {
                 }.growX().left().row()
                 t.add(
                     SqBundle.format(
-                        SqBundle.cat("stat", "crafttime"),
+                        "stat.crafttime",
                         Strings.autoFixed(form.time / 60f, 2)
                     )
                 ).left()

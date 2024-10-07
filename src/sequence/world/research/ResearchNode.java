@@ -9,16 +9,16 @@ import mindustry.gen.Tex;
 import static sequence.world.research.ResearchTree.all;
 
 public class ResearchNode {
+    //    public @Nullable ObjectFloatMap<Item> researchCostMultipliers;
+    public final Seq<ResearchNode> children = new Seq<>();
     public int depth;
     public @Nullable Drawable icon;
     public @Nullable String name;
-//    public boolean requiresUnlock = false;
+    //    public boolean requiresUnlock = false;
     public @Nullable ResearchNode parent;
-//    public @Nullable ObjectFloatMap<Item> researchCostMultipliers;
-    public final Seq<ResearchNode> children = new Seq<>();
 
     public ResearchNode(@Nullable ResearchNode parent) {
-        if(parent != null){
+        if (parent != null) {
             parent.children.add(this);
         }
 
@@ -32,7 +32,7 @@ public class ResearchNode {
         return icon == null ? Tex.clear : icon;
     }
 
-    public String localizedName(){
+    public String localizedName() {
         return Core.bundle.get("research-tree." + name, name);
     }
 }

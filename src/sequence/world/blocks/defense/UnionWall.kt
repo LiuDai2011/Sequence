@@ -6,7 +6,6 @@ import arc.util.Strings
 import arc.util.Time
 import mindustry.world.meta.StatValue
 import sequence.core.SqBundle
-import sequence.ui.SqUI
 import sequence.ui.SqUI.pad
 
 open class UnionWall(name: String) : SqWall(name) {
@@ -59,7 +58,8 @@ open class UnionWall(name: String) : SqWall(name) {
                     p.health = Mathf.lerp(
                         p.health / p.maxHealth,
                         sumHealth / sumMaxHealth,
-                        apportionedSpeed * Time.delta) * p.maxHealth
+                        apportionedSpeed * Time.delta
+                    ) * p.maxHealth
                 }
             }
         }
@@ -72,7 +72,12 @@ open class UnionWall(name: String) : SqWall(name) {
             it.row()
             it.pad { bt ->
                 bt.add(SqBundle["blocks.union-wall.seqstat"]).row()
-                bt.add(SqBundle.format("blocks.union-wall.seqstat.apportionedSpeed", Strings.autoFixed(apportionedSpeed * 60f, 4)))
+                bt.add(
+                    SqBundle.format(
+                        "blocks.union-wall.seqstat.apportionedSpeed",
+                        Strings.autoFixed(apportionedSpeed * 60f, 4)
+                    )
+                )
             }
         }
     }

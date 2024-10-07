@@ -1,15 +1,14 @@
+@file:JvmName("SeqMod")
+
 package sequence
 
+import arc.util.Log
+import mindustry.Vars
+import mindustry.mod.Mod
+import mindustry.mod.Mods.LoadedMod
 import sequence.content.SqContent
 import sequence.core.SqBundle
 import sequence.core.SqLog
-import arc.util.Log
-import mindustry.Vars
-import mindustry.content.Blocks
-import mindustry.mod.Mod
-import mindustry.mod.Mods.LoadedMod
-import mindustry.world.blocks.defense.turrets.ItemTurret
-import sequence.util.classEq
 
 class SeqMod : Mod() {
     init {
@@ -23,28 +22,26 @@ class SeqMod : Mod() {
     private fun loadMeta() {
         MOD = Vars.mods.getMod(javaClass)
         MOD.apply {
-            meta.version = SqBundle.modCat("meta", "version")
-            meta.author = SqBundle.modCat("meta", "author")
-            meta.displayName = SqBundle.modCat("meta", "display-name")
-            meta.description = SqBundle.modCat("meta", "description")
+            meta.version = SqBundle.mod("meta.version")
+            meta.author = SqBundle.mod("meta.author")
+            meta.displayName = SqBundle.mod("meta.display-name")
+            meta.description = SqBundle.mod("meta.description")
             repo = Companion.repo
-            MOD_PREFIX = "${meta.name}-"
         }
     }
 
     override fun loadContent() {
         SqLog.info("Loading seq content.")
-        println(Blocks.duo::class)
-        println(Blocks.duo classEq ItemTurret::class)
         loadMeta()
         SqContent.loadContent()
     }
 
     companion object {
         const val dev = true
-        const val skipChk = true
+        const val skipChk = false
         const val repo = "LiuDai2011/Sequence"
         lateinit var MOD: LoadedMod
-        var MOD_PREFIX = ""
+        val MOD_PREFIX: String by lazy { "${MOD.meta.name}-" }
+        val MOD_PREFIX_POINT: String by lazy { "${MOD.meta.name}." }
     }
 }

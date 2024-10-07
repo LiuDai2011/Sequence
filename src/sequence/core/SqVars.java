@@ -1,6 +1,5 @@
 package sequence.core;
 
-import sequence.world.entities.SpreadPointBulletType;
 import arc.Events;
 import arc.files.Fi;
 import arc.func.Cons;
@@ -9,17 +8,15 @@ import arc.struct.IntMap;
 import arc.struct.Seq;
 import mindustry.Vars;
 import mindustry.game.EventType;
-import mindustry.mod.ClassMap;
 import org.jetbrains.annotations.NotNull;
 
 public class SqVars {
-    private static final int MIN_PRIORITY = Integer.MAX_VALUE;
-
     public static final Interp pow7 = new Interp.Pow(7);
     public static final Object[] emptyObjArr = {};
     public static final float revTimerUnit = 20;
-    public static Fi unzipDirectory;
     public static final IntMap<Seq<Processor>> processors = new IntMap<>();
+    private static final int MIN_PRIORITY = Integer.MAX_VALUE;
+    public static Fi unzipDirectory;
 
     static {
         unzipDirectory = Vars.dataDirectory.child("unzip/");

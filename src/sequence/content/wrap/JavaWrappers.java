@@ -19,9 +19,9 @@ public class JavaWrappers {
                     liquids.remove(liq, amount);
                     float multi = liq.getDamageMulti();
                     float knockbackMulti = liq.getKnockbackMulti();
-                    Util.checkKey(
-                            Util.checkKey(
-                                    Util.checkKey(
+                    Util.INSTANCE.checkKey(
+                            Util.INSTANCE.checkKey(
+                                    Util.INSTANCE.checkKey(
                                             SqTmp.damageMultiMap,
                                             type,
                                             ObjectMap::new

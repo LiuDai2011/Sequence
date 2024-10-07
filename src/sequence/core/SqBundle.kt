@@ -11,7 +11,7 @@ object SqBundle {
 
     operator fun get(key: String, def: String = "???$key???"): String = Core.bundle[key, def]
 
-    operator fun invoke(key: String, def: String = "???${SeqMod.MOD_PREFIX}$key???"): String = get(key, def)
+    operator fun invoke(key: String, def: String = "???${SeqMod.MOD_PREFIX_POINT}$key???"): String = get(key, def)
 
     fun cat(vararg args: String): String {
         builder.setLength(0)
@@ -22,8 +22,8 @@ object SqBundle {
         return builder.toString()
     }
 
-    fun modCat(vararg args: String): String {
-        return SqBundle[SeqMod.MOD.meta.name + "." + cat(*args)]
+    fun mod(arg: String): String {
+        return SqBundle[SeqMod.MOD.meta.name + "." + arg]
     }
 
     fun catGet(vararg args: String): String {

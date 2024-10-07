@@ -1,10 +1,6 @@
 package sequence.content
 
-import arc.func.Prov
 import arc.graphics.Color
-import arc.math.Mathf
-import arc.math.geom.Geometry
-import mindustry.Vars
 import mindustry.content.Fx
 import mindustry.content.Items
 import mindustry.content.Liquids
@@ -17,17 +13,14 @@ import mindustry.type.Category
 import mindustry.type.ItemStack
 import mindustry.type.LiquidStack
 import mindustry.world.Block
-import mindustry.world.blocks.defense.Wall
 import mindustry.world.blocks.defense.turrets.ItemTurret
 import mindustry.world.draw.DrawArcSmelt
 import mindustry.world.draw.DrawDefault
 import mindustry.world.draw.DrawMulti
-import mindustry.world.meta.StatValue
 import sequence.SeqMod
 import sequence.core.SeqElem
-import sequence.graphic.SqColor
 import sequence.util.IgnoredLocalName
-import sequence.util.IgnoredSequenceElementImpl
+import sequence.util.register
 import sequence.world.blocks.defense.BatteryWall
 import sequence.world.blocks.defense.SqShieldWall
 import sequence.world.blocks.defense.SqWall
@@ -37,8 +30,6 @@ import sequence.world.drawer.DrawBottom
 import sequence.world.drawer.NoCheckDrawLiquidRegion
 import sequence.world.entities.SpreadPointBulletType
 import sequence.world.meta.Formula
-import sequence.world.meta.imagine.BuildingIEc
-import sequence.world.meta.imagine.ImagineEnergyRecord
 
 object SqBlocks {
     lateinit var multiFluidMixer: Block
@@ -71,149 +62,141 @@ object SqBlocks {
 
             override fun statValue() = null
         }
-        grainBoundaryAlloyWall = object : UnionWall("grain-boundary-alloy-wall") {
-            init {
-                requirements(Category.defense, ItemStack.with(SqItems.grainBoundaryAlloy, 6))
-                health = 280
-            }
+        grainBoundaryAlloyWall = UnionWall("grain-boundary-alloy-wall").register {
+            requirements(Category.defense, ItemStack.with(SqItems.grainBoundaryAlloy, 6))
+            health = 280
         }
-        grainBoundaryAlloyWallLarge = object : UnionWall("grain-boundary-alloy-wall-large") {
-            init {
-                requirements(Category.defense, ItemStack.with(SqItems.grainBoundaryAlloy, 24))
-                size = 2
-                health = 280 * 4
-                apportionedSpeed = 0.0017f
-            }
+        grainBoundaryAlloyWallLarge = UnionWall("grain-boundary-alloy-wall-large").register {
+            requirements(Category.defense, ItemStack.with(SqItems.grainBoundaryAlloy, 24))
+            size = 2
+            health = 280 * 4
+            apportionedSpeed = 0.0017f
         }
-        pureCapacitanceWall = object : BatteryWall("pure-capacitance-wall") {
-            init {
-                requirements(Category.defense, ItemStack.with(
+        pureCapacitanceWall = BatteryWall("pure-capacitance-wall").register {
+            requirements(
+                Category.defense, ItemStack.with(
                     SqItems.crystallizedBeryllium, 3,
                     SqItems.pureSilicon, 6
-                ))
-                health = 110
-                consumePowerBuffered(800f)
-            }
+                )
+            )
+            health = 110
+            consumePowerBuffered(800f)
         }
-        pureCapacitanceWallLarge = object : BatteryWall("pure-capacitance-wall-large") {
-            init {
-                requirements(Category.defense, ItemStack.with(
+        pureCapacitanceWallLarge = BatteryWall("pure-capacitance-wall-large").register {
+            requirements(
+                Category.defense, ItemStack.with(
                     SqItems.crystallizedBeryllium, 12,
                     SqItems.pureSilicon, 24
-                ))
-                size = 2
-                health = 110 * 4
-                consumePowerBuffered(3200f)
-            }
+                )
+            )
+            size = 2
+            health = 110 * 4
+            consumePowerBuffered(3200f)
         }
-        intensifiedShieldedWall = object : SqShieldWall("intensified-shielded-wall") {
-            init {
-                requirements(Category.defense, ItemStack.with(
+        intensifiedShieldedWall = SqShieldWall("intensified-shielded-wall").register {
+            requirements(
+                Category.defense, ItemStack.with(
                     SqItems.phaseCore, 2,
                     SqItems.grainBoundaryAlloy, 4,
                     Items.surgeAlloy, 4
-                ))
-                health = 300
-                armor = 15f
-                consumePower(3f / 60f)
-                chanceDeflect = 16f
-                breakCooldown = 60f * 11f
-            }
+                )
+            )
+            health = 300
+            armor = 15f
+            consumePower(3f / 60f)
+            chanceDeflect = 16f
+            breakCooldown = 60f * 11f
         }
-        intensifiedShieldedWallLarge = object : SqShieldWall("intensified-shielded-wall-large") {
-            init {
-                requirements(Category.defense, ItemStack.with(
+        intensifiedShieldedWallLarge = SqShieldWall("intensified-shielded-wall-large").register {
+            requirements(
+                Category.defense, ItemStack.with(
                     SqItems.phaseCore, 2,
                     SqItems.grainBoundaryAlloy, 12,
                     Items.surgeAlloy, 12
-                ))
-                size = 2
-                health = 300 * 4
-                armor = 60f
-                consumePower(6f / 60f)
-                chanceDeflect = 16f
-                regenSpeed = 4f
-                shieldHealth = 3600f
-                breakCooldown = 60f * 17f
-            }
+                )
+            )
+            size = 2
+            health = 300 * 4
+            armor = 60f
+            consumePower(6f / 60f)
+            chanceDeflect = 16f
+            regenSpeed = 4f
+            shieldHealth = 3600f
+            breakCooldown = 60f * 17f
         }
         // endregion
 
-        multiFluidMixer = object : MultiCrafter("multi-fluid-mixer") {
-            init {
-                addFormula(
-                    Formula(
-                        ItemStack.with(SqItems.crystallizedBeryllium, 1),
-                        LiquidStack.with(Liquids.water, 6),
-                        1.5f,
-                        ItemStack.empty,
-                        LiquidStack.with(SqLiquids.crystallizedFluid, 5),
-                        0f,
-                        0.5f * 60f,
-                        false
-                    ),
-                    Formula(
-                        ItemStack.with(SqItems.grainBoundaryAlloy, 1),
-                        LiquidStack.with(SqLiquids.crystallizedFluid, 6),
-                        2f,
-                        ItemStack.empty,
-                        LiquidStack.with(SqLiquids.vectorizedFluid, 4.5),
-                        0f,
-                        1.2f * 60f,
-                        false
-                    )
+        multiFluidMixer = MultiCrafter("multi-fluid-mixer").register {
+            addFormula(
+                Formula(
+                    ItemStack.with(SqItems.crystallizedBeryllium, 1),
+                    LiquidStack.with(Liquids.water, 6),
+                    1.5f,
+                    ItemStack.empty,
+                    LiquidStack.with(SqLiquids.crystallizedFluid, 5),
+                    0f,
+                    0.5f * 60f,
+                    false
+                ),
+                Formula(
+                    ItemStack.with(SqItems.grainBoundaryAlloy, 1),
+                    LiquidStack.with(SqLiquids.crystallizedFluid, 6),
+                    2f,
+                    ItemStack.empty,
+                    LiquidStack.with(SqLiquids.vectorizedFluid, 4.5),
+                    0f,
+                    1.2f * 60f,
+                    false
                 )
-                requirements(
-                    Category.crafting, ItemStack.with(
-                        Items.graphite, 60,
-                        SqItems.pureSilicon, 30,
-                        SqItems.crystallizedBeryllium, 120,
-                        Items.tungsten, 80
-                    )
+            )
+            requirements(
+                Category.crafting, ItemStack.with(
+                    Items.graphite, 60,
+                    SqItems.pureSilicon, 30,
+                    SqItems.crystallizedBeryllium, 120,
+                    Items.tungsten, 80
                 )
-                drawer = DrawMulti(
-                    DrawBottom(),
-                    NoCheckDrawLiquidRegion(),
-                    DrawDefault()
-                )
-                scaledHealth = 65f
-                craftEffect = Fx.pulverizeMedium
-                size = 2
-                itemCapacity = 20
-                liquidCapacity = 60f
-                ord = 34
-            }
+            )
+            drawer = DrawMulti(
+                DrawBottom(),
+                NoCheckDrawLiquidRegion(),
+                DrawDefault()
+            )
+            scaledHealth = 65f
+            craftEffect = Fx.pulverizeMedium
+            size = 2
+            itemCapacity = 20
+            liquidCapacity = 60f
+            ord = 34
         }
-        berylliumCrystallizer = object : MultiCrafter("beryllium-crystallizer") {
-            init {
-                addFormula(
-                    Formula(
-                        ItemStack.with(Items.beryllium, 4),
-                        LiquidStack.empty,
-                        1f,
-                        ItemStack.with(SqItems.crystallizedBeryllium, 3),
-                        LiquidStack.empty,
-                        0f,
-                        1.57f * 60f
-                    )
+        berylliumCrystallizer = MultiCrafter("beryllium-crystallizer").register {
+            addFormula(
+                Formula(
+                    ItemStack.with(Items.beryllium, 4),
+                    LiquidStack.empty,
+                    1f,
+                    ItemStack.with(SqItems.crystallizedBeryllium, 3),
+                    LiquidStack.empty,
+                    0f,
+                    1.57f * 60f
                 )
-                onlyOneFormula = true
-                requirements(
-                    Category.crafting, ItemStack.with(
-                        Items.graphite, 80,
-                        Items.tungsten, 20,
-                        Items.beryllium, 60
-                    )
+            )
+            onlyOneFormula = true
+            requirements(
+                Category.crafting, ItemStack.with(
+                    Items.graphite, 80,
+                    Items.tungsten, 20,
+                    Items.beryllium, 60
                 )
-                drawer = DrawMulti(
-                    DrawBottom(),  // DrawEfficiency(),
-                    DrawArcSmelt(),
-                    DrawDefault()
-                )
-                scaledHealth = 73f
-                size = 3
-                itemCapacity = 30
-            }
+            )
+            drawer = DrawMulti(
+                DrawBottom(),
+                DrawArcSmelt(),
+                DrawDefault()
+            )
+            scaledHealth = 73f
+            size = 3
+            itemCapacity = 30
         }
         object : ItemTurret("acacac"), SeqElem, IgnoredLocalName {
             init {
@@ -451,17 +434,17 @@ object SqBlocks {
                         5f,
                         8f, false
                     ),
-                    Formula(
-                        ItemStack.empty,
-                        LiquidStack.empty,
-                        3f,
-                        ImagineEnergyRecord(5f, 10f, 0f, true),
-                        ItemStack.empty,
-                        LiquidStack.empty,
-                        5f,
-                        ImagineEnergyRecord(3f, 1f, 2f, false),
-                        8f, false
-                    )
+//                    Formula(
+//                        ItemStack.empty,
+//                        LiquidStack.empty,
+//                        3f,
+//                        ImagineEnergyRecord(5f, 10f, 0f, true),
+//                        ItemStack.empty,
+//                        LiquidStack.empty,
+//                        5f,
+//                        ImagineEnergyRecord(3f, 1f, 2f, false),
+//                        8f, false
+//                    )
                 )
                 requirements(Category.crafting, ItemStack.empty)
                 craftEffect = Fx.pulverizeMedium
@@ -495,17 +478,17 @@ object SqBlocks {
                         5f,
                         8f, false
                     ),
-                    Formula(
-                        ItemStack.empty,
-                        LiquidStack.empty,
-                        3f,
-                        ImagineEnergyRecord(5f, 10f, 0f, true),
-                        ItemStack.empty,
-                        LiquidStack.empty,
-                        5f,
-                        ImagineEnergyRecord(3f, 1f, 2f, false),
-                        8f, false
-                    )
+//                    Formula(
+//                        ItemStack.empty,
+//                        LiquidStack.empty,
+//                        3f,
+//                        ImagineEnergyRecord(5f, 10f, 0f, true),
+//                        ItemStack.empty,
+//                        LiquidStack.empty,
+//                        5f,
+//                        ImagineEnergyRecord(3f, 1f, 2f, false),
+//                        8f, false
+//                    )
                 )
                 onlyOneFormula = true
                 requirements(Category.crafting, ItemStack.empty)
@@ -518,38 +501,6 @@ object SqBlocks {
                 liquidCapacity = 100f
             }
         }
-        object : Wall("test2"), IgnoredLocalName, IgnoredSequenceElementImpl {
-            init {
-                requirements(Category.effect, ItemStack.empty)
-                health = 100
-                update = true
-                buildType = Prov {
-                    object : WallBuild() {
-                        override fun updateTile() {
-                            for (len in 1..14) {
-                                for (i in 0..3) {
-                                    val tile1 = Vars.world.tile(
-                                        Geometry.d4x(i) * len + tileX(),
-                                        Geometry.d4y(i) * len + tileY()
-                                    )
-                                    if (tile1?.build != null && tile1.build is BuildingIEc) {
-                                        if (Mathf.chanceDelta((tile1.block().size * 0.1f / len).toDouble())) Fx.healBlockFull.at(
-                                            tile1.build.x,
-                                            tile1.build.y,
-                                            0f,
-                                            SqColor.LiuDai.cpy().a(0.3f),
-                                            tile1.build.block
-                                        )
-                                    }
-                                }
-                            }
-                            super.updateTile()
-                        }
-                    }
-                }
-            }
-        }
-
 //        new ImagineNode("imagine-node") {{
 //            requirements(Category.effect, ItemStack.empty);
 //        }};

@@ -21,14 +21,15 @@ import mindustry.ui.fragments.MenuFragment.MenuButton
 import mindustry.world.meta.StatValue
 import sequence.content.SqIcon.mainMenu
 import sequence.core.SqBundle
-import sequence.core.SqLog
 import sequence.ui.research.SqResearchDialog
+import sequence.ui.wiki.PcWikiDialog
 import sequence.world.meta.Formula
 import sequence.world.meta.imagine.ImagineEnergyRecord
 
 object SqUI {
-    var research: SqResearchDialog? = null
-    var dialog: BaseDialog? = null
+    val research: SqResearchDialog by lazy { SqResearchDialog() }
+    val mobileMenu: BaseDialog by lazy { MobileMainmenuDialog() }
+    val pcWiki: BaseDialog by lazy { PcWikiDialog() }
 
     fun pad(builder: (Table) -> Unit): StatValue =
         StatValue { table ->
@@ -39,7 +40,8 @@ object SqUI {
             }.padLeft(0f).padTop(5f).padBottom(5f).growX().margin(10f)
             table.row()
         }
-    fun Table.pad(builder: (Table) -> Unit): Unit {
+
+    fun Table.pad(builder: (Table) -> Unit) {
         SqUI.pad(builder).display(this)
     }
 
@@ -63,10 +65,8 @@ object SqUI {
                     .padLeft(10f).padRight(10f)
                 bt.add()
                 if (form.liquidSecond) {
-                    val liquidStacks = arrayOfNulls<LiquidStack>(form.outputLiquid.size)
-                    for (i in form.outputLiquid.indices) {
-                        liquidStacks[i] =
-                            LiquidStack(form.outputLiquid[i].liquid, form.outputLiquid[i].amount * form.time)
+                    val liquidStacks = Array(form.outputLiquid.size) {
+                        LiquidStack(form.outputLiquid[it].liquid, form.outputLiquid[it].amount * form.time)
                     }
                     uiILPFormula(form.outputItem, liquidStacks, form.outputPower, form.outputImagine, bt, false)
                 } else uiILPFormula(
@@ -84,7 +84,7 @@ object SqUI {
 
     fun uiILPFormula(
         items: Array<ItemStack>,
-        liquids: Array<LiquidStack?>,
+        liquids: Array<LiquidStack>,
         power: Float,
         record: ImagineEnergyRecord,
         bt: Table,
@@ -96,7 +96,7 @@ object SqUI {
             display = ItemDisplay(stack.item, stack.amount, false)
             display.addListener(tooltip(stack.item))
             if (butt) {
-                button = Button(Styles.cleari)
+                button = Button(Styles.grayPanel)
                 button.add(display).size(Vars.iconMed)
                 button.clicked { Vars.ui.content.show(stack.item) }
                 bt.add(button).size(Vars.iconMed).left().padLeft(2f).padRight(2f)
@@ -106,10 +106,10 @@ object SqUI {
             bt.add()
         }
         for (stack in liquids) {
-            display = SqLiquidDisplay(stack!!.liquid, stack.amount, false, false)
+            display = SqLiquidDisplay(stack.liquid, stack.amount, false, false)
             display.addListener(tooltip(stack.liquid))
             if (butt) {
-                button = Button(Styles.cleari)
+                button = Button(Styles.grayPanel)
                 button.add(display).size(Vars.iconMed)
                 button.clicked { Vars.ui.content.show(stack.liquid) }
                 bt.add(button).size(Vars.iconMed).left().padLeft(2f).padRight(2f)
@@ -125,24 +125,21 @@ object SqUI {
     }
 
     private fun tooltip(content: UnlockableContent) = Tooltip {
-            it.background(Tex.button).add(
-                content.localizedName + if (Core.settings.getBool("console")) "\n[gray]${content.name}".trimIndent() else ""
-            )
-        }
+        it.background(Tex.button).add(
+            content.localizedName + if (Core.settings.getBool("console")) "\n[gray]${content.name}".trimIndent() else ""
+        )
+    }
 
     fun load() {
         Events.on(ClientLoadEvent::class.java) {
-            research = SqResearchDialog()
-            //            research.show();
-            dialog = MobileMainmenuDialog()
             Vars.ui.menufrag.addButton(
                 MenuButton(
-                    SqBundle.modCat("mainmenu", "text"),
-                    mainMenu, { (dialog as BaseDialog).show() },
+                    SqBundle.mod("mainmenu.text"),
+                    mainMenu, { mobileMenu.show() },
                     MenuButton(
-                        SqBundle.modCat("mainmenu", "wiki", "text"),
+                        SqBundle.mod("mainmenu.wiki.text"),
                         Icon.book
-                    ) {  }
+                    ) { pcWiki.show() }
                 )
             )
         }

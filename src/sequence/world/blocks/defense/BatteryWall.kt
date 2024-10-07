@@ -6,9 +6,6 @@ import arc.struct.Seq
 import mindustry.gen.Building
 import mindustry.world.meta.BlockStatus
 import mindustry.world.meta.Env
-import mindustry.world.meta.StatValue
-import sequence.ui.SqUI
-import sequence.ui.SqUI.pad
 
 open class BatteryWall(name: String) : SqWall(name) {
     init {

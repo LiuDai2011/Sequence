@@ -8,7 +8,10 @@ import arc.scene.ui.Button
 import arc.scene.ui.layout.Table
 import arc.struct.EnumSet
 import arc.struct.Seq
-import arc.util.*
+import arc.util.Eachable
+import arc.util.Nullable
+import arc.util.Strings
+import arc.util.Time
 import arc.util.io.Reads
 import arc.util.io.Writes
 import mindustry.Vars
@@ -33,15 +36,13 @@ import mindustry.world.modules.ItemModule
 import mindustry.world.modules.LiquidModule
 import mindustry.world.modules.PowerModule
 import sequence.core.SeqElem
-import sequence.core.SqLog
 import sequence.core.SqStatValues.formulaStat
 import sequence.ui.SqUI.formula
 import sequence.util.Util
 import sequence.world.blocks.imagine.ImagineBlock
 import sequence.world.meta.Formula
-import sequence.world.meta.imagine.ImagineBlocks
 
-open class MultiCrafter(name: String?) : ImagineBlock(name), SeqElem {
+open class MultiCrafter(name: String) : ImagineBlock(name), SeqElem {
     val formulas = Seq<Formula>()
     var ord = -1
     var liquidOutputDirections = intArrayOf(-1)
@@ -71,7 +72,7 @@ open class MultiCrafter(name: String?) : ImagineBlock(name), SeqElem {
 
     override fun setStats() {
         super.setStats()
-        ImagineBlocks.stats(this)
+//        ImagineBlocks.stats(this)
         if (!onlyOneFormula) return
         stats.timePeriod = formulas[0].time
         if (hasItems && itemCapacity > 0 || formulas[0].outputItem.isNotEmpty()) {
@@ -95,7 +96,7 @@ open class MultiCrafter(name: String?) : ImagineBlock(name), SeqElem {
         super.setBars()
         removeBar("items")
         removeBar("liquid")
-        ImagineBlocks.bars(this)
+//        ImagineBlocks.bars(this)
     }
 
     override fun rotatedOutput(x: Int, y: Int): Boolean {
@@ -114,14 +115,14 @@ open class MultiCrafter(name: String?) : ImagineBlock(name), SeqElem {
             if (formula.outputItem.isNotEmpty() || formula.inputItem.isNotEmpty()) hasItems = true
             if (formula.inputPower > 0 || formula.outputPower > 0) hasPower = true
             if (formula.outputPower > 0) outputsPower = true
-            if (!formula.inputImagine.zero() || !formula.outputImagine.zero()) hasImagine = true
+//            if (!formula.inputImagine.zero() || !formula.outputImagine.zero()) hasImagine = true
         }
         consumePowerDynamic { build: MultiCrafterBuild -> if (build.now == -1) 0f else build.formula!!.inputPower }
         if (onlyOneFormula) {
             configurable = false
         } else {
             config(Int::class.javaObjectType)
-                { building: Building, integer: Int -> (building as MultiCrafterBuild).now = integer }
+            { building: Building, integer: Int -> (building as MultiCrafterBuild).now = integer }
             configClear { building: Building -> (building as MultiCrafterBuild).now = -1 }
         }
         super.init()
