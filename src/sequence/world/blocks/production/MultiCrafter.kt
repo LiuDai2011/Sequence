@@ -177,17 +177,15 @@ open class MultiCrafter(name: String) : ImagineBlock(name), SeqElem {
         private var warmup = 0f
         private var upd = false
         private var lastOutputPower = 0f
-        override fun acceptItem(source: Building, item: Item): Boolean {
-            return now != -1 && Util.item(formula!!.inputItem, item) > 0 && items[item] < getMaximumAccepted(item)
-        }
 
-        override fun acceptLiquid(source: Building, liquid: Liquid): Boolean {
-            return now != -1 && Util.liquid(formula!!.inputLiquid, liquid) > 0
-        }
+        override fun acceptItem(source: Building, item: Item): Boolean =
+            now != -1 && Util.item(formula!!.inputItem, item) > 0 && items[item] < getMaximumAccepted(item)
 
-        override fun getPowerProduction(): Float {
-            return if (now == -1) 0f else lastOutputPower
-        }
+        override fun acceptLiquid(source: Building, liquid: Liquid): Boolean =
+            now != -1 && Util.liquid(formula!!.inputLiquid, liquid) > 0
+
+        override fun getPowerProduction(): Float =
+            if (now == -1) 0f else lastOutputPower
 
         @get:Nullable
         val formula: Formula?

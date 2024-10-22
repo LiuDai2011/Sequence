@@ -29,7 +29,8 @@ import sequence.world.meta.imagine.ImagineEnergyRecord
 object SqUI {
     val research: SqResearchDialog by lazy { SqResearchDialog() }
     val mobileMenu: BaseDialog by lazy { MobileMainmenuDialog() }
-    val pcWiki: BaseDialog by lazy { PcWikiDialog() }
+//    val pcWiki: BaseDialog by lazy { PcWikiDialog() }
+    val pcWiki: BaseDialog by lazy { ThinkDialog() }
 
     fun pad(builder: (Table) -> Unit): StatValue =
         StatValue { table ->
@@ -126,7 +127,7 @@ object SqUI {
 
     private fun tooltip(content: UnlockableContent) = Tooltip {
         it.background(Tex.button).add(
-            content.localizedName + if (Core.settings.getBool("console")) "\n[gray]${content.name}".trimIndent() else ""
+            content.localizedName + if (Core.settings.getBool("console")) "\n[gray]${content.name}" else ""
         )
     }
 

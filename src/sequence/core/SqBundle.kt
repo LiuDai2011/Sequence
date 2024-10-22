@@ -9,9 +9,13 @@ object SqBundle {
         return Core.bundle.format(key, *args)
     }
 
-    operator fun get(key: String, def: String = "???$key???"): String = Core.bundle[key, def]
+    operator fun get(key: String, def: String): String = Core.bundle[key, def]
 
-    operator fun invoke(key: String, def: String = "???${SeqMod.MOD_PREFIX_POINT}$key???"): String = get(key, def)
+    operator fun invoke(key: String, def: String): String = get(key, def)
+
+    operator fun get(key: String): String = Core.bundle[key]
+
+    operator fun invoke(key: String): String = get(key)
 
     fun cat(vararg args: String): String {
         builder.setLength(0)
