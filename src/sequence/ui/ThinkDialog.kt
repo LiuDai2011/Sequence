@@ -3,56 +3,161 @@ package sequence.ui
 import arc.Core
 import arc.graphics.g2d.Draw
 import arc.graphics.g2d.TextureRegion
+import arc.math.Mathf
 import arc.scene.Element
+import mindustry.content.Blocks
 import mindustry.ui.dialogs.BaseDialog
-import sequence.content.SqBlocks
+import sequence.SeqMod
 import sequence.core.SqBundle
-import sequence.core.SqLog
+import java.util.*
 
 class ThinkDialog : BaseDialog(SqBundle("ui.think.title")) {
+    val canvas = ThinkCanvas()
+
     init {
-        add(ThinkCanvas())
-        SqLog.info(SqBlocks.multiFluidMixer.fullIcon.height)
-        SqLog.info(SqBlocks.berylliumCrystallizer.fullIcon.height)
+        stack(canvas, table {
+
+        }.get())
+        canvas.figure.apply {
+            tilemap[3][4].block = Blocks.impulsePump.fullIcon
+            tilemap[3][3].block = Blocks.pulseConduit.fullIcon
+            tilemap[3][3].rotation = 270f
+            tilemap[3][0].block = Blocks.liquidTank.fullIcon
+        }
+        addCloseListener()
     }
 
-    data class ThinkTile(
-        val floor: TextureRegion = Core.atlas.white(),
-        val overlay: TextureRegion = Core.atlas.white(),
-        val block: TextureRegion = Core.atlas.white()
-    )
+    interface Base {
+        var parent: Base?
+        fun draw()
+        fun update()
+    }
 
-    class ThinkCanvas : Element() {
-        companion object {
-            const val width = 20
-            const val height = 20
+    data class RenderRequest(val z: Int = 0, val action: () -> Unit) : Comparable<RenderRequest> {
+        override operator fun compareTo(other: RenderRequest) = z.compareTo(other.z)
+    }
+
+    class ThinkTile(
+        var floor: TextureRegion = Blocks.air.fullIcon,
+        var overlay: TextureRegion = Blocks.air.fullIcon,
+        var block: TextureRegion = Blocks.air.fullIcon,
+        var rotation: Float = 0f
+    ) : Base {
+        override var parent: Base? = null
+
+        override fun draw() {
+            (parent as? ThinkFigure)?.apply {
+                renderQueue.add(RenderRequest {
+                    (parent as? ThinkCanvas)?.also {
+                        it.drawIcon(floor)
+                    }
+                })
+            }
         }
 
-        val tilemap: Array<Array<ThinkTile?>> = Array(Companion.width) { Array(Companion.height) { null } }
+        override fun update() {
+        }
+    }
+
+    class ThinkFigure(val width: Int = 9, val height: Int = 9) : Base {
+        val tilemap: Array<Array<ThinkTile>> = Array(width) { i ->
+            Array(height) { j ->
+                (if (width % 3 == 0 && height % 3 == 0)
+                    ThinkTile(floor = defaultFloor[((i / 3 + j / 3) % 2 + (if (i % 3 == 1 && j % 3 == 1) 1 else 0)) % 2])
+                else
+                    ThinkTile(floor = defaultFloor[(i + j) % 2])).apply {
+                    parent = this@ThinkFigure
+                }
+            }
+        }
+
+        val renderQueue: PriorityQueue<RenderRequest> = PriorityQueue()
+
+        override fun update() {
+            for (row in tilemap) {
+                for (tile in row) {
+                    tile.update()
+                }
+            }
+        }
+
+        override var parent: Base? = null
+
+        override fun draw() {
+            for (row in tilemap) {
+                for (tile in row) {
+                    tile.draw()
+                }
+            }
+            while (renderQueue.isNotEmpty()) {
+                val (_, action) = renderQueue.peek()
+                action()
+            }
+        }
+    }
+
+    class ThinkCanvas : Element(), Base {
+        companion object {
+            const val sqrt2 = 1.4142135f
+        }
+
+        var figure: ThinkFigure = ThinkFigure()
+        override var parent: Base? = null
+
+        init {
+            update {
+                figure.update()
+                figure.parent = this
+            }
+        }
 
         override fun draw() {
             val color = Draw.getColor()
             Draw.color()
 
-            x = Core.graphics.width / 2f
-            y = Core.graphics.height / 2f
-            drawIcon(SqBlocks.multiFluidMixer.fullIcon, 0, 0)
-            drawIcon(SqBlocks.berylliumCrystallizer.fullIcon, 0, 0)
-            for (row in tilemap) {
-                for (tile in row) {
-                    if (tile == null) continue
-                    drawIcon(tile.floor)
-                }
-            }
+            val tilemap = figure.tilemap
+            val width = figure.width
+            val height = figure.height
+            x = Core.graphics.width / 2f - 16 * width
+            y = Core.graphics.height / 2f - 16 * height
+//            for (row in tilemap.indices) {
+//                for (idx in tilemap[row].indices) {
+//                    val tile = tilemap[row][idx]
+//                    drawIcon(tile.floor, 32 * row, 32 * idx, tile.rotation)
+//                }
+//            }
+//            for (row in tilemap.indices) {
+//                for (idx in tilemap[row].indices) {
+//                    val tile = tilemap[row][idx]
+//                    drawIcon(tile.overlay, 32 * row, 32 * idx, tile.rotation)
+//                }
+//            }
+//            for (row in tilemap.indices) {
+//                for (idx in tilemap[row].indices) {
+//                    val tile = tilemap[row][idx]
+//                    drawIcon(tile.block, 32 * row, 32 * idx, tile.rotation)
+//                }
+//            }
+            figure.draw()
 
             Draw.color(color)
         }
 
+        override fun update() {}
+
         fun drawIcon(icon: TextureRegion, offsetX: Int = 0, offsetY: Int = 0, rotation: Float = 0f) =
-            Draw.rect(icon,
-                x + offsetX + icon.width.toFloat() / 2,
-                y + offsetY + icon.height.toFloat() / 2,
+            Draw.rect(
+                icon,
+                x + offsetX + (icon.width.toFloat() * (2 + (Mathf.sinDeg(-rotation - 135) * sqrt2)) - 32) / 2,
+                y + offsetY + (icon.height.toFloat() * (2 + (Mathf.cosDeg(-rotation - 135) * sqrt2)) - 32) / 2,
                 icon.width.toFloat(), icon.height.toFloat(),
-                0f, 0f, rotation)
+                0f, 0f, rotation
+            )
+    }
+
+    companion object {
+        var defaultFloor: Array<TextureRegion> = Array(2) {
+            Core.atlas.find(SeqMod.name("def-floor-0${it + 1}"))
+        }
     }
 }

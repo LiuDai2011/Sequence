@@ -13,7 +13,6 @@ import sequence.core.SqLog
 import sequence.util.IgnoredLocalName
 import sequence.util.IgnoredSequenceElementImpl
 import sequence.util.hasSign
-import sequence.util.set
 import sequence.world.meta.SqStat
 
 object SqContentMap {

@@ -1,15 +1,11 @@
 package sequence.ui.wiki
 
 import arc.Core
-import arc.math.geom.Vec2
 import arc.scene.ui.Button
 import arc.scene.ui.Image
-import arc.scene.ui.ImageButton
 import arc.scene.ui.layout.Table
 import arc.struct.Seq
-import mindustry.Vars
 import mindustry.Vars.ui
-import mindustry.core.UI
 import mindustry.ui.Styles
 import mindustry.ui.dialogs.BaseDialog
 import sequence.content.SqContentMap
@@ -34,10 +30,10 @@ class PcWikiDialog : BaseDialog(SqBundle("mainmenu.wiki.text")) {
             for (idx in (page - 1) * pageSize..<page * pageSize) {
                 val i = idx + 1
                 base.table(Styles.grayPanel) { table ->
-                    table.table (Styles.grayPanel) {
+                    table.table(Styles.grayPanel) {
                         it.add("$i")
                     }
-                    table.table (Styles.grayPanel) {
+                    table.table(Styles.grayPanel) {
                         for (content in SqContentMap.seqMap.get(i) { Seq() })
                             it.add(Button(Styles.grayPanel).apply {
                                 add(Image(content.uiIcon))
@@ -55,7 +51,7 @@ class PcWikiDialog : BaseDialog(SqBundle("mainmenu.wiki.text")) {
                     minHeight(32f)
                     row()
                 }
-                base.table(Styles.none)  {
+                base.table(Styles.none) {
                     it.height = 7f
                 }.apply {
                     fillX()

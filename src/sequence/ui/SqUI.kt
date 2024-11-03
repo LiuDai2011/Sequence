@@ -19,6 +19,7 @@ import mindustry.ui.Styles
 import mindustry.ui.dialogs.BaseDialog
 import mindustry.ui.fragments.MenuFragment.MenuButton
 import mindustry.world.meta.StatValue
+import sequence.SeqMod
 import sequence.content.SqIcon.mainMenu
 import sequence.core.SqBundle
 import sequence.ui.research.SqResearchDialog
@@ -29,8 +30,9 @@ import sequence.world.meta.imagine.ImagineEnergyRecord
 object SqUI {
     val research: SqResearchDialog by lazy { SqResearchDialog() }
     val mobileMenu: BaseDialog by lazy { MobileMainmenuDialog() }
-//    val pcWiki: BaseDialog by lazy { PcWikiDialog() }
-    val pcWiki: BaseDialog by lazy { ThinkDialog() }
+
+    val pcWiki: BaseDialog by lazy { PcWikiDialog() }
+    val think: BaseDialog by lazy { ThinkDialog() }
 
     fun pad(builder: (Table) -> Unit): StatValue =
         StatValue { table ->
@@ -143,6 +145,13 @@ object SqUI {
                     ) { pcWiki.show() }
                 )
             )
+            if (SeqMod.dev)
+                Vars.ui.menufrag.addButton(
+                    MenuButton(
+                        "Test think",
+                        Icon.admin
+                    ) { think.show() }
+                )
         }
     }
 }

@@ -43,5 +43,7 @@ class SeqMod : Mod() {
         lateinit var MOD: LoadedMod
         val MOD_PREFIX: String by lazy { "${MOD.meta.name}-" }
         val MOD_PREFIX_POINT: String by lazy { "${MOD.meta.name}." }
+
+        fun name(s: String) = MOD_PREFIX + s
     }
 }
