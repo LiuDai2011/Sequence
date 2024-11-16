@@ -1,6 +1,7 @@
 package sequence.util
 
 import arc.func.*
+import arc.math.Interp
 import arc.struct.IntMap
 import arc.struct.ObjectFloatMap
 import arc.struct.ObjectIntMap
@@ -21,6 +22,7 @@ infix fun Any.classEq(other: KClass<*>) = this::class eq other
 
 inline fun <reified T : SignBase> Any.hasSign() = this is T
 
+operator fun Interp.invoke(a: Float) = apply(a)
 
 operator fun <K> ObjectIntMap<K>.set(key: K, value: Int) = put(key, value)
 operator fun <K> ObjectFloatMap<K>.set(key: K, value: Float) = put(key, value)

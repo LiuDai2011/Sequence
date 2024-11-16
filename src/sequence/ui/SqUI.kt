@@ -32,7 +32,7 @@ object SqUI {
     val mobileMenu: BaseDialog by lazy { MobileMainmenuDialog() }
 
     val pcWiki: BaseDialog by lazy { PcWikiDialog() }
-    val think: BaseDialog by lazy { ThinkDialog() }
+    val ponder: BaseDialog by lazy { PonderDialog() }
 
     fun pad(builder: (Table) -> Unit): StatValue =
         StatValue { table ->
@@ -148,9 +148,9 @@ object SqUI {
             if (SeqMod.dev)
                 Vars.ui.menufrag.addButton(
                     MenuButton(
-                        "Test think",
+                        "Test ponder",
                         Icon.admin
-                    ) { think.show() }
+                    ) { ponder.show() }
                 )
         }
     }
