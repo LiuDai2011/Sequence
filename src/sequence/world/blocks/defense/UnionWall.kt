@@ -8,7 +8,7 @@ import mindustry.world.meta.StatValue
 import sequence.core.SqBundle
 import sequence.ui.SqUI.pad
 
-open class UnionWall(name: String) : SqWall(name) {
+class UnionWall(name: String) : SqWall(name) {
     var apportionedSpeed: Float = 0.0008f
 
     init {

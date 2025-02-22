@@ -3,6 +3,7 @@ package sequence.core
 import arc.util.Nullable
 import mindustry.world.meta.StatValue
 
+@AllOpen
 interface SeqElem {
     fun order() = -1
 

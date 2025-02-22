@@ -42,7 +42,7 @@ import sequence.util.Util
 import sequence.world.blocks.imagine.ImagineBlock
 import sequence.world.meta.Formula
 
-open class MultiCrafter(name: String) : ImagineBlock(name), SeqElem {
+class MultiCrafter(name: String) : ImagineBlock(name), SeqElem {
     val formulas = Seq<Formula>()
     var ord = -1
     var liquidOutputDirections = intArrayOf(-1)

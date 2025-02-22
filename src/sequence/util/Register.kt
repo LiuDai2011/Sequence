@@ -3,14 +3,13 @@ package sequence.util
 import arc.func.Prov
 import arc.struct.ObjectMap
 import mindustry.Vars
-import mindustry.ctype.UnlockableContent
 import mindustry.gen.EntityMapping
 import mindustry.gen.Entityc
 import mindustry.type.UnitType
 import sequence.SeqMod.Companion.dev
 import sequence.core.SqLog
 
-inline fun <reified T : UnlockableContent> T.register(builder: T.() -> Unit): T {
+inline fun <reified T> T.register(builder: T.() -> Unit): T {
     builder(this)
     return this
 }

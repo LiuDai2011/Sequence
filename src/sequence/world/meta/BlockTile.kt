@@ -1,4 +1,4 @@
-package sequence.world.blocks
+package sequence.world.meta
 
 import arc.Core
 import arc.graphics.Color
@@ -6,14 +6,21 @@ import arc.graphics.g2d.Draw
 import arc.graphics.g2d.Font
 import arc.graphics.g2d.GlyphLayout
 import arc.graphics.g2d.Lines
+import arc.math.geom.Point2
 import arc.math.geom.Vec2
 import arc.scene.ui.layout.Scl
 import arc.util.pooling.Pools
 import mindustry.Vars
+import mindustry.content.Blocks
+import mindustry.graphics.Layer
 import mindustry.graphics.Pal
 import mindustry.ui.Fonts
 import mindustry.world.Block
+import sequence.core.MapDataManager
+import sequence.core.SqLog
 import sequence.util.Util.inZone
+import sequence.util.set
+import sequence.world.blocks.MBSPlaceHolder
 
 class BlockTile(var block: Block, var x: Int, var y: Int, var alpha: Float, var rotation: Float) {
     @JvmOverloads
@@ -35,11 +42,16 @@ class BlockTile(var block: Block, var x: Int, var y: Int, var alpha: Float, var 
 
     fun draw() {
         mouse.set(Core.input.mouseWorld()).scl(1f / Vars.tilesize)
-        min[x - 0.5f] = y - 0.5f
+        min.set(x - 0.5f, y - 0.5f)
         center.set(min).add(block.size / 2f, block.size / 2f).scl(Vars.tilesize.toFloat())
         Draw.color(Color.white, alpha)
+        Draw.z(Layer.blockOver)
         Draw.rect(block.fullIcon, center.x, center.y, rotation)
-        Draw.flush()
+        Draw.reset()
+        chkTip()
+    }
+
+    fun chkTip() {
         if (inZone(min, Vec2(block.size.toFloat(), block.size.toFloat()), mouse)) {
             drawTip(center.x, center.y)
         }
@@ -54,6 +66,7 @@ class BlockTile(var block: Block, var x: Int, var y: Int, var alpha: Float, var 
         val width = layout.width
         tipFont.color = tipColor
         var dy = offsetY + block.size * Vars.tilesize / 2f + 3
+        Draw.z(Layer.overlayUI)
         tipFont.draw(block.localizedName, offsetX, dy + layout.height + 1, 1)
         --dy
         Lines.stroke(2f, Color.darkGray)
@@ -66,6 +79,18 @@ class BlockTile(var block: Block, var x: Int, var y: Int, var alpha: Float, var 
         Draw.reset()
         Pools.free(layout)
         Draw.flush()
+    }
+
+    fun setPlaceHolder() {
+        MapDataManager.placeHolders[Point2.pack(x, y)] = block
+        if (Vars.world.tile(x, y).block() == Blocks.air) {
+            Vars.world.tile(x, y).setBlock(MBSPlaceHolder[block])
+            SqLog.debug("@, @, @ set", x, y, block)
+        }
+    }
+
+    fun removePlaceHolder() {
+        MapDataManager.placeHolders.remove(Point2.pack(x, y))
     }
 
     companion object {

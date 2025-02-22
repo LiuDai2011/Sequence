@@ -1,5 +1,6 @@
 package sequence.content
 
+import arc.func.Prov
 import arc.graphics.Color
 import mindustry.content.Fx
 import mindustry.content.Items
@@ -8,6 +9,7 @@ import mindustry.entities.bullet.BasicBulletType
 import mindustry.entities.bullet.PointBulletType
 import mindustry.entities.effect.MultiEffect
 import mindustry.entities.pattern.ShootAlternate
+import mindustry.gen.Building
 import mindustry.graphics.Pal
 import mindustry.type.Category
 import mindustry.type.ItemStack
@@ -20,16 +22,17 @@ import mindustry.world.draw.DrawMulti
 import sequence.SeqMod
 import sequence.core.SeqElem
 import sequence.util.IgnoredLocalName
+import sequence.util.IgnoredSequenceElementImpl
 import sequence.util.register
-import sequence.world.blocks.defense.BatteryWall
-import sequence.world.blocks.defense.SqShieldWall
-import sequence.world.blocks.defense.SqWall
-import sequence.world.blocks.defense.UnionWall
+import sequence.world.blocks.defense.*
+import sequence.world.blocks.imagine.ImagineCenter
+import sequence.world.blocks.imagine.ImagineNode
 import sequence.world.blocks.production.MultiCrafter
 import sequence.world.drawer.DrawBottom
 import sequence.world.drawer.NoCheckDrawLiquidRegion
 import sequence.world.entities.SpreadPointBulletType
 import sequence.world.meta.Formula
+import sequence.world.meta.MultiBlockSchematic
 
 object SqBlocks {
     lateinit var multiFluidMixer: Block
@@ -126,6 +129,7 @@ object SqBlocks {
         }
         // endregion
 
+        // region factory
         multiFluidMixer = MultiCrafter("multi-fluid-mixer").register {
             addFormula(
                 Formula(
@@ -198,7 +202,9 @@ object SqBlocks {
             size = 3
             itemCapacity = 30
         }
-        object : ItemTurret("acacac"), SeqElem, IgnoredLocalName {
+        // endregion
+        if (!SeqMod.dev) return
+        object : ItemTurret("acacacacac"), SeqElem, IgnoredLocalName {
             init {
                 requirements(Category.turret, ItemStack.empty)
                 ammo(
@@ -413,7 +419,6 @@ object SqBlocks {
 
             override fun statValue() = null
         }
-        if (!SeqMod.dev) return
         object : MultiCrafter("test-multi-crafter"), IgnoredLocalName {
             init {
                 addFormula(
@@ -507,5 +512,55 @@ object SqBlocks {
 //        new ImagineCenter("imagine-center") {{
 //            requirements(Category.effect, ItemStack.empty);
 //        }};
+        object : ImagineNode("imagine-node"), IgnoredLocalName, IgnoredSequenceElementImpl {
+            init {
+                requirements(Category.effect, ItemStack.empty)
+            }
+        }
+        object : ImagineCenter("imagine-center"), IgnoredLocalName, IgnoredSequenceElementImpl {
+            init {
+                requirements(Category.effect, ItemStack.empty)
+                size = 4
+            }
+        }
+        object : BulletEnhancer("b-e"), IgnoredLocalName, IgnoredSequenceElementImpl {
+            init {
+                requirements(Category.effect, ItemStack.empty)
+                size = 4
+            }
+        }
+        object : Block("test-multi-block"), IgnoredLocalName, IgnoredSequenceElementImpl {
+            init {
+//                val mbs = MultiBlockSchematic(
+//                    CacheBlockTile(0, 0, BlockTile(Blocks.arc, 0, 0)),
+//                    CacheBlockTile(1, 0, BlockTile(Blocks.battery, 0, 0)),
+//                    CacheBlockTile(0, 1, BlockTile(Blocks.powerNode, 0, 0)),
+//                    CacheBlockTile(1, 1, BlockTile(Blocks.copperWall, 0, 0))
+//                )
+                val mbs =
+                    MultiBlockSchematic.readBase64("bWJzaHicY2AAAxYGroL88tQi3bz8lFQG7uT8ggIgpzwxJ4eBObEomYE9KbGkJLWoEqwUAhihJCOUxcQAA8wQEQAo+AzJ")
+                requirements(Category.effect, ItemStack.empty)
+                update = true
+                drawDisabled = false
+                buildType = Prov {
+                    object : Building() {
+                        override fun draw() {
+                            super.draw()
+                            mbs.draw(tileX() + 2, tileY() + 2)
+                        }
+
+                        override fun update() {
+                            super.update()
+                            mbs.setPlaceHolder(tileX() + 2, tileY() + 2)
+                        }
+
+                        override fun onRemoved() {
+                            super.onRemoved()
+                            mbs.removePlaceHolder(tileX() + 2, tileY() + 2)
+                        }
+                    }
+                }
+            }
+        }
     }
 }

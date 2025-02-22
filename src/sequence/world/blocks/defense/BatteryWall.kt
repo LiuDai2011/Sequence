@@ -7,7 +7,7 @@ import mindustry.gen.Building
 import mindustry.world.meta.BlockStatus
 import mindustry.world.meta.Env
 
-open class BatteryWall(name: String) : SqWall(name) {
+class BatteryWall(name: String) : SqWall(name) {
     init {
         outputsPower = true
         consumesPower = true

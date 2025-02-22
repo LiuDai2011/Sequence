@@ -76,7 +76,7 @@ object SqItems {
         }
     }
 
-    open class SqItem(name: String) : Item(name), SeqElem {
+    class SqItem(name: String) : Item(name), SeqElem {
         var ord = -1
         override fun order(): Int {
             return ord
@@ -87,7 +87,7 @@ object SqItems {
         }
     }
 
-    open class EncapsulatedImagineEnergyItem(name: String) : SqItem(name) {
+    class EncapsulatedImagineEnergyItem(name: String) : SqItem(name) {
         override fun setStats() {
             super.setStats()
             stats.remove(Stat.explosiveness)

@@ -32,7 +32,7 @@ object Util {
         return inZone(start.x, start.y, start.x + size.x, start.y + size.y, point.x, point.y)
     }
 
-    fun <T : Comparable<T>?> inZone(x: T, y: T, x1: T, y1: T, px: T, py: T): Boolean {
-        return x!! < px && y!! < py && x1!! > px && y1!! > py
+    fun <T : Comparable<T>> inZone(x: T, y: T, x1: T, y1: T, px: T, py: T): Boolean {
+        return x < px && y < py && x1 > px && y1 > py
     }
 }

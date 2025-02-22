@@ -1,8 +1,10 @@
 package sequence.world.blocks.imagine
 
 import mindustry.world.Block
+import sequence.core.AllOpen
 
-open class ImagineBlock(name: String) : Block(name) {
+@AllOpen
+class ImagineBlock(name: String) : Block(name) {
     var hasImagine = true
     var imagineCapacity = 10f
 
@@ -14,5 +16,4 @@ open class ImagineBlock(name: String) : Block(name) {
     fun hasImagineEnergy(): Boolean {
         return hasImagine
     }
-
 }

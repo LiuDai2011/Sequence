@@ -2,10 +2,13 @@ package sequence.util
 
 import arc.func.*
 import arc.math.Interp
+import arc.math.Mathf
+import arc.math.geom.Point2
 import arc.struct.IntMap
 import arc.struct.ObjectFloatMap
 import arc.struct.ObjectIntMap
 import arc.struct.ObjectMap
+import mindustry.world.Tiles
 import kotlin.reflect.KClass
 
 infix fun KClass<*>.eq(other: KClass<*>): Boolean {
@@ -38,3 +41,11 @@ operator fun <P1, P2, R> Func2<P1, P2, R>.invoke(p1: P1, p2: P2): R = get(p1, p2
 operator fun <P1, P2, P3, R> Func3<P1, P2, P3, R>.invoke(p1: P1, p2: P2, p3: P3): R = get(p1, p2, p3)
 operator fun <R> Prov<R>.invoke(): R = get()
 operator fun <P, T : Throwable> ConsT<P, T>.invoke(p: P) = get(p)
+
+
+operator fun Point2.component1(): Int = x
+operator fun Point2.component2(): Int = y
+
+operator fun Tiles.get(idx: Int) = getp(idx)
+
+fun Float.notZero() = !Mathf.zero(this)

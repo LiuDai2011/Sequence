@@ -3,7 +3,7 @@ package sequence.graphic
 import arc.graphics.Color
 
 object SqColor {
-    val imagineEnergy = Color(0xbf92f9ff.toInt())
+    val imagineEnergy = Color.valueOf("#bf92f9")
     val NedKelly = imagineEnergy
-    val LiuDai = Color(0xceeaf4ff.toInt())
+    val LiuDai = Color.valueOf("#ceeaf4")
 }

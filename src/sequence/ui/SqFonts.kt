@@ -65,15 +65,6 @@ object SqFonts {
             }
         })
         jetbrainsMono = loadFamily("JetBrainsMono") { FreeTypeFontParameter() }
-//        Events.on(ClientLoadEvent::class.java) {
-//            jetbrainsMono.fonts.find { it.info.name.contains("Regular") }?.apply {
-//                for (i in 0..400)
-//                    if (font.data.hasGlyph(i.toChar())) {
-//                        Fonts.def.data.setGlyph(i, font.data.getGlyph(i.toChar()))
-//                        Fonts.outline.data.setGlyph(i, font.data.getGlyph(i.toChar()))
-//                    }
-//            }
-//        }
     }
 
     fun loadFont(file: Fi?, parameter: FreeTypeFontParameter): Font {

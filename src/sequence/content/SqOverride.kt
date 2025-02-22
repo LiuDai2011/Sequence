@@ -1,26 +1,15 @@
 package sequence.content
 
 import arc.Events
-import mindustry.Vars
 import mindustry.content.Blocks
+import mindustry.ctype.UnlockableContent
 import mindustry.game.EventType.ClientLoadEvent
 import mindustry.world.blocks.defense.turrets.ItemTurret
-import mindustry.world.blocks.defense.turrets.Turret
-import sequence.content.wrap.JavaWrappers
-import sequence.util.classEq
+import sequence.graphic.SqColor
 
 object SqOverride {
     fun setup() {
         Events.on(ClientLoadEvent::class.java) {
-            for (content in Vars.content.blocks()) {
-                if (content is Turret) {
-                    if (content is ItemTurret) {
-                        if (content classEq ItemTurret::class) {
-                            content.buildType = JavaWrappers.wrapItemTurretBuild(content)
-                        }
-                    }
-                }
-            }
             SqContentMap.init()
             Blocks.itemSource.health = Int.MAX_VALUE
             Blocks.liquidSource.health = Int.MAX_VALUE
@@ -31,6 +20,20 @@ object SqOverride {
             Blocks.liquidVoid.health = Int.MAX_VALUE
             Blocks.powerVoid.health = Int.MAX_VALUE
             Blocks.payloadVoid.health = Int.MAX_VALUE
+
+            Blocks.foreshadow.override<ItemTurret> {
+                ammoTypes.put(SqItems.grainBoundaryAlloy, SqBulletTypes.foreshadowGBA)
+            }
         }
+    }
+
+    fun addOverrideTag(content: UnlockableContent) {
+        content.description = content.description ?: ""
+        content.description += "\n[#${SqColor.LiuDai}]Override by [#${SqColor.NedKelly}]Sequence[]"
+    }
+
+    inline fun <reified T : UnlockableContent> UnlockableContent.override(builder: T.() -> Unit) {
+        addOverrideTag(this)
+        builder(this as T)
     }
 }
