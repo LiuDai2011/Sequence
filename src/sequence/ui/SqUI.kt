@@ -14,7 +14,6 @@ import mindustry.gen.Icon
 import mindustry.gen.Tex
 import mindustry.type.ItemStack
 import mindustry.type.LiquidStack
-import mindustry.ui.ItemDisplay
 import mindustry.ui.Styles
 import mindustry.ui.dialogs.BaseDialog
 import mindustry.ui.fragments.MenuFragment.MenuButton
@@ -22,6 +21,7 @@ import mindustry.world.meta.StatValue
 import sequence.SeqMod
 import sequence.content.SqIcon.mainMenu
 import sequence.core.SqBundle
+import sequence.legacy.ItemDisplay
 import sequence.ui.research.SqResearchDialog
 import sequence.ui.wiki.PcWikiDialog
 import sequence.world.meta.Formula

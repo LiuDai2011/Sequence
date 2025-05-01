@@ -11,7 +11,6 @@ import mindustry.world.Block
 import mindustry.world.Tile
 import mindustry.world.meta.BuildVisibility
 import sequence.core.MapDataManager
-import sequence.core.SqLog
 import sequence.util.get
 
 class MBSPlaceHolder private constructor(val block: Block = Blocks.air) :
@@ -45,7 +44,6 @@ class MBSPlaceHolder private constructor(val block: Block = Blocks.air) :
         ambientSound = Sounds.none
         breakSound = Sounds.none
         destroySound = Sounds.none
-        loopSound = Sounds.none
         placeSound = Sounds.none
 
         region = Core.atlas.find("status-blasted")
@@ -53,12 +51,12 @@ class MBSPlaceHolder private constructor(val block: Block = Blocks.air) :
         uiIcon = Core.atlas.find("status-blasted")
 
         localizedName = block.localizedName
+        buildType = Prov { MBSPlaceHolderBuild() }
     }
 
     override fun canBreak(tile: Tile?) = false
     override fun isHidden() = true
     override fun canReplace(other: Block?) = (other ?: Blocks.air) == block
-
     override fun drawShadow(tile: Tile?) {}
 
     inner class MBSPlaceHolderBuild : Building() {
@@ -73,7 +71,6 @@ class MBSPlaceHolder private constructor(val block: Block = Blocks.air) :
                 }
                 holdBlock.apply {
                     if (this == this@MBSPlaceHolder.block) return
-                    SqLog.info("@, @, @ set", x, y, this)
                     Vars.world.tiles[this@MBSPlaceHolderBuild.pos()].setBlock(MBSPlaceHolder[this])
                 }
             }

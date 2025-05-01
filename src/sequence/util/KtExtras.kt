@@ -42,9 +42,11 @@ operator fun <P1, P2, P3, R> Func3<P1, P2, P3, R>.invoke(p1: P1, p2: P2, p3: P3)
 operator fun <R> Prov<R>.invoke(): R = get()
 operator fun <P, T : Throwable> ConsT<P, T>.invoke(p: P) = get(p)
 
-
 operator fun Point2.component1(): Int = x
 operator fun Point2.component2(): Int = y
+
+operator fun <V> IntMap.Entry<V>.component1(): Int = key
+operator fun <V> IntMap.Entry<V>.component2(): V = value
 
 operator fun Tiles.get(idx: Int) = getp(idx)
 

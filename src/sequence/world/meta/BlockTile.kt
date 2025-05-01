@@ -12,6 +12,7 @@ import arc.scene.ui.layout.Scl
 import arc.util.pooling.Pools
 import mindustry.Vars
 import mindustry.content.Blocks
+import mindustry.game.Team
 import mindustry.graphics.Layer
 import mindustry.graphics.Pal
 import mindustry.ui.Fonts
@@ -78,13 +79,13 @@ class BlockTile(var block: Block, var x: Int, var y: Int, var alpha: Float, var 
         tipFont.data.setScale(1f)
         Draw.reset()
         Pools.free(layout)
-        Draw.flush()
+//        Draw.flush() // 好像会让动态力场炸掉
     }
 
-    fun setPlaceHolder() {
+    fun setPlaceHolder(team: Team) {
         MapDataManager.placeHolders[Point2.pack(x, y)] = block
-        if (Vars.world.tile(x, y).block() == Blocks.air) {
-            Vars.world.tile(x, y).setBlock(MBSPlaceHolder[block])
+        if (Vars.world.tile(x, y)?.block() == Blocks.air) {
+            Vars.world.tile(x, y).setBlock(MBSPlaceHolder[block], team)
             SqLog.debug("@, @, @ set", x, y, block)
         }
     }

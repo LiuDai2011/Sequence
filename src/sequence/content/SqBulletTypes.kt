@@ -9,12 +9,12 @@ object SqBulletTypes {
     lateinit var foreshadowGBA: BulletType
 
     fun load() {
-        foreshadowGBA = PointBulletType().register {
+        foreshadowGBA = PointBulletType().register<PointBulletType> {
             shootEffect = Fx.instShoot
-            hitEffect = Fx.instHit
+            hitEffect = SqFx.fgbaBomb
             smokeEffect = Fx.smokeCloud
             trailEffect = SqFx.fgbaTrail
-            despawnEffect = Fx.instBomb
+            despawnEffect = SqFx.fgbaBomb
             trailSpacing = 20f
             damage = 127f
             buildingDamageMultiplier = 0.2f
@@ -35,6 +35,8 @@ object SqBulletTypes {
                 status = SqStatusEffects.brokenShield
                 statusDuration = 30f
                 pierce = true
+                despawnEffect = Fx.none
+                hitEffect = Fx.none
             }
         }
     }
