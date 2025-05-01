@@ -16,6 +16,7 @@ import mindustry.type.ItemStack
 import mindustry.type.LiquidStack
 import mindustry.world.Block
 import mindustry.world.blocks.defense.turrets.ItemTurret
+import mindustry.world.blocks.environment.OreBlock
 import mindustry.world.draw.DrawArcSmelt
 import mindustry.world.draw.DrawDefault
 import mindustry.world.draw.DrawMulti
@@ -35,8 +36,11 @@ import sequence.world.meta.Formula
 import sequence.world.meta.MultiBlockSchematic
 
 object SqBlocks {
+    lateinit var siliconOre: Block
+
     lateinit var multiFluidMixer: Block
     lateinit var berylliumCrystallizer: Block
+
     lateinit var berylliumalAlloyWall: Block
     lateinit var berylliumalAlloyWallLarge: Block
     lateinit var grainBoundaryAlloyWall: Block
@@ -47,6 +51,13 @@ object SqBlocks {
     lateinit var intensifiedShieldedWallLarge: Block
 
     fun load() {
+        // region environment
+        siliconOre = object : OreBlock(Items.silicon), IgnoredSequenceElementImpl, IgnoredLocalName {}.register {
+            oreThreshold = 0.6812f
+            oreScale = 15.75345f
+            itemDrop.hardness = 4
+        }
+        // endregion
         // region defense
         berylliumalAlloyWall = object : SqWall("berylliumal-alloy-wall") {
             init {
@@ -128,7 +139,6 @@ object SqBlocks {
             breakCooldown = 60f * 17f
         }
         // endregion
-
         // region factory
         multiFluidMixer = MultiCrafter("multi-fluid-mixer").register {
             addFormula(
@@ -546,17 +556,17 @@ object SqBlocks {
                     object : Building() {
                         override fun draw() {
                             super.draw()
-                            mbs.draw(tileX() + 2, tileY() + 2)
+                            mbs.draw(tileX() - 20, tileY() - 20)
                         }
 
                         override fun update() {
                             super.update()
-                            mbs.setPlaceHolder(tileX() + 2, tileY() + 2)
+                            mbs.setPlaceHolder(tileX() - 20, tileY() - 20, team)
                         }
 
                         override fun onRemoved() {
                             super.onRemoved()
-                            mbs.removePlaceHolder(tileX() + 2, tileY() + 2)
+                            mbs.removePlaceHolder(tileX() - 20, tileY() - 20)
                         }
                     }
                 }

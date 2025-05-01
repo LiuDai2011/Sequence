@@ -1,4 +1,4 @@
-package sequence.ui;
+package sequence.legacy;
 
 import arc.graphics.Color;
 import arc.scene.ui.Image;
@@ -9,19 +9,21 @@ import arc.util.Strings;
 import mindustry.type.Liquid;
 import mindustry.ui.Styles;
 import mindustry.world.meta.StatUnit;
-import sequence.legacy.LiquidDisplay;
 
 import static mindustry.Vars.iconMed;
 
-public class SqLiquidDisplay extends LiquidDisplay {
-    public SqLiquidDisplay(Liquid liquid, float amount, boolean perSecond) {
-        super(liquid, amount, perSecond);
-    }
+/**
+ * An ItemDisplay, but for liquids.
+ */
+public class LiquidDisplay extends Table {
+    public final Liquid liquid;
+    public final float amount;
+    public final boolean perSecond;
 
-    public SqLiquidDisplay(Liquid liquid, float amount, boolean perSecond, boolean showName) {
-        super(liquid, amount, perSecond);
-
-        clear();
+    public LiquidDisplay(Liquid liquid, float amount, boolean perSecond) {
+        this.liquid = liquid;
+        this.amount = amount;
+        this.perSecond = perSecond;
 
         add(new Stack() {{
             add(new Image(liquid.uiIcon).setScaling(Scaling.fit));
@@ -37,6 +39,6 @@ public class SqLiquidDisplay extends LiquidDisplay {
             add(StatUnit.perSecond.localized()).padLeft(2).padRight(5).color(Color.lightGray).style(Styles.outlineLabel);
         }
 
-        if (showName) add(liquid.localizedName);
+        add(liquid.localizedName);
     }
 }

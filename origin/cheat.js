@@ -1,0 +1,1 @@
+Vars.content.statusEffect("seq-broken-shield").damage = 100

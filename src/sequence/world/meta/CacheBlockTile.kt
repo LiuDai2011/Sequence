@@ -1,6 +1,7 @@
 package sequence.world.meta
 
 import mindustry.content.Blocks
+import mindustry.game.Team
 
 class CacheBlockTile(var x: Int, var y: Int, var tile: BlockTile = empty, var config: Any? = null) {
     fun draw() {
@@ -11,10 +12,10 @@ class CacheBlockTile(var x: Int, var y: Int, var tile: BlockTile = empty, var co
         tile.y -= y
     }
 
-    fun setPlaceHolder() {
+    fun setPlaceHolder(team: Team) {
         tile.x += x
         tile.y += y
-        tile.setPlaceHolder()
+        tile.setPlaceHolder(team)
         tile.x -= x
         tile.y -= y
     }

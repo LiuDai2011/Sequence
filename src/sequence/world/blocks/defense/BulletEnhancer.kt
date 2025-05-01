@@ -1,5 +1,6 @@
 package sequence.world.blocks.defense
 
+import arc.func.Cons
 import arc.func.Prov
 import mindustry.Vars
 import mindustry.Vars.tilesize
@@ -39,17 +40,17 @@ class BulletEnhancer(name: String) : Block(name), SeqElem {
         override fun updateTile() {
             super.updateTile()
             if (!Vars.net.client()) {
-                Groups.bullet.intersect(x - range, y - range, range * 2, range * 2) {
+                Groups.bullet.intersect(x - range, y - range, range * 2, range * 2, Cons {
                     if (it.dst(x, y) <= range && it.team == team) {
-                        val liquid = liquids.current() ?: return@intersect
-                        if (liquid !is VectorizedFluid) return@intersect
+                        val liquid = liquids.current() ?: return@Cons
+                        if (liquid !is VectorizedFluid) return@Cons
 //                        if (it.damage * (liquid.damageMulti - 1f) > maxEnhancer) return@intersect
                         if (liquids.get(liquid) >= Int.MAX_VALUE) {
                             liquids.set(liquid, 0f)
-                            return@intersect
+                            return@Cons
                         }
                         val consume = liquid.consumeAmount * it.damage * liquid.damageMulti
-                        if (getLiquidAmount(liquid) < consume) return@intersect
+                        if (getLiquidAmount(liquid) < consume) return@Cons
 //                        it.type(it.type.copy().change { bt ->
 //                            bt?.apply {
 //                                damage *= liquid.damageMulti
@@ -60,7 +61,7 @@ class BulletEnhancer(name: String) : Block(name), SeqElem {
                         Fx.blastExplosion.at(it)
                         consumeLiquid(liquid, consume)
                     }
-                }
+                })
             }
         }
 

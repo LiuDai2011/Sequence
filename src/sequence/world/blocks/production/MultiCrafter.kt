@@ -256,7 +256,7 @@ class MultiCrafter(name: String) : ImagineBlock(name), SeqElem {
                 fullness += Mathf.clamp(items[stack.item].toFloat() / stack.amount)
                 count++
             }
-            if (count == 0) efficiency(1f) else efficiency(fullness / count)
+            efficiency = if (count == 0) 1f else fullness / count
             if (efficiency > 0 && has) {
                 progress += getProgressIncrease(formula!!.time)
                 warmup = Mathf.approachDelta(warmup, warmupTarget(), warmupSpeed)

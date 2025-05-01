@@ -12,7 +12,7 @@ description: "[red]pls turn on the mod to know more about it[]"
 
 version: "-- alpha --"
 
-minGameVersion: "146"
+minGameVersion: "149"
 
 java: true
 

@@ -12,6 +12,7 @@ import arc.util.serialization.Base64Coder
 import mindustry.Vars
 import mindustry.content.Blocks
 import mindustry.ctype.ContentType
+import mindustry.game.Team
 import mindustry.io.TypeIO
 import mindustry.world.Block
 import mindustry.world.blocks.legacy.LegacyBlock
@@ -31,11 +32,11 @@ class MultiBlockSchematic() {
         this.tiles = tiles
     }
 
-    fun setPlaceHolder(x: Int, y: Int) {
+    fun setPlaceHolder(x: Int, y: Int, team: Team) {
         for (tile in tiles) {
             tile.x += x
             tile.y += y
-            tile.setPlaceHolder()
+            tile.setPlaceHolder(team)
             tile.x -= x
             tile.y -= y
         }
