@@ -84,7 +84,7 @@ object SqBlocks {
             requirements(Category.defense, ItemStack.with(SqItems.grainBoundaryAlloy, 24))
             size = 2
             health = 280 * 4
-            apportionedSpeed = 0.0017f
+            apportionedSpeed = 0.017f
         }
         pureCapacitanceWall = BatteryWall("pure-capacitance-wall").register {
             requirements(

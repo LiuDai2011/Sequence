@@ -9,7 +9,7 @@ import sequence.core.SqBundle
 import sequence.ui.SqUI.pad
 
 class UnionWall(name: String) : SqWall(name) {
-    var apportionedSpeed: Float = 0.0008f
+    var apportionedSpeed: Float = 0.008f
 
     init {
         buildType = Prov { UnionWallBuild() }
