@@ -12,7 +12,6 @@ import mindustry.graphics.Pal
 import mindustry.type.Liquid
 import mindustry.ui.Fonts
 import mindustry.world.Block
-import mindustry.world.meta.StatValue
 import sequence.content.SqLiquids
 import sequence.content.SqLiquids.VectorizedFluid
 import sequence.core.SeqElem
@@ -28,8 +27,6 @@ class BulletEnhancer(name: String) : Block(name), SeqElem {
         solid = true
         buildType = Prov { BulletEnhancerBuild() }
     }
-
-    override fun statValue(): StatValue? = null
 
     override fun drawPlace(x: Int, y: Int, rotation: Int, valid: Boolean) {
         super.drawPlace(x, y, rotation, valid)

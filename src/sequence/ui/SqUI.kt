@@ -135,6 +135,7 @@ object SqUI {
 
     fun load() {
         Events.on(ClientLoadEvent::class.java) {
+            if (!SeqMod.dev) return@on
             Vars.ui.menufrag.addButton(
                 MenuButton(
                     SqBundle.mod("mainmenu.text"),
@@ -145,13 +146,12 @@ object SqUI {
                     ) { pcWiki.show() }
                 )
             )
-            if (SeqMod.dev)
-                Vars.ui.menufrag.addButton(
-                    MenuButton(
-                        "Test ponder",
-                        Icon.admin
-                    ) { ponder.show() }
-                )
+            Vars.ui.menufrag.addButton(
+                MenuButton(
+                    "Test ponder",
+                    Icon.admin
+                ) { ponder.show() }
+            )
         }
     }
 }

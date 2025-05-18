@@ -25,10 +25,8 @@ object SqStatusEffects {
     }
 
     class SqStatusEffect(name: String) : StatusEffect(name), SeqElem {
-        var order: Int = -1
-
-        override fun statValue() = null
-
-        override fun order() = order
+        var ord: Int = -1
+        override val order: Int
+            get() = ord
     }
 }

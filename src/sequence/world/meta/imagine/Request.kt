@@ -1,4 +1,6 @@
-package sequence.util.struct
+package sequence.world.meta.imagine
+
+import arc.struct.PQueue
 
 abstract class Request : Comparable<Request> {
     abstract val priority: Int
@@ -6,4 +8,4 @@ abstract class Request : Comparable<Request> {
     override operator fun compareTo(other: Request) = priority.compareTo(other.priority)
 }
 
-class RequestQueue
+class RequestQueue : PQueue<Request>()

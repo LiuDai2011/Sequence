@@ -22,6 +22,6 @@ object SqContent {
     }
 
     fun registerChunks() {
-        SaveVersion.addCustomChunk("sequence-place-holder-chunk", PlaceHolderChunk)
+        SaveVersion.addCustomChunk("seq-place-holder-chunk", PlaceHolderChunk)
     }
 }

@@ -30,6 +30,10 @@ object SqBundle {
         return SqBundle[SeqMod.MOD.meta.name + "." + arg]
     }
 
+    fun modFormat(arg: String, vararg args: Any?): String {
+        return format(SeqMod.MOD.meta.name + "." + arg, *args)
+    }
+
     fun catGet(vararg args: String): String {
         return SqBundle[cat(*args)]
     }

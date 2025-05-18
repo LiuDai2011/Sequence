@@ -4,7 +4,7 @@ import arc.graphics.Color
 
 object SqColor {
     val imagineEnergy = Color.valueOf("#bf92f9")
-    val NedKelly = imagineEnergy
+    val NedKelly = imagineEnergy.cpy()
     val LiuDai = Color.valueOf("#ceeaf4")
 
     val gba = arrayOf(

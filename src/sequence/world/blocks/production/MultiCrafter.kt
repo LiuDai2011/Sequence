@@ -157,17 +157,19 @@ class MultiCrafter(name: String) : ImagineBlock(name), SeqElem {
         formulas.add(forms)
     }
 
-    override fun order() = ord
+    override val order: Int
+        get() = ord
 
-    override fun statValue() = StatValue { table: Table ->
-        table.row()
-        table.table {
-            it.add(Core.bundle["blocks.multi-crafter.seqstat"]).growX().left().row()
-        }.growX().left().row()
-        for (formula in formulas) {
-            formulaStat(formula!!).display(table)
+    override val statValue: StatValue?
+        get() = StatValue { table: Table ->
+            table.row()
+            table.table {
+                it.add(Core.bundle["blocks.multi-crafter.seqstat"]).growX().left().row()
+            }.growX().left().row()
+            for (formula in formulas) {
+                formulaStat(formula!!).display(table)
+            }
         }
-    }
 
     inner class MultiCrafterBuild : Building() {
         private val all = Seq<Button>()

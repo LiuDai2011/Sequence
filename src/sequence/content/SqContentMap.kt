@@ -43,11 +43,11 @@ object SqContentMap {
                     content.stats.useCategories = true
                     content.stats.add(
                         SqStat.sequenceOrder,
-                        if (content.order() == -1) SqBundle.mod("seq-null") else content.order().toString()
+                        if (content.order == -1) SqBundle.mod("seq-null") else content.order.toString()
                     )
-                    if (content.order() != -1 && content.statValue() != null) {
-                        content.stats.add(SqStat.sequenceEffect, content.statValue())
-                        seqMap.get(content.order()) { Seq() }.add(content)
+                    if (content.order != -1 && content.statValue != null) {
+                        content.stats.add(SqStat.sequenceEffect, content.statValue)
+                        seqMap.get(content.order) { Seq() }.add(content)
                     }
                 }
             }
@@ -56,6 +56,7 @@ object SqContentMap {
             if (!SeqMod.skipChk) {
                 TODO("\n${uninitiatedContent.joinToString("\n\n")}\n\n")
             } else {
+                SqLog.warn("SKIP CHECK!!!")
                 SqLog.warn("\n${uninitiatedContent.joinToString("\n\n")}\n\n")
             }
         }

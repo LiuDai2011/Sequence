@@ -22,13 +22,16 @@ import mindustry.world.draw.DrawDefault
 import mindustry.world.draw.DrawMulti
 import sequence.SeqMod
 import sequence.core.SeqElem
+import sequence.graphic.SqColor
 import sequence.util.IgnoredLocalName
 import sequence.util.IgnoredSequenceElementImpl
+import sequence.util.clearEffects
 import sequence.util.register
 import sequence.world.blocks.defense.*
 import sequence.world.blocks.imagine.ImagineCenter
 import sequence.world.blocks.imagine.ImagineNode
 import sequence.world.blocks.production.MultiCrafter
+import sequence.world.blocks.turrets.SqItemTurret
 import sequence.world.drawer.DrawBottom
 import sequence.world.drawer.NoCheckDrawLiquidRegion
 import sequence.world.entities.SpreadPointBulletType
@@ -50,6 +53,8 @@ object SqBlocks {
     lateinit var intensifiedShieldedWall: Block
     lateinit var intensifiedShieldedWallLarge: Block
 
+    lateinit var eternalNight: Block
+
     fun load() {
         // region environment
         siliconOre = object : OreBlock(Items.silicon), IgnoredSequenceElementImpl, IgnoredLocalName {}.register {
@@ -64,8 +69,6 @@ object SqBlocks {
                 requirements(Category.defense, ItemStack.with(SqItems.berylliumalAlloy, 6))
                 health = 230
             }
-
-            override fun statValue() = null
         }
         berylliumalAlloyWallLarge = object : SqWall("berylliumal-alloy-wall-large") {
             init {
@@ -73,8 +76,6 @@ object SqBlocks {
                 size = 2
                 health = 230 * 4
             }
-
-            override fun statValue() = null
         }
         grainBoundaryAlloyWall = UnionWall("grain-boundary-alloy-wall").register {
             requirements(Category.defense, ItemStack.with(SqItems.grainBoundaryAlloy, 6))
@@ -137,6 +138,77 @@ object SqBlocks {
             regenSpeed = 4f
             shieldHealth = 3600f
             breakCooldown = 60f * 17f
+        }
+        // endregion
+        // region turret
+        eternalNight = SqItemTurret("eternal-night").register {
+            ord = 19
+            requirements(Category.turret, ItemStack.empty)
+            ammo(
+                SqItems.encapsulatedImagineEnergy,
+                SqBulletTypes.ImagineEnergyPointDrawBulletType().register {
+                    clearEffects()
+
+                    damage = 80f
+                    speed = 6f
+                    pierce = true
+                    ammoMultiplier = 3f
+                    lifetime = 120f
+
+                    trailColor = SqColor.imagineEnergy
+                    trailLength = 12
+                    trailEffect = Fx.none
+
+                    homingPower = 0.09f
+                    homingRange = 500f
+
+                    intervalDelay = 12f
+                    intervalBullets = 1
+                    intervalBullet =
+                        SqBulletTypes.imagineEnergyPointSmall.copy().register {
+                            damage = 120f / 60f
+                            lifetime = 100f
+                        }
+
+                    fragBullets = 8
+                    fragBullet = SqBulletTypes.ImagineEnergyPointDrawBulletType().register {
+                        clearEffects()
+
+                        damage = 200f
+                        speed = 6f
+                        pierce = true
+                        ammoMultiplier = 8f
+
+                        trailColor = SqColor.imagineEnergy
+                        trailLength = 12
+                        trailEffect = Fx.none
+
+                        homingPower = 0.06f
+                        homingRange = 100f
+
+                        intervalDelay = 12f
+                        intervalBullets = 1
+                        intervalBullet =
+                            SqBulletTypes.imagineEnergyPointSmall.copy().register {
+                                damage = 98f / 60f
+                                lifetime = 100f
+                            }
+
+                        fragBullets = 1
+                        fragBullet =
+                            SqBulletTypes.imagineEnergyPointSmall.copy().register {
+                                damage = 112f / 60f
+                                lifetime = 150f
+                            }
+                    }
+                }
+            )
+            size = 4
+            scaledHealth = 200f
+            reload = 80f
+            inaccuracy = 2f
+            rotateSpeed = 2f
+            range = 640f
         }
         // endregion
         // region factory
@@ -214,6 +286,7 @@ object SqBlocks {
         }
         // endregion
         if (!SeqMod.dev) return
+        // region dev
         object : ItemTurret("acacacacac"), SeqElem, IgnoredLocalName {
             init {
                 requirements(Category.turret, ItemStack.empty)
@@ -426,8 +499,6 @@ object SqBlocks {
                 researchCostMultiplier = 0.05f
                 limitRange()
             }
-
-            override fun statValue() = null
         }
         object : MultiCrafter("test-multi-crafter"), IgnoredLocalName {
             init {
@@ -572,5 +643,6 @@ object SqBlocks {
                 }
             }
         }
+        // endregion
     }
 }

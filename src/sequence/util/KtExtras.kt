@@ -8,6 +8,8 @@ import arc.struct.IntMap
 import arc.struct.ObjectFloatMap
 import arc.struct.ObjectIntMap
 import arc.struct.ObjectMap
+import mindustry.content.Fx
+import mindustry.entities.bullet.BulletType
 import mindustry.world.Tiles
 import kotlin.reflect.KClass
 
@@ -51,3 +53,13 @@ operator fun <V> IntMap.Entry<V>.component2(): V = value
 operator fun Tiles.get(idx: Int) = getp(idx)
 
 fun Float.notZero() = !Mathf.zero(this)
+
+fun BulletType.clearEffects() {
+    despawnEffect = Fx.none
+    hitEffect = Fx.none
+    trailEffect = Fx.none
+    shootEffect = Fx.none
+    smokeEffect = Fx.none
+    chargeEffect = Fx.none
+    healEffect = Fx.none
+}

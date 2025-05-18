@@ -65,10 +65,11 @@ class UnionWall(name: String) : SqWall(name) {
         }
     }
 
-    override fun order() = 94
+    override val order: Int
+        get() = 94
 
-    override fun statValue(): StatValue {
-        return StatValue {
+    override val statValue: StatValue?
+        get() = StatValue {
             it.row()
             it.pad { bt ->
                 bt.add(SqBundle["blocks.union-wall.seqstat"]).row()
@@ -80,5 +81,4 @@ class UnionWall(name: String) : SqWall(name) {
                 )
             }
         }
-    }
 }

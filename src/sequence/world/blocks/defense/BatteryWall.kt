@@ -16,9 +16,8 @@ class BatteryWall(name: String) : SqWall(name) {
         buildType = Prov { BatteryWallBuild() }
     }
 
-    override fun order() = 157
-
-    override fun statValue() = null
+    override val order: Int
+        get() = 157
 
     inner class BatteryWallBuild : WallBuild() {
         override fun warmup(): Float {

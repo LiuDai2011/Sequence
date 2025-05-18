@@ -10,6 +10,4 @@ class SqShieldWall(name: String) : ShieldWall(name), SeqElem {
         consumesPower = true
         conductivePower = true
     }
-
-    override fun statValue() = null
 }

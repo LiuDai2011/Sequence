@@ -3,7 +3,6 @@ package sequence.content
 import arc.graphics.Color
 import mindustry.type.Item
 import mindustry.world.meta.Stat
-import mindustry.world.meta.StatValue
 import sequence.core.SeqElem
 import sequence.util.register
 import sequence.world.meta.SqStat
@@ -37,54 +36,39 @@ object SqItems {
             healthScaling = 0.01f
             explosiveness = 2f
         }
-        grainBoundaryAlloy = object : SqItem("grain-boundary-alloy") {
-            init {
-                color = Color.valueOf("aaaaaa")
-                radioactivity = 0.3f
-                charge = 0.5f
-                cost = 1.8f
-            }
+        grainBoundaryAlloy = SqItem("grain-boundary-alloy").register {
+            color = Color.valueOf("aaaaaa")
+            radioactivity = 0.3f
+            charge = 0.5f
+            cost = 1.8f
         }
-        pureSilicon = object : SqItem("pure-silicon") {
-            init {
-                color = Color.valueOf("53565c")
-                cost = 0.9f
-            }
+        pureSilicon = SqItem("pure-silicon").register {
+            color = Color.valueOf("53565c")
+            cost = 0.9f
         }
-        phaseCore = object : SqItem("phase-core") {
-            init {
-                color = Color.valueOf("ffd59e")
-                radioactivity = 2.5f
-                cost = 5f
-                healthScaling = 0.1f
-            }
+        phaseCore = SqItem("phase-core").register {
+            color = Color.valueOf("ffd59e")
+            radioactivity = 2.5f
+            cost = 5f
+            healthScaling = 0.1f
         }
-        standardAlloyPlate = object : SqItem("standard-alloy-plate") {
-            init {
-                color = Color.valueOf("cbd97f")
-                cost = 1.45f
-                healthScaling = 1.3f
-            }
+        standardAlloyPlate = SqItem("standard-alloy-plate").register {
+            color = Color.valueOf("cbd97f")
+            cost = 1.45f
+            healthScaling = 1.3f
         }
-        vectorizedChip = object : SqItem("vectorized-chip") {
-            init {
-                color = Color.valueOf("4a4b53")
-                cost = 1.2f
-                radioactivity = 0.85f
-                explosiveness = 0.05f
-            }
+        vectorizedChip = SqItem("vectorized-chip").register {
+            color = Color.valueOf("4a4b53")
+            cost = 1.2f
+            radioactivity = 0.85f
+            explosiveness = 0.05f
         }
     }
 
     class SqItem(name: String) : Item(name), SeqElem {
         var ord = -1
-        override fun order(): Int {
-            return ord
-        }
-
-        override fun statValue(): StatValue? {
-            return null
-        }
+        override val order: Int
+            get() = ord
     }
 
     class EncapsulatedImagineEnergyItem(name: String) : SqItem(name) {

@@ -9,6 +9,7 @@ import mindustry.mod.Mods.LoadedMod
 import sequence.content.SqContent
 import sequence.core.SqBundle
 import sequence.core.SqLog
+import sequence.graphic.SqColor
 
 class SeqMod : Mod() {
     init {
@@ -23,7 +24,7 @@ class SeqMod : Mod() {
         MOD = Vars.mods.getMod(javaClass)
         MOD.apply {
             meta.version = SqBundle.mod("meta.version")
-            meta.author = SqBundle.mod("meta.author")
+            meta.author = SqBundle.modFormat("meta.author", SqColor.NedKelly, SqColor.LiuDai)
             meta.displayName = SqBundle.mod("meta.display-name")
             meta.description = SqBundle.mod("meta.description")
             repo = Companion.repo

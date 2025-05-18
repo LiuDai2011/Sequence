@@ -34,13 +34,8 @@ object SqLiquids {
 
     class SqLiquid(name: String) : Liquid(name), SeqElem {
         var ord = -1
-        override fun order(): Int {
-            return ord
-        }
-
-        override fun statValue(): StatValue? {
-            return null
-        }
+        override val order: Int
+            get() = ord
     }
 
     class VectorizedFluid(name: String) : SqLiquid(name) {
@@ -62,15 +57,14 @@ object SqLiquids {
             all.add(this)
         }
 
-        override fun statValue(): StatValue {
-            return StatValue { table ->
+        override val statValue: StatValue?
+            get() = StatValue { table ->
                 table.row().table(Styles.grayPanel) {
                     it.left().top().defaults().padRight(3f).left()
                     it.add(desc)
                 }
                 table.row()
             }
-        }
 
         companion object {
             val all = Seq<VectorizedFluid>()

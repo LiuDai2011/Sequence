@@ -5,8 +5,10 @@ import mindustry.world.meta.StatValue
 
 @AllOpen
 interface SeqElem {
-    fun order() = -1
+    val order: Int
+        get() = -1
 
-    @Nullable
-    fun statValue(): StatValue?
+    @get:Nullable
+    val statValue: StatValue?
+        get() = null
 }
