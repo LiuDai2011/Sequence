@@ -10,4 +10,8 @@ class SqShieldWall(name: String) : ShieldWall(name), SeqElem {
         consumesPower = true
         conductivePower = true
     }
+
+    var ord: Int = -1
+    override val order: Int
+        get() = ord
 }

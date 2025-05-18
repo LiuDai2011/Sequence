@@ -4,7 +4,11 @@ import mindustry.world.blocks.defense.Wall
 import mindustry.world.meta.Env
 import sequence.core.SeqElem
 
-abstract class SqWall(name: String) : Wall(name), SeqElem {
+class SqWall(name: String) : Wall(name), SeqElem {
+    var ord: Int = -1
+    override val order: Int
+        get() = ord
+
     init {
         envDisabled = envDisabled or Env.scorching
     }

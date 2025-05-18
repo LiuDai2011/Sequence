@@ -28,6 +28,8 @@ import sequence.util.IgnoredSequenceElementImpl
 import sequence.util.clearEffects
 import sequence.util.register
 import sequence.world.blocks.defense.*
+import sequence.world.blocks.distribution.SqDuct
+import sequence.world.blocks.distribution.SqStackConveyor
 import sequence.world.blocks.imagine.ImagineCenter
 import sequence.world.blocks.imagine.ImagineNode
 import sequence.world.blocks.production.MultiCrafter
@@ -43,6 +45,7 @@ object SqBlocks {
 
     lateinit var multiFluidMixer: Block
     lateinit var berylliumCrystallizer: Block
+    lateinit var pureSiliconSmelter: Block
 
     lateinit var berylliumalAlloyWall: Block
     lateinit var berylliumalAlloyWallLarge: Block
@@ -55,6 +58,9 @@ object SqBlocks {
 
     lateinit var eternalNight: Block
 
+    lateinit var grainBoundaryAlloyConveyor: Block
+    lateinit var crystallizationDuct: Block
+
     fun load() {
         // region environment
         siliconOre = object : OreBlock(Items.silicon), IgnoredSequenceElementImpl, IgnoredLocalName {}.register {
@@ -64,18 +70,16 @@ object SqBlocks {
         }
         // endregion
         // region defense
-        berylliumalAlloyWall = object : SqWall("berylliumal-alloy-wall") {
-            init {
-                requirements(Category.defense, ItemStack.with(SqItems.berylliumalAlloy, 6))
-                health = 230
-            }
+        berylliumalAlloyWall = SqWall("berylliumal-alloy-wall").register {
+            requirements(Category.defense, ItemStack.with(SqItems.berylliumalAlloy, 6))
+            health = 230
+            absorbLasers = true
         }
-        berylliumalAlloyWallLarge = object : SqWall("berylliumal-alloy-wall-large") {
-            init {
-                requirements(Category.defense, ItemStack.with(SqItems.berylliumalAlloy, 24))
-                size = 2
-                health = 230 * 4
-            }
+        berylliumalAlloyWallLarge = SqWall("berylliumal-alloy-wall-large").register {
+            requirements(Category.defense, ItemStack.with(SqItems.berylliumalAlloy, 24))
+            size = 2
+            health = 230 * 4
+            absorbLasers = true
         }
         grainBoundaryAlloyWall = UnionWall("grain-boundary-alloy-wall").register {
             requirements(Category.defense, ItemStack.with(SqItems.grainBoundaryAlloy, 6))
@@ -143,7 +147,15 @@ object SqBlocks {
         // region turret
         eternalNight = SqItemTurret("eternal-night").register {
             ord = 19
-            requirements(Category.turret, ItemStack.empty)
+            requirements(
+                Category.turret, ItemStack.with(
+                    SqItems.berylliumalAlloy, 480,
+                    SqItems.pureSilicon, 750,
+                    SqItems.phaseCore, 45,
+                    SqItems.grainBoundaryAlloy, 120,
+                    SqItems.vectorizedChip, 8
+                )
+            )
             ammo(
                 SqItems.encapsulatedImagineEnergy,
                 SqBulletTypes.ImagineEnergyPointDrawBulletType().register {
@@ -152,7 +164,7 @@ object SqBlocks {
                     damage = 80f
                     speed = 6f
                     pierce = true
-                    ammoMultiplier = 3f
+                    ammoMultiplier = 1f
                     lifetime = 120f
 
                     trailColor = SqColor.imagineEnergy
@@ -204,7 +216,7 @@ object SqBlocks {
                 }
             )
             size = 4
-            scaledHealth = 200f
+            scaledHealth = 320f
             reload = 80f
             inaccuracy = 2f
             rotateSpeed = 2f
@@ -283,6 +295,55 @@ object SqBlocks {
             scaledHealth = 73f
             size = 3
             itemCapacity = 30
+        }
+        pureSiliconSmelter = MultiCrafter("pure-silicon-smelter").register {
+            addFormula(
+                Formula(
+                    ItemStack.with(Items.silicon, 2),
+                    LiquidStack.with(Liquids.water, 0.15f),
+                    2f,
+                    ItemStack.with(SqItems.pureSilicon, 1),
+                    LiquidStack.empty,
+                    0f,
+                    0.9f * 60f
+                )
+            )
+            onlyOneFormula = true
+            requirements(
+                Category.crafting, ItemStack.with(
+                    Items.graphite, 80,
+                    Items.silicon, 100,
+                    Items.tungsten, 100,
+                    SqItems.crystallizedBeryllium, 80
+                )
+            )
+            drawer = DrawMulti(
+                DrawBottom(),
+                DrawArcSmelt(),
+                DrawDefault()
+            )
+            scaledHealth = 62f
+            size = 3
+            itemCapacity = 40
+        }
+        // endregion
+        // region distribution
+        crystallizationDuct = SqDuct("crystallization-duct").register {
+            requirements(Category.distribution, ItemStack.with(Items.beryllium, 1, SqItems.crystallizedBeryllium, 1))
+            health = 148
+            speed = 2.8f
+        }
+        grainBoundaryAlloyConveyor = SqStackConveyor("grain-boundary-alloy-conveyor").register {
+            requirements(
+                Category.distribution,
+                ItemStack.with(Items.surgeAlloy, 1, Items.tungsten, 1, SqItems.grainBoundaryAlloy, 1)
+            )
+            health = 280
+            speed = 11f / 60f
+            itemCapacity = 35
+
+            underBullets = true
+            baseEfficiency = 1f
         }
         // endregion
         if (!SeqMod.dev) return

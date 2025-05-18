@@ -18,7 +18,11 @@ import sequence.core.SeqElem
 
 class BulletEnhancer(name: String) : Block(name), SeqElem {
     var range: Float = 80f
-//    var maxEnhancer: Float = 1e8f
+
+    //    var maxEnhancer: Float = 1e8f
+    var ord: Int = 49
+    override val order: Int
+        get() = ord
 
     init {
         hasLiquids = true
