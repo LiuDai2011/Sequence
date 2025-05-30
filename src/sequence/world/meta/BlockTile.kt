@@ -6,22 +6,15 @@ import arc.graphics.g2d.Draw
 import arc.graphics.g2d.Font
 import arc.graphics.g2d.GlyphLayout
 import arc.graphics.g2d.Lines
-import arc.math.geom.Point2
 import arc.math.geom.Vec2
 import arc.scene.ui.layout.Scl
 import arc.util.pooling.Pools
 import mindustry.Vars
-import mindustry.content.Blocks
-import mindustry.game.Team
 import mindustry.graphics.Layer
 import mindustry.graphics.Pal
 import mindustry.ui.Fonts
 import mindustry.world.Block
-import sequence.core.MapDataManager
-import sequence.core.SqLog
 import sequence.util.Util.inZone
-import sequence.util.set
-import sequence.world.blocks.MBSPlaceHolder
 
 class BlockTile(var block: Block, var x: Int, var y: Int, var alpha: Float, var rotation: Float) {
     @JvmOverloads
@@ -80,18 +73,6 @@ class BlockTile(var block: Block, var x: Int, var y: Int, var alpha: Float, var 
         Draw.reset()
         Pools.free(layout)
 //        Draw.flush() // 好像会让动态力场炸掉
-    }
-
-    fun setPlaceHolder(team: Team) {
-        MapDataManager.placeHolders[Point2.pack(x, y)] = block
-        if (Vars.world.tile(x, y)?.block() == Blocks.air) {
-            Vars.world.tile(x, y).setBlock(MBSPlaceHolder[block], team)
-            SqLog.debug("@, @, @ set", x, y, block)
-        }
-    }
-
-    fun removePlaceHolder() {
-        MapDataManager.placeHolders.remove(Point2.pack(x, y))
     }
 
     companion object {

@@ -20,6 +20,7 @@ import mindustry.world.blocks.environment.OreBlock
 import mindustry.world.draw.DrawArcSmelt
 import mindustry.world.draw.DrawDefault
 import mindustry.world.draw.DrawMulti
+import mindustry.world.draw.DrawTurret
 import sequence.SeqMod
 import sequence.core.SeqElem
 import sequence.graphic.SqColor
@@ -221,6 +222,8 @@ object SqBlocks {
             inaccuracy = 2f
             rotateSpeed = 2f
             range = 640f
+
+            drawer = DrawTurret("seq-e0-")
         }
         // endregion
         // region factory
@@ -300,7 +303,7 @@ object SqBlocks {
             addFormula(
                 Formula(
                     ItemStack.with(Items.silicon, 2),
-                    LiquidStack.with(Liquids.water, 0.15f),
+                    LiquidStack.with(Liquids.water, 6f),
                     2f,
                     ItemStack.with(SqItems.pureSilicon, 1),
                     LiquidStack.empty,
@@ -689,16 +692,6 @@ object SqBlocks {
                         override fun draw() {
                             super.draw()
                             mbs.draw(tileX() - 20, tileY() - 20)
-                        }
-
-                        override fun update() {
-                            super.update()
-                            mbs.setPlaceHolder(tileX() - 20, tileY() - 20, team)
-                        }
-
-                        override fun onRemoved() {
-                            super.onRemoved()
-                            mbs.removePlaceHolder(tileX() - 20, tileY() - 20)
                         }
                     }
                 }

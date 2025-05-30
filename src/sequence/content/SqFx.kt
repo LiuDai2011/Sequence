@@ -34,7 +34,7 @@ object SqFx {
         Lines.circle(e.x, e.y, 4f + e.finpow() * 20f)
         Drawf.light(e.x, e.y, 150f, SqColor.gba[0], 0.9f * e.fout())
     }
-    val iepsDespawn = Effect(15f) { e ->
+    val iepsDespawn = Effect(40f) { e ->
         Draw.color(SqColor.imagineEnergy)
         Draw.alpha(e.fout())
         Fill.circle(e.x, e.y, 3f * e.foutpow())
