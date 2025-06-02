@@ -63,3 +63,5 @@ fun BulletType.clearEffects() {
     chargeEffect = Fx.none
     healEffect = Fx.none
 }
+
+typealias MUnit = mindustry.gen.Unit

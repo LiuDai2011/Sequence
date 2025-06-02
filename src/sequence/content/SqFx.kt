@@ -22,17 +22,17 @@ object SqFx {
         strokeFrom = 8f
         strokeTo = 0f
         cone = 0f
-        colorFrom = SqColor.gba[0]
-        colorTo = SqColor.gba[2]
+        colorFrom = SqColor.grainBoundaryAlloy[0]
+        colorTo = SqColor.grainBoundaryAlloy[2]
     }
     val fgbaBomb = Effect(15f, 100f) { e ->
-        Draw.color(SqColor.gba[1])
+        Draw.color(SqColor.grainBoundaryAlloy[1])
         Draw.alpha(e.foutpow())
         Fill.circle(e.x, e.y, 9f)
         Draw.alpha(1f)
         Lines.stroke(e.fout() * 4f)
         Lines.circle(e.x, e.y, 4f + e.finpow() * 20f)
-        Drawf.light(e.x, e.y, 150f, SqColor.gba[0], 0.9f * e.fout())
+        Drawf.light(e.x, e.y, 150f, SqColor.grainBoundaryAlloy[0], 0.9f * e.fout())
     }
     val iepsDespawn = Effect(40f) { e ->
         Draw.color(SqColor.imagineEnergy)

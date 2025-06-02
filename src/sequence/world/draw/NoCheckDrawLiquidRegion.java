@@ -1,4 +1,4 @@
-package sequence.world.drawer;
+package sequence.world.draw;
 
 import arc.Core;
 import mindustry.world.Block;

@@ -6,6 +6,7 @@ import mindustry.content.Fx
 import mindustry.content.Items
 import mindustry.content.Liquids
 import mindustry.entities.bullet.BasicBulletType
+import mindustry.entities.bullet.BulletType
 import mindustry.entities.bullet.PointBulletType
 import mindustry.entities.effect.MultiEffect
 import mindustry.entities.pattern.ShootAlternate
@@ -20,7 +21,6 @@ import mindustry.world.blocks.environment.OreBlock
 import mindustry.world.draw.DrawArcSmelt
 import mindustry.world.draw.DrawDefault
 import mindustry.world.draw.DrawMulti
-import mindustry.world.draw.DrawTurret
 import sequence.SeqMod
 import sequence.core.SeqElem
 import sequence.graphic.SqColor
@@ -35,8 +35,10 @@ import sequence.world.blocks.imagine.ImagineCenter
 import sequence.world.blocks.imagine.ImagineNode
 import sequence.world.blocks.production.MultiCrafter
 import sequence.world.blocks.turrets.SqItemTurret
-import sequence.world.drawer.DrawBottom
-import sequence.world.drawer.NoCheckDrawLiquidRegion
+import sequence.world.draw.DrawBottom
+import sequence.world.draw.DrawTurretGlow
+import sequence.world.draw.NoCheckDrawLiquidRegion
+import sequence.world.entities.SnipeBulletType
 import sequence.world.entities.SpreadPointBulletType
 import sequence.world.meta.Formula
 import sequence.world.meta.MultiBlockSchematic
@@ -57,6 +59,7 @@ object SqBlocks {
     lateinit var intensifiedShieldedWall: Block
     lateinit var intensifiedShieldedWallLarge: Block
 
+    lateinit var executor: Block
     lateinit var eternalNight: Block
 
     lateinit var grainBoundaryAlloyConveyor: Block
@@ -146,6 +149,97 @@ object SqBlocks {
         }
         // endregion
         // region turret
+        executor = SqItemTurret("executor").register {
+            requirements(
+                Category.turret, ItemStack.with(
+                    SqItems.crystallizedBeryllium, 300,
+                    SqItems.berylliumalAlloy, 380,
+                    SqItems.pureSilicon, 300,
+                    SqItems.phaseCore, 25,
+                    SqItems.grainBoundaryAlloy, 80,
+                    SqItems.vectorizedChip, 8
+                )
+            )
+            ammo(
+                SqItems.crystallizedBeryllium,
+                BulletType().register {
+                    ammoMultiplier = 6f
+                    lifetime = 0f
+                    damage = 0f
+                    speed = 0f
+                    rangeChange = -155f
+
+                    fragBullets = 7
+                    fragRandomSpread = 0f
+                    fragSpread = 5f
+                    fragVelocityMin = 1f
+                    reloadMultiplier = 1f / 0.55f
+
+                    fragBullet = BasicBulletType(6f, 188f).register {
+                        lifetime = 70f
+                        width = 12f
+                        hitSize = 7f
+                        height = 20f
+                        smokeEffect = Fx.shootBigSmoke
+                        pierceCap = 12
+                        pierce = true
+                        pierceBuilding = true
+                        trailColor = SqColor.crystallizedBeryllium
+                        backColor = trailColor
+                        hitColor = backColor
+                        frontColor = Color.white
+                        trailWidth = 2.8f
+                        trailLength = 12
+                        despawnEffect = Fx.hitBulletColor
+                        hitEffect = despawnEffect
+                        buildingDamageMultiplier = 1.2f
+                    }
+                },
+                SqItems.grainBoundaryAlloy,
+                SnipeBulletType().register {
+                    speed = 999999f
+                    ammoMultiplier = 1.5f
+                    damage = 8000f
+                    lifetime = 720f
+                    rangeChange = 120f
+                    trailEffect = SqFx.fgbaTrail
+                    trailSpacing = 20f
+                    fragBullets = 3
+
+                    fragBullet = BasicBulletType(6f, 700f).register {
+                        lifetime = 97.5f
+                        width = 12f
+                        hitSize = 7f
+                        height = 20f
+                        pierceCap = 8
+                        pierce = true
+                        homingPower = 1f
+                        homingRange = 999f
+                        pierceBuilding = true
+                        trailColor = SqColor.grainBoundaryAlloy[0]
+                        backColor = trailColor
+                        hitColor = backColor
+                        frontColor = Color.white
+                        trailWidth = 2.8f
+                        trailLength = 12
+                        despawnEffect = Fx.hitBulletColor
+                        hitEffect = despawnEffect
+                        buildingDamageMultiplier = 1.2f
+                    }
+                }
+            )
+            ammoPerShot = 12
+            size = 4
+            scaledHealth = 280f
+            reload = 85.7f
+            inaccuracy = 0f
+            shootCone = 0.0001f
+            rotateSpeed = 1.5f
+            range = 555f
+
+            itemCapacity = 50
+            drawer = DrawTurretGlow("seq-e0-", SqColor.imagineEnergy, 0.45f)
+        }
         eternalNight = SqItemTurret("eternal-night").register {
             ord = 19
             requirements(
@@ -223,7 +317,8 @@ object SqBlocks {
             rotateSpeed = 2f
             range = 640f
 
-            drawer = DrawTurret("seq-e0-")
+            itemCapacity = 25
+            drawer = DrawTurretGlow("seq-e0-", SqColor.imagineEnergy, 0.55f)
         }
         // endregion
         // region factory

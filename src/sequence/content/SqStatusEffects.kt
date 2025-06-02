@@ -2,9 +2,9 @@ package sequence.content
 
 import arc.graphics.Color
 import arc.util.Time
-import mindustry.gen.Unit
 import mindustry.type.StatusEffect
 import sequence.core.SeqElem
+import sequence.util.MUnit
 import sequence.util.register
 import kotlin.math.pow
 
@@ -13,7 +13,7 @@ object SqStatusEffects {
 
     fun load() {
         brokenShield = object : SqStatusEffect("broken-shield") {
-            override fun update(unit: Unit?, time: Float) {
+            override fun update(unit: MUnit?, time: Float) {
                 super.update(unit, time)
                 if (unit == null) return
                 unit.shield = (unit.shield - damage.pow(4) * Time.delta).coerceAtLeast(0f)

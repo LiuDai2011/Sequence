@@ -17,8 +17,10 @@ import mindustry.entities.Units
 import mindustry.game.EventType
 import mindustry.game.EventType.UnitBulletDestroyEvent
 import mindustry.game.Team
-import mindustry.gen.*
-import mindustry.gen.Unit
+import mindustry.gen.Building
+import mindustry.gen.Bullet
+import mindustry.gen.Call
+import mindustry.gen.Healthc
 import mindustry.world.blocks.storage.CoreBlock.CoreBuild
 
 object SqDamage {
@@ -57,10 +59,10 @@ object SqDamage {
     }
 
     fun trueDamageUnits(
-        team: Team?, x: Float, y: Float, size: Float, damage: Float, predicate: Boolf<Unit?>,
-        acceptor: Cons<Unit?>
+        team: Team?, x: Float, y: Float, size: Float, damage: Float, predicate: Boolf<MUnit?>,
+        acceptor: Cons<MUnit?>
     ) {
-        val cons = Cons { entity: Unit ->
+        val cons = Cons { entity: MUnit ->
             if (!predicate[entity] || !entity.hittable()) return@Cons
             entity.hitbox(hitrect)
             if (!hitrect.overlaps(rect)) return@Cons
@@ -97,7 +99,7 @@ object SqDamage {
         team: Team?, x: Float, y: Float, radius: Float, damage: Float, complete: Boolean, air: Boolean,
         ground: Boolean, scaled: Boolean, @Nullable source: Bullet?
     ) {
-        val cons = Cons { unit: Unit ->
+        val cons = Cons { unit: MUnit ->
             if (unit.team === team || !unit.checkTarget(air, ground) || !unit.hittable()
                 || !unit.within(x, y, radius + if (scaled) unit.hitSize / 2f else 0f)
             )

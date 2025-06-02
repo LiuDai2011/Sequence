@@ -7,9 +7,10 @@ object SqColor {
     val NedKelly = imagineEnergy.cpy()
     val LiuDai = Color.valueOf("#ceeaf4")
 
-    val gba = arrayOf(
+    val grainBoundaryAlloy = arrayOf(
         Color.valueOf("dedede"),
         Color.valueOf("aaaaaa"),
         Color.valueOf("6b6b6b")
     )
+    val crystallizedBeryllium = Color.valueOf("d1eeee")
 }

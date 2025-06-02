@@ -38,7 +38,7 @@ class SeqMod : Mod() {
     }
 
     companion object {
-        const val dev = true
+        const val dev = false
         const val skipChk = false
         const val repo = "LiuDai2011/Sequence"
         lateinit var MOD: LoadedMod

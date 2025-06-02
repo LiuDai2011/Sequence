@@ -10,6 +10,7 @@ import sequence.ui.SqUI.pad
 
 class UnionWall(name: String) : SqWall(name) {
     var apportionedSpeed: Float = 0.008f
+    var depthLimit: Int = 8
 
     init {
         buildType = Prov { UnionWallBuild() }
@@ -18,17 +19,21 @@ class UnionWall(name: String) : SqWall(name) {
 
     inner class UnionWallBuild : WallBuild() {
         override fun damage(damage: Float) {
-            if (damage >= maxHealth) {
+            damage(damage, 0)
+        }
+
+        fun damage(damage: Float, depth: Int) {
+            if (depth > depthLimit || damage >= maxHealth) {
                 super.damage(damage)
                 return
             }
-
             if (damage <= 0.001 * health) {
                 heal(damage)
                 return
             }
 
             var count = 1
+            var handled = 0
             for (p in proximity) {
                 if (p is UnionWallBuild) {
                     count++
@@ -38,7 +43,13 @@ class UnionWall(name: String) : SqWall(name) {
             super.damage(damage / count)
             for (p in proximity) {
                 if (p is UnionWallBuild) {
-                    p.damage(damage / count)
+                    try {
+                        p.damage(damage / count, depth + 1)
+                        handled++
+                    } catch (e: StackOverflowError) {
+                        super.damage(damage - damage / count * handled)
+                        break
+                    }
                 }
             }
         }

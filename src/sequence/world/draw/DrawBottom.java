@@ -1,4 +1,4 @@
-package sequence.world.drawer;
+package sequence.world.draw;
 
 import mindustry.world.draw.DrawRegion;
 
