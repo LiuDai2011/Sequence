@@ -10,7 +10,7 @@ import sequence.ui.SqUI.pad
 
 class UnionWall(name: String) : SqWall(name) {
     var apportionedSpeed: Float = 0.008f
-    var depthLimit: Int = 8
+    var depthLimit: Int = 12
 
     init {
         buildType = Prov { UnionWallBuild() }

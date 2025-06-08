@@ -26,8 +26,7 @@ class ImagineEnergyDisplay(record: ImagineEnergyRecord) : Stack() {
                     amount * 60f,
                     2
                 )
-            )
-                .style(Styles.outlineLabel)
+            ).style(Styles.outlineLabel)
             t.pack()
         })
 //        if (record.active) add(Table { t: Table ->

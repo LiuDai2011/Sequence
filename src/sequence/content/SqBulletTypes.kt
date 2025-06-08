@@ -1,10 +1,12 @@
 package sequence.content
 
+import arc.graphics.Color
 import arc.graphics.g2d.Draw
 import arc.graphics.g2d.Fill
 import arc.util.Time
 import mindustry.content.Fx
 import mindustry.entities.Damage
+import mindustry.entities.bullet.BasicBulletType
 import mindustry.entities.bullet.BulletType
 import mindustry.entities.bullet.PointBulletType
 import mindustry.gen.Bullet
@@ -13,10 +15,17 @@ import sequence.graphic.SqColor
 import sequence.util.SqDamage
 import sequence.util.clearEffects
 import sequence.util.register
+import sequence.world.entities.SnipeBulletType
 
 object SqBulletTypes {
     lateinit var imagineEnergyPointSmall: BulletType
+
     lateinit var foreshadowGBA: BulletType
+
+    lateinit var havocCB: BulletType
+    lateinit var havocPC: BulletType
+
+    lateinit var executor: BulletType
 
     fun load() {
         foreshadowGBA = PointBulletType().register {
@@ -69,6 +78,100 @@ object SqBulletTypes {
 
             clearEffects()
             despawnEffect = SqFx.iepsDespawn
+        }
+        executor = SnipeBulletType().register {
+            speed = 999999f
+            damage = 8000f
+            lifetime = 720f
+            trailEffect = SqFx.fgbaTrail
+            trailSpacing = 20f
+            fragBullets = 3
+
+            fragBullet = BasicBulletType(6f, 700f).register {
+                lifetime = 97.5f
+                width = 12f
+                hitSize = 7f
+                height = 20f
+                pierceCap = 8
+                pierce = true
+                homingPower = 1f
+                homingRange = 999f
+                pierceBuilding = true
+                trailColor = SqColor.grainBoundaryAlloy[0]
+                backColor = trailColor
+                hitColor = backColor
+                frontColor = Color.white
+                trailWidth = 2.8f
+                trailLength = 12
+                despawnEffect = Fx.hitBulletColor
+                hitEffect = despawnEffect
+                buildingDamageMultiplier = 1.2f
+            }
+        }
+        havocCB = BulletType().register {
+            clearEffects()
+
+            lifetime = 0f
+            damage = 0f
+            speed = 0f
+
+            fragBullets = 7
+            fragRandomSpread = 0f
+            fragSpread = 5f
+            fragVelocityMin = 1f
+            reloadMultiplier = 1f / 0.75f
+
+            fragBullet = BasicBulletType(6f, 188f).register {
+                lifetime = 62f
+                width = 12f
+                hitSize = 7f
+                height = 20f
+                smokeEffect = Fx.shootBigSmoke
+                pierceCap = 12
+                pierce = true
+                pierceBuilding = true
+                trailColor = SqColor.crystallizedBeryllium
+                backColor = trailColor
+                hitColor = backColor
+                frontColor = Color.white
+                trailWidth = 2.8f
+                trailLength = 8
+                despawnEffect = Fx.hitBulletColor
+                hitEffect = despawnEffect
+                buildingDamageMultiplier = 1.2f
+            }
+        }
+        havocPC = BulletType().register {
+            clearEffects()
+
+            lifetime = 0f
+            damage = 0f
+            speed = 0f
+
+            fragBullets = 5
+            fragRandomSpread = 0f
+            fragSpread = 3f
+            fragVelocityMin = 1f
+            reloadMultiplier = 1f / 0.57f
+
+            fragBullet = BasicBulletType(9f, 243f).register {
+                lifetime = 41f
+                width = 11f
+                hitSize = 12f
+                height = 21f
+                pierceCap = 12
+                pierce = true
+                pierceBuilding = true
+                trailColor = SqColor.phaseCore
+                backColor = trailColor
+                hitColor = backColor
+                frontColor = Color.white
+                trailWidth = 2.8f
+                trailLength = 12
+                despawnEffect = Fx.hitBulletColor
+                hitEffect = despawnEffect
+                buildingDamageMultiplier = 1.33f
+            }
         }
     }
 
