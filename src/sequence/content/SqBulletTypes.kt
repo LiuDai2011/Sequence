@@ -6,9 +6,7 @@ import arc.graphics.g2d.Fill
 import arc.util.Time
 import mindustry.content.Fx
 import mindustry.entities.Damage
-import mindustry.entities.bullet.BasicBulletType
-import mindustry.entities.bullet.BulletType
-import mindustry.entities.bullet.PointBulletType
+import mindustry.entities.bullet.*
 import mindustry.gen.Bullet
 import mindustry.graphics.Drawf
 import sequence.graphic.SqColor
@@ -21,6 +19,10 @@ object SqBulletTypes {
     lateinit var imagineEnergyPointSmall: BulletType
 
     lateinit var foreshadowGBA: BulletType
+
+    lateinit var hailCB: BulletType
+
+    lateinit var swarmerCB: BulletType
 
     lateinit var havocCB: BulletType
     lateinit var havocPC: BulletType
@@ -172,6 +174,36 @@ object SqBulletTypes {
                 hitEffect = despawnEffect
                 buildingDamageMultiplier = 1.33f
             }
+        }
+        hailCB = ArtilleryBulletType(3f, 46f).register {
+            knockback = 0.8f
+            lifetime = 80f
+            height = 11f
+            width = height
+            collidesTiles = false
+            splashDamageRadius = 25f
+            splashDamage = 33f
+            pierce = true
+            pierceCap = 2
+            trailColor = SqColor.crystallizedBeryllium
+            backColor = trailColor
+            hitColor = backColor
+            frontColor = SqColor.crystallizedBeryllium
+            despawnEffect = Fx.hitBulletColor
+        }
+        swarmerCB = MissileBulletType(3.7f, 38f).register {
+            width = 8f
+            height = 8f
+            shrinkY = 0f
+            splashDamageRadius = 29f
+            splashDamage = 25f * 1.8f
+            hitEffect = Fx.blastExplosion
+            despawnEffect = Fx.blastExplosion
+            ammoMultiplier = 4f
+            trailColor = SqColor.crystallizedBeryllium
+            backColor = trailColor
+            hitColor = backColor
+            frontColor = SqColor.crystallizedBeryllium
         }
     }
 

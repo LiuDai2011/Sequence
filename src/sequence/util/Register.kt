@@ -20,7 +20,7 @@ fun <T : UnitType, R : Entityc> T.build(constructor: Prov<R>) {
 }
 
 object EntityRegister {
-    val needIdClasses = ObjectMap<Class<*>, ProvSet>()
+    private val needIdClasses = ObjectMap<Class<*>, ProvSet>()
     private val classIdMap = ObjectMap<Class<*>, Int>()
 
     fun <T : Entityc> put(c: Class<T>, p: ProvSet) {

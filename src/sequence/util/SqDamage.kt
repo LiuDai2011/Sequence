@@ -12,10 +12,10 @@ import arc.util.Nullable
 import arc.util.Time
 import mindustry.Vars
 import mindustry.core.World
-import mindustry.entities.Damage
 import mindustry.entities.Units
 import mindustry.game.EventType
 import mindustry.game.EventType.UnitBulletDestroyEvent
+import mindustry.game.EventType.UnitDamageEvent
 import mindustry.game.Team
 import mindustry.gen.Building
 import mindustry.gen.Bullet
@@ -111,7 +111,7 @@ object SqDamage {
             )
             unit.trueDamage(amount)
             if (source != null) {
-//                Events.fire(Damage.bulletDamageEvent.set(unit, source))
+                Events.fire(bulletDamageEvent.set(unit, source))
                 unit.controller().hit(source)
                 if (!dead && unit.dead) {
                     Events.fire(UnitBulletDestroyEvent(unit, source))
@@ -245,5 +245,5 @@ object SqDamage {
         return damage * scaled
     }
 
-    private var Damage.bulletDamageEvent: EventType.UnitDamageEvent by accessField("bulletDamageEvent")
+    private val bulletDamageEvent = UnitDamageEvent()
 }

@@ -53,8 +53,9 @@ class MultiBlockSchematic() {
     fun writeBase64() = Companion.writeBase64(this)
 
     companion object {
-        val header = byteArrayOf('m'.code.toByte(), 'b'.code.toByte(), 's'.code.toByte(), 'h'.code.toByte())
         private val out = OptimizedByteArrayOutputStream(1024)
+        val header = byteArrayOf('m'.code.toByte(), 'b'.code.toByte(), 's'.code.toByte(), 'h'.code.toByte())
+        val empty = MultiBlockSchematic()
 
         fun read(input: InputStream): MultiBlockSchematic {
             for (b in header) {
@@ -141,6 +142,21 @@ class MultiBlockSchematic() {
             } catch (e: IOException) {
                 throw java.lang.RuntimeException(e)
             }
+        }
+
+        fun of(vararg obj: Any): MultiBlockSchematic {
+            assert(obj.size % 3 == 0)
+            val seq: Seq<CacheBlockTile> = Seq()
+            for (i in 0..<(obj.size / 3)) {
+                seq.add(
+                    CacheBlockTile(
+                        obj[i * 3] as Int,
+                        obj[i * 3 + 1] as Int,
+                        BlockTile(obj[i * 3 + 2] as Block, 0, 0)
+                    )
+                )
+            }
+            return MultiBlockSchematic(seq)
         }
     }
 }

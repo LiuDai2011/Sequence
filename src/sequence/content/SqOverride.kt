@@ -21,6 +21,12 @@ object SqOverride {
             Blocks.powerVoid.health = Int.MAX_VALUE
             Blocks.payloadVoid.health = Int.MAX_VALUE
 
+            Blocks.hail.override<ItemTurret> {
+                ammoTypes.put(SqItems.crystallizedBeryllium, SqBulletTypes.hailCB)
+            }
+            Blocks.swarmer.override<ItemTurret> {
+                ammoTypes.put(SqItems.crystallizedBeryllium, SqBulletTypes.swarmerCB)
+            }
             Blocks.foreshadow.override<ItemTurret> {
                 ammoTypes.put(SqItems.grainBoundaryAlloy, SqBulletTypes.foreshadowGBA)
             }

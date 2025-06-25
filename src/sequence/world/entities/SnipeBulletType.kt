@@ -17,7 +17,7 @@ import mindustry.gen.Teamc
 import sequence.content.SqFx
 import sequence.util.MUnit
 
-class SnipeBulletType : BulletType() {
+open class SnipeBulletType : BulletType() {
     var trailSpacing = 10f
 
     init {
@@ -89,7 +89,8 @@ class SnipeBulletType : BulletType() {
         var x = 0f
         var y = 0f
         var target: Teamc? = null
-        operator fun set(x: Float, y: Float, target: Teamc?): Collided {
+
+        fun set(x: Float, y: Float, target: Teamc?): Collided {
             this.x = x
             this.y = y
             this.target = target

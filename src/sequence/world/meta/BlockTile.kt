@@ -23,10 +23,10 @@ class BlockTile(var block: Block, var x: Int, var y: Int, var alpha: Float, var 
     @get:JvmName("valid")
     val valid: Boolean
         get() {
-            for (x in 0 until block.size) {
-                for (y in 0 until block.size) {
+            for (x in 0..<block.size) {
+                for (y in 0..<block.size) {
                     val tile = Vars.world.tile(this.x + x, this.y + y)
-                    if (tile == null || tile.block() !== block) {
+                    if (tile == null || tile.block() != block || tile.build?.rotation != (rotation / 90f).toInt()) {
                         return false
                     }
                 }
@@ -39,7 +39,7 @@ class BlockTile(var block: Block, var x: Int, var y: Int, var alpha: Float, var 
         min.set(x - 0.5f, y - 0.5f)
         center.set(min).add(block.size / 2f, block.size / 2f).scl(Vars.tilesize.toFloat())
         Draw.color(Color.white, alpha)
-        Draw.z(Layer.blockOver)
+        Draw.z(Layer.plans)
         Draw.rect(block.fullIcon, center.x, center.y, rotation)
         Draw.reset()
         chkTip()

@@ -2,6 +2,7 @@ package sequence.content
 
 import arc.func.Prov
 import arc.graphics.Color
+import mindustry.content.Blocks
 import mindustry.content.Fx
 import mindustry.content.Items
 import mindustry.content.Liquids
@@ -25,7 +26,6 @@ import mindustry.world.draw.DrawArcSmelt
 import mindustry.world.draw.DrawDefault
 import mindustry.world.draw.DrawMulti
 import sequence.SeqMod
-import sequence.core.SeqElem
 import sequence.graphic.SqColor
 import sequence.util.IgnoredLocalName
 import sequence.util.IgnoredSequenceElementImpl
@@ -34,6 +34,7 @@ import sequence.util.register
 import sequence.world.blocks.defense.*
 import sequence.world.blocks.distribution.SqDuct
 import sequence.world.blocks.distribution.SqStackConveyor
+import sequence.world.blocks.drill.SqDrill
 import sequence.world.blocks.imagine.ImagineCenter
 import sequence.world.blocks.imagine.ImagineNode
 import sequence.world.blocks.production.MultiCrafter
@@ -44,6 +45,7 @@ import sequence.world.draw.NoCheckDrawLiquidRegion
 import sequence.world.entities.SpreadPointBulletType
 import sequence.world.meta.Formula
 import sequence.world.meta.MultiBlockSchematic
+import sequence.world.meta.PlaceHolderDrawer
 
 object SqBlocks {
     lateinit var siliconOre: Block
@@ -64,6 +66,8 @@ object SqBlocks {
     lateinit var executor: Block
     lateinit var havoc: Block
     lateinit var eternalNight: Block
+
+    lateinit var extractor: Block
 
     lateinit var grainBoundaryAlloyConveyor: Block
     lateinit var crystallizationDuct: Block
@@ -106,6 +110,7 @@ object SqBlocks {
                 )
             )
             health = 110
+            absorbLasers = true
             consumePowerBuffered(800f)
         }
         pureCapacitanceWallLarge = BatteryWall("pure-capacitance-wall-large").register {
@@ -117,6 +122,7 @@ object SqBlocks {
             )
             size = 2
             health = 110 * 4
+            absorbLasers = true
             consumePowerBuffered(3200f)
         }
         intensifiedShieldedWall = SqShieldWall("intensified-shielded-wall").register {
@@ -416,6 +422,31 @@ object SqBlocks {
             itemCapacity = 40
         }
         // endregion
+        // region drill
+        extractor = SqDrill("extractor").register {
+            requirements(
+                Category.production,
+                ItemStack.empty
+            )
+            hardnessDrillMultiplier = -4f
+            drillTime = 75f
+            size = 5
+            drawRim = true
+            hasPower = true
+            tier = Int.MAX_VALUE
+            updateEffect = Fx.pulverizeRed
+            updateEffectChance = 0.03f
+            drillEffect = Fx.mineHuge
+            rotateSpeed = 6f
+            warmupSpeed = 0.005f
+            itemCapacity = 200
+
+            liquidBoostIntensity = 1.95f
+
+            consumePower(750f / 60f)
+            consumeLiquid(Liquids.water, 0.4f).boost()
+        }
+        // endregion
         // region distribution
         crystallizationDuct = SqDuct("crystallization-duct").register {
             requirements(Category.distribution, ItemStack.with(Items.beryllium, 1, SqItems.crystallizedBeryllium, 1))
@@ -437,7 +468,7 @@ object SqBlocks {
         // endregion
         if (!SeqMod.dev) return
         // region dev
-        object : ItemTurret("acacacacac"), SeqElem, IgnoredLocalName {
+        object : ItemTurret("acacacacac"), IgnoredLocalName, IgnoredSequenceElementImpl {
             init {
                 requirements(Category.turret, ItemStack.empty)
                 ammo(
@@ -762,22 +793,23 @@ object SqBlocks {
         }
         object : Block("test-multi-block"), IgnoredLocalName, IgnoredSequenceElementImpl {
             init {
-//                val mbs = MultiBlockSchematic(
-//                    CacheBlockTile(0, 0, BlockTile(Blocks.arc, 0, 0)),
-//                    CacheBlockTile(1, 0, BlockTile(Blocks.battery, 0, 0)),
-//                    CacheBlockTile(0, 1, BlockTile(Blocks.powerNode, 0, 0)),
-//                    CacheBlockTile(1, 1, BlockTile(Blocks.copperWall, 0, 0))
-//                )
-                val mbs =
-                    MultiBlockSchematic.readBase64("bWJzaHicY2AAAxYGroL88tQi3bz8lFQG7uT8ggIgpzwxJ4eBObEomYE9KbGkJLWoEqwUAhihJCOUxcQAA8wQEQAo+AzJ")
+                val mbs = MultiBlockSchematic.of(
+                    0, 0, Blocks.arc,
+                    1, 0, Blocks.battery,
+                    0, 1, Blocks.powerNode,
+                    1, 1, Blocks.copperWall,
+                    3, 3, Blocks.airFactory
+                )
+//                val mbs =
+//                    MultiBlockSchematic.readBase64("bWJzaHicY2AAAxYGroL88tQi3bz8lFQG7uT8ggIgpzwxJ4eBObEomYE9KbGkJLWoEqwUAhihJCOUxcQAA8wQEQAo+AzJ")
                 requirements(Category.effect, ItemStack.empty)
                 update = true
                 drawDisabled = false
                 buildType = Prov {
                     object : Building() {
-                        override fun draw() {
-                            super.draw()
-                            mbs.draw(tileX() - 20, tileY() - 20)
+                        override fun updateTile() {
+                            super.updateTile()
+                            PlaceHolderDrawer(mbs, tileX() - 20, tileY() - 20)
                         }
                     }
                 }

@@ -2,9 +2,10 @@ package sequence.content
 
 import mindustry.io.SaveVersion
 import sequence.core.ClassPutter
-import sequence.io.ImagineEnergyChunk
 import sequence.ui.SqFonts
 import sequence.ui.SqUI
+import sequence.util.EntityRegister
+import sequence.world.meta.ImagineEnergyChunk
 
 object SqContent {
     fun loadContent() {
@@ -15,6 +16,8 @@ object SqContent {
         SqLiquids.load()
         SqBulletTypes.load()
         SqBlocks.load()
+//        SqUnitTypes.load()
+        EntityRegister.load()
         SqOverride.setup()
         SqUI.load()
 
