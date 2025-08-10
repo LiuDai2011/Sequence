@@ -14,9 +14,12 @@ inline fun <reified T> T.register(builder: T.() -> Unit): T {
     return this
 }
 
-fun <T : UnitType, R : Entityc> T.build(constructor: Prov<R>) {
+@Suppress("UNCHECKED_CAST")
+inline fun <reified T : UnitType, reified R : Entityc> T.build(constructor: Prov<R>): T {
     EntityMapping.nameMap.put(name, constructor)
     EntityRegister.put(constructor.get().javaClass, constructor)
+    this.constructor = EntityMapping.map(name) as Prov<out MUnit>
+    return this
 }
 
 object EntityRegister {
@@ -35,7 +38,10 @@ object EntityRegister {
 
     fun load() {
         val key = needIdClasses.keys().toSeq().sortComparing { it.toString().hashCode() }
-        for (c in key) classIdMap.put(c, EntityMapping.register(c.toString(), needIdClasses[c].prov))
+        for (c in key) {
+            if (EntityMapping.map(c.simpleName) != null) continue
+            classIdMap.put(c, EntityMapping.register(c.toString(), needIdClasses[c].prov))
+        }
         if (dev || Vars.headless) {
             SqLog.info("//=============================================\\\\")
             classIdMap.each { c, i ->

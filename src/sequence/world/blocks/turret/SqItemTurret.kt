@@ -1,4 +1,4 @@
-package sequence.world.blocks.turrets
+package sequence.world.blocks.turret
 
 import mindustry.world.blocks.defense.turrets.ItemTurret
 import sequence.core.SeqElem

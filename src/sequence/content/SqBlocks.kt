@@ -2,10 +2,14 @@ package sequence.content
 
 import arc.func.Prov
 import arc.graphics.Color
+import arc.math.Mathf
+import arc.scene.ui.layout.Table
+import mindustry.Vars
 import mindustry.content.Blocks
 import mindustry.content.Fx
 import mindustry.content.Items
 import mindustry.content.Liquids
+import mindustry.entities.UnitSorts
 import mindustry.entities.bullet.BasicBulletType
 import mindustry.entities.bullet.PointBulletType
 import mindustry.entities.effect.MultiEffect
@@ -14,31 +18,37 @@ import mindustry.entities.part.RegionPart
 import mindustry.entities.pattern.ShootAlternate
 import mindustry.entities.pattern.ShootBarrel
 import mindustry.gen.Building
+import mindustry.gen.Sounds
 import mindustry.graphics.Layer
 import mindustry.graphics.Pal
 import mindustry.type.Category
 import mindustry.type.ItemStack
 import mindustry.type.LiquidStack
+import mindustry.type.StatusEffect
 import mindustry.world.Block
+import mindustry.world.blocks.defense.BuildTurret
 import mindustry.world.blocks.defense.turrets.ItemTurret
 import mindustry.world.blocks.environment.OreBlock
 import mindustry.world.draw.DrawArcSmelt
 import mindustry.world.draw.DrawDefault
 import mindustry.world.draw.DrawMulti
+import mindustry.world.meta.BuildVisibility
 import sequence.SeqMod
+import sequence.content.SqOverride.setupStats
 import sequence.graphic.SqColor
-import sequence.util.IgnoredLocalName
-import sequence.util.IgnoredSequenceElementImpl
-import sequence.util.clearEffects
-import sequence.util.register
+import sequence.graphic.dashRectBuild
+import sequence.ui.SqFragments
+import sequence.util.*
 import sequence.world.blocks.defense.*
 import sequence.world.blocks.distribution.SqDuct
 import sequence.world.blocks.distribution.SqStackConveyor
-import sequence.world.blocks.drill.SqDrill
+import sequence.world.blocks.drill.ImpulseDrill
 import sequence.world.blocks.imagine.ImagineCenter
 import sequence.world.blocks.imagine.ImagineNode
+import sequence.world.blocks.liquid.SqArmoredConduit
 import sequence.world.blocks.production.MultiCrafter
-import sequence.world.blocks.turrets.SqItemTurret
+import sequence.world.blocks.turret.SqItemTurret
+import sequence.world.blocks.turret.WarmupItemTurret
 import sequence.world.draw.DrawBottom
 import sequence.world.draw.DrawTurretGlow
 import sequence.world.draw.NoCheckDrawLiquidRegion
@@ -46,6 +56,7 @@ import sequence.world.entities.SpreadPointBulletType
 import sequence.world.meta.Formula
 import sequence.world.meta.MultiBlockSchematic
 import sequence.world.meta.PlaceHolderDrawer
+import sequence.world.meta.imagine.ImagineLink
 
 object SqBlocks {
     lateinit var siliconOre: Block
@@ -66,11 +77,14 @@ object SqBlocks {
     lateinit var executor: Block
     lateinit var havoc: Block
     lateinit var eternalNight: Block
+    lateinit var finality: Block
 
     lateinit var extractor: Block
 
     lateinit var grainBoundaryAlloyConveyor: Block
     lateinit var crystallizationDuct: Block
+
+    lateinit var alloyConduit: Block
 
     fun load() {
         // region environment
@@ -215,6 +229,7 @@ object SqBlocks {
             rotateSpeed = 1.5f
             range = 675f
             shootY = 11.5f
+            unitSort = UnitSorts.strongest
 
             coolant = consumeCoolant(0.1f)
             coolantMultiplier = 4f
@@ -235,63 +250,9 @@ object SqBlocks {
             )
             ammo(
                 SqItems.encapsulatedImagineEnergy,
-                SqBulletTypes.ImagineEnergyPointDrawBulletType().register {
-                    clearEffects()
-
-                    damage = 80f
-                    speed = 6f
-                    pierce = true
-                    ammoMultiplier = 1f
-                    lifetime = 120f
-
-                    trailColor = SqColor.imagineEnergy
-                    trailLength = 12
-                    trailEffect = Fx.none
-
-                    homingPower = 0.09f
-                    homingRange = 500f
-
-                    intervalDelay = 12f
-                    intervalBullets = 1
-                    intervalBullet =
-                        SqBulletTypes.imagineEnergyPointSmall.copy().register {
-                            damage = 120f / 60f
-                            lifetime = 100f
-                        }
-
-                    fragBullets = 8
-                    fragBullet = SqBulletTypes.ImagineEnergyPointDrawBulletType().register {
-                        clearEffects()
-
-                        damage = 200f
-                        speed = 6f
-                        pierce = true
-                        ammoMultiplier = 8f
-
-                        trailColor = SqColor.imagineEnergy
-                        trailLength = 12
-                        trailEffect = Fx.none
-
-                        homingPower = 0.06f
-                        homingRange = 100f
-
-                        intervalDelay = 12f
-                        intervalBullets = 1
-                        intervalBullet =
-                            SqBulletTypes.imagineEnergyPointSmall.copy().register {
-                                damage = 98f / 60f
-                                lifetime = 100f
-                            }
-
-                        fragBullets = 1
-                        fragBullet =
-                            SqBulletTypes.imagineEnergyPointSmall.copy().register {
-                                damage = 112f / 60f
-                                lifetime = 150f
-                            }
-                    }
-                }
+                SqBulletTypes.eternalNight
             )
+            setupStats().replaceAmmo(ammoTypes)
             size = 4
             scaledHealth = 320f
             reload = 80f
@@ -316,6 +277,28 @@ object SqBlocks {
                     }
                 )
             }
+        }
+        finality = WarmupItemTurret("finality").register {
+            ord = 7
+            requirements(Category.turret, ItemStack.empty)
+            ammo(
+                SqItems.encapsulatedImagineEnergy, SqBulletTypes.finality
+            )
+            maxAmmo = 20
+            ammoPerShot = 1
+            size = 4
+            scaledHealth = 722f
+            minWarmup = 12f
+            shootNeededWarmup = 18f
+            inaccuracy = 0f
+            shootCone = 0.0001f
+            range = 1100f
+            shootEffect = Fx.none
+            shootSound = Sounds.none
+            unitSort = UnitSorts.strongest
+
+            itemCapacity = 50
+            drawer = DrawTurretGlow("seq-e0-", SqColor.imagineEnergy, 0.45f)
         }
         // endregion
         // region factory
@@ -423,12 +406,12 @@ object SqBlocks {
         }
         // endregion
         // region drill
-        extractor = SqDrill("extractor").register {
+        extractor = ImpulseDrill("extractor").register {
             requirements(
                 Category.production,
                 ItemStack.empty
             )
-            hardnessDrillMultiplier = -4f
+            hardnessDrillMultiplier = -0.04f
             drillTime = 75f
             size = 5
             drawRim = true
@@ -466,8 +449,31 @@ object SqBlocks {
             baseEfficiency = 1f
         }
         // endregion
+        // region liquid
+        alloyConduit = SqArmoredConduit("alloy-conduit").register {
+            requirements(Category.liquid, ItemStack.with(SqItems.grainBoundaryAlloy, 1))
+            botColor = Pal.darkestMetal
+            leaks = true
+            liquidCapacity = 100f
+            liquidPressure = 2f
+            health = 350
+            underBullets = true
+            flammabilityScale = 20f / 50f
+            explosivenessScale = flammabilityScale
+        }
+        // endregion
         if (!SeqMod.dev) return
         // region dev
+        object : BuildTurret("sandbox-build-tower"), IgnoredLocalName, IgnoredSequenceElementImpl {
+            init {
+                requirements(Category.effect, BuildVisibility.sandboxOnly, ItemStack.empty)
+                outlineColor = Pal.darkOutline
+                range = 1e5f
+                size = 1
+                buildSpeed = 1e8f
+                health = Int.MAX_VALUE
+            }
+        };
         object : ItemTurret("acacacacac"), IgnoredLocalName, IgnoredSequenceElementImpl {
             init {
                 requirements(Category.turret, ItemStack.empty)
@@ -681,6 +687,53 @@ object SqBlocks {
                 limitRange()
             }
         }
+        object : ItemTurret("test-status-effect"), IgnoredLocalName, IgnoredSequenceElementImpl {
+            init {
+                requirements(Category.turret, ItemStack.empty)
+                val copy = PointBulletType().register {
+                    shootEffect = Fx.instShoot
+                    hitEffect = Fx.instHit
+                    smokeEffect = Fx.smokeCloud
+                    trailEffect = Fx.instTrail
+                    despawnEffect = Fx.instBomb
+                    trailSpacing = 20f
+                    speed = 6000f
+                    hitShake = 6f
+                    ammoMultiplier = 1f
+                    statusDuration = 10f * 60f
+                    damage = 0f
+                    splashDamageRadius = 999f
+                    splashDamage = Mathf.FLOAT_ROUNDING_ERROR * 1.1f
+                }
+                val methods = SqStatusEffects::class.java.declaredMethods
+                    .filter { it.name.startsWith("get") }
+                    .sortedBy { it.name }
+                val instance = SqStatusEffects::class.java.getDeclaredField("INSTANCE")
+                    .also { it.isAccessible = true }
+                    .get(null)
+                var i = 0
+                for (m in methods) {
+                    m.isAccessible = true
+                    ammoTypes[Vars.content.items().get(i)] = copy.copy().register {
+                        status = m.invoke(instance) as StatusEffect?
+                    }
+                    i++
+                }
+                shoot = ShootAlternate(3.5f)
+                recoils = 2
+                recoil = 0.5f
+                shootY = 3f
+                reload = 20f
+                range = 6000f
+                shootCone = 15f
+                ammoUseEffect = Fx.casing1
+                health = Int.MAX_VALUE
+                inaccuracy = 0f
+                rotateSpeed = 100000f
+                itemCapacity = 1
+                limitRange()
+            }
+        }
         object : MultiCrafter("test-multi-crafter"), IgnoredLocalName {
             init {
                 addFormula(
@@ -768,12 +821,6 @@ object SqBlocks {
                 liquidCapacity = 100f
             }
         }
-//        new ImagineNode("imagine-node") {{
-//            requirements(Category.effect, ItemStack.empty);
-//        }};
-//        new ImagineCenter("imagine-center") {{
-//            requirements(Category.effect, ItemStack.empty);
-//        }};
         object : ImagineNode("imagine-node"), IgnoredLocalName, IgnoredSequenceElementImpl {
             init {
                 requirements(Category.effect, ItemStack.empty)
@@ -783,6 +830,24 @@ object SqBlocks {
             init {
                 requirements(Category.effect, ItemStack.empty)
                 size = 4
+            }
+        }
+        object : Block("imagine-build"), IgnoredLocalName, IgnoredSequenceElementImpl {
+            init {
+                requirements(Category.effect, ItemStack.empty)
+                update = true
+                size = 2
+                solid = true
+                buildType = Prov {
+                    object : Building(), ImagineLink {
+                        override var center: ImagineCenter.ImagineCenterBuild? = null
+
+                        override fun draw() {
+                            super.draw()
+                            if (center != null) dashRectBuild(Pal.accent, center!!)
+                        }
+                    }
+                }
             }
         }
         object : BulletEnhancer("b-e"), IgnoredLocalName, IgnoredSequenceElementImpl {
@@ -810,6 +875,23 @@ object SqBlocks {
                         override fun updateTile() {
                             super.updateTile()
                             PlaceHolderDrawer(mbs, tileX() - 20, tileY() - 20)
+                        }
+                    }
+                }
+            }
+        }
+        object : Block("test-frag"), IgnoredLocalName, IgnoredSequenceElementImpl {
+            init {
+                requirements(Category.effect, ItemStack.empty)
+                update = true
+                configurable = true
+                val `$0` = this
+                buildType = Prov {
+                    object : Building() {
+                        override fun buildConfiguration(table: Table?) {
+                            super.buildConfiguration(table)
+                            SqFragments.unlock(`$0`, true)
+                            Vars.control.input.config.hideConfig()
                         }
                     }
                 }

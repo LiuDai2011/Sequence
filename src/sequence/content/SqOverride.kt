@@ -5,6 +5,7 @@ import mindustry.content.Blocks
 import mindustry.ctype.UnlockableContent
 import mindustry.game.EventType.ClientLoadEvent
 import mindustry.world.blocks.defense.turrets.ItemTurret
+import mindustry.world.meta.Stats
 import sequence.graphic.SqColor
 
 object SqOverride {
@@ -36,6 +37,11 @@ object SqOverride {
     fun addOverrideTag(content: UnlockableContent) {
         content.description = content.description ?: ""
         content.description += "\n[#${SqColor.LiuDai}]Override by [#${SqColor.NedKelly}]Sequence[]"
+    }
+
+    fun <T : UnlockableContent> T.setupStats(): Stats {
+        checkStats()
+        return this.stats
     }
 
     inline fun <reified T : UnlockableContent> UnlockableContent.override(builder: T.() -> Unit) {

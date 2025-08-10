@@ -25,7 +25,7 @@ object SqContentMap {
                 if (!content.hasSign<IgnoredSequenceElementImpl>()) {
                     if (content !is SeqElem)
                         uninitiatedContent.add("Not yet implemented(seqstat): content ${content.name}\nPlease give the information to LiuDai")
-                }
+                } else SqLog.warn("$content has sign isei")
                 if (!content.hasSign<IgnoredLocalName>()) {
                     val prefix = "${content.contentType}.${content.name}"
                     if (!Core.bundle.has("$prefix.name") ||

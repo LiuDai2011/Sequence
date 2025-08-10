@@ -3,17 +3,36 @@ package sequence.content
 import arc.graphics.Color
 import arc.graphics.g2d.Draw
 import arc.graphics.g2d.Fill
+import arc.math.Rand
+import arc.math.geom.Vec2
+import arc.scene.ui.ImageButton
+import arc.scene.ui.layout.Collapser
+import arc.scene.ui.layout.Table
+import arc.struct.ObjectMap
 import arc.util.Time
 import mindustry.content.Fx
 import mindustry.entities.Damage
 import mindustry.entities.bullet.*
 import mindustry.gen.Bullet
+import mindustry.gen.Healthc
+import mindustry.gen.Icon
+import mindustry.gen.Teamc
 import mindustry.graphics.Drawf
+import mindustry.graphics.Layer
+import mindustry.ui.Styles
+import mindustry.world.meta.StatValue
+import sequence.core.SqBundle
+import sequence.core.SqStatValues
 import sequence.graphic.SqColor
-import sequence.util.SqDamage
+import sequence.util.IgnoredFragBullet
+import sequence.util.SqDamage.trueDamage
 import sequence.util.clearEffects
+import sequence.util.modf
 import sequence.util.register
+import sequence.world.blocks.turret.WarmupItemTurret
+import sequence.world.entities.AdditionInfoBulletType
 import sequence.world.entities.SnipeBulletType
+import sequence.world.entities.WarmupBulletType
 
 object SqBulletTypes {
     lateinit var imagineEnergyPointSmall: BulletType
@@ -28,6 +47,10 @@ object SqBulletTypes {
     lateinit var havocPC: BulletType
 
     lateinit var executor: BulletType
+
+    lateinit var finality: BulletType
+
+    lateinit var eternalNight: BulletType
 
     fun load() {
         foreshadowGBA = PointBulletType().register {
@@ -60,15 +83,21 @@ object SqBulletTypes {
                 hitEffect = Fx.none
             }
         }
-        imagineEnergyPointSmall = object : ImagineEnergyPointDrawBulletType() {
+        imagineEnergyPointSmall = object : ImagineEnergyPointDrawBulletType(), AdditionInfoBulletType {
             override fun update(b: Bullet?) {
                 super.update(b)
                 if (b == null) return
-                SqDamage.trueDamage(b.team, b.x, b.y, 24f, b.damage * Time.delta)
+                trueDamage(b.team, b.x, b.y, 24f, b.damage * Time.delta)
                 Damage.damage(b.team, b.x, b.y, 24f, 0.01f)
             }
 
             override fun continuousDamage() = damage * 60f
+
+            override val info: StatValue
+                get() = StatValue { bt ->
+                    SqStatValues.Bullets.trueDamage(bt, damage)
+                    bt.row()
+                }
         }.register {
             keepVelocity = false
             collides = false
@@ -87,24 +116,23 @@ object SqBulletTypes {
             lifetime = 720f
             trailEffect = SqFx.fgbaTrail
             trailSpacing = 20f
+            hitEffect = SqFx.egbaHit
+            despawnEffect = SqFx.iepsDespawn
             fragBullets = 3
+            status = SqStatusEffects.brokenShield
+            statusDuration = 5f * 60f
 
             fragBullet = BasicBulletType(6f, 700f).register {
                 lifetime = 97.5f
-                width = 12f
                 hitSize = 7f
-                height = 20f
                 pierceCap = 8
                 pierce = true
                 homingPower = 1f
                 homingRange = 999f
                 pierceBuilding = true
-                trailColor = SqColor.grainBoundaryAlloy[0]
                 backColor = trailColor
                 hitColor = backColor
-                frontColor = Color.white
-                trailWidth = 2.8f
-                trailLength = 12
+                frontColor = Color.clear
                 despawnEffect = Fx.hitBulletColor
                 hitEffect = despawnEffect
                 buildingDamageMultiplier = 1.2f
@@ -173,6 +201,9 @@ object SqBulletTypes {
                 despawnEffect = Fx.hitBulletColor
                 hitEffect = despawnEffect
                 buildingDamageMultiplier = 1.33f
+
+                status = SqStatusEffects.corrode
+                statusDuration = 4f * 60f
             }
         }
         hailCB = ArtilleryBulletType(3f, 46f).register {
@@ -205,6 +236,186 @@ object SqBulletTypes {
             hitColor = backColor
             frontColor = SqColor.crystallizedBeryllium
         }
+        eternalNight = ImagineEnergyPointDrawBulletType().register {
+            clearEffects()
+
+            damage = 80f
+            speed = 6f
+            pierce = true
+            ammoMultiplier = 1f
+            lifetime = 120f
+
+            trailColor = SqColor.imagineEnergy
+            trailLength = 12
+            trailEffect = Fx.none
+
+            homingPower = 0.09f
+            homingRange = 500f
+
+            intervalDelay = 12f
+            intervalBullets = 1
+            intervalBullet = imagineEnergyPointSmall.copy().register {
+                damage = 120f / 60f
+                lifetime = 100f
+            }
+
+            fragBullets = 8
+            fragBullet = ImagineEnergyPointDrawBulletType().register {
+                clearEffects()
+
+                damage = 200f
+                speed = 6f
+                pierce = true
+                ammoMultiplier = 8f
+
+                trailColor = SqColor.imagineEnergy
+                trailLength = 12
+                trailEffect = Fx.none
+
+                homingPower = 0.06f
+                homingRange = 100f
+
+                intervalDelay = 12f
+                intervalBullets = 1
+                intervalBullet = imagineEnergyPointSmall.copy().register {
+                    damage = 98f / 60f
+                    lifetime = 100f
+                }
+
+                fragBullets = 1
+                fragBullet = imagineEnergyPointSmall.copy().register {
+                    damage = 112f / 60f
+                    lifetime = 150f
+                }
+            }
+        }
+        finality = (object : SnipeBulletType(), WarmupBulletType, AdditionInfoBulletType, IgnoredFragBullet {
+            override var warmupBulletType: BulletType? = null
+            override val info: StatValue
+                get() = _info
+            var _info = StatValue { }
+            val trueDamage = 4000f
+            override fun onHit(target: Teamc) {
+                (target as? Healthc)?.trueDamage(trueDamage)
+            }
+        }).register {
+            pierce = true
+            pierceBuilding = true
+            speed = 999999f
+            damage = 12000f
+            lifetime = 1200f
+            trailEffect = SqFx.fgbaTrail
+            trailSpacing = 20f
+            despawnEffect = SqFx.egbaHit
+            hitEffect = SqFx.finalityHit
+            val warmupType = (object : BulletType(), IgnoredFragBullet {
+                override fun draw(b: Bullet?) {
+                    super.draw(b)
+                    b ?: return
+                    val fl = (b.time / 10f).coerceIn(0f, 1f)
+                    Draw.color(trailColor)
+                    Fill.circle(b.x, b.y, 2.4f * fl)
+                    Draw.z(Layer.effect)
+                    Draw.color(Color.black)
+                    Fill.circle(b.x, b.y, 1.9f * fl)
+                    Draw.reset()
+                }
+            }).register {
+                clearEffects()
+                trailColor = SqColor.imagineEnergy
+                trailWidth = 1.4f
+                trailLength = 18
+                pierce = true
+                pierceBuilding = true
+                pierceCap = 3
+                lifetime = 60f
+                speed = 10f
+                damage = 770f
+                status = SqStatusEffects.entropyIncreasing
+                statusDuration = 60f
+
+                fragVelocityMin = 1f
+                fragVelocityMax = 1f
+                fragOffsetMin = 0f
+                fragOffsetMax = 0f
+                fragRandomSpread = 0f
+                fragBullets = 1
+                fragBullet = (object : BulletType(), IgnoredFragBullet {
+                    override fun draw(b: Bullet?) {
+                        super.draw(b)
+                        b ?: return
+                        Draw.color(trailColor)
+                        Fill.circle(b.x, b.y, 2.4f)
+                        Draw.z(Layer.effect)
+                        Draw.color(Color.black)
+                        Fill.circle(b.x, b.y, 1.9f)
+                        Draw.reset()
+                    }
+                }).register {
+                    trailColor = SqColor.imagineEnergy
+                    trailWidth = 1.4f
+                    trailLength = 18
+                    pierce = true
+                    pierceBuilding = true
+                    pierceCap = 3
+                    lifetime = 80f
+                    speed = 12f
+                    damage = 770f
+                    status = SqStatusEffects.entropyIncreasing
+                    statusDuration = 60f
+                    homingPower = 0.12f
+                    homingRange = 999999f
+                }
+            }
+            _info = StatValue { bt ->
+                SqStatValues.Bullets.trueDamage(bt, trueDamage)
+                bt.row()
+                val fc = Table()
+                SqStatValues.ammo(
+                    ObjectMap.of(SqItems.encapsulatedImagineEnergy, warmupType),
+                    nested = true,
+                    showUnit = false
+                ).display(fc)
+                val coll = Collapser(fc, true)
+                coll.setDuration(0.1f)
+                bt.table { ft: Table ->
+                    ft.left().defaults().left()
+                    ft.add(
+                        SqBundle.format(
+                            "bullet.warmup",
+                            1f / ((SqBlocks.finality as WarmupItemTurret).shootNeededWarmup / 60f)
+                        )
+                    )
+                    ft.button(
+                        Icon.downOpen,
+                        Styles.emptyi
+                    ) { coll.toggle(false) }.update { i: ImageButton ->
+                        i.style.imageUp =
+                            if (!coll.isCollapsed) Icon.upOpen else Icon.downOpen
+                    }.size(8f).padLeft(16f).expandX()
+                }
+                bt.row()
+                bt.add(coll)
+            }
+            val radius = 80f
+            warmupBulletType = object : BulletType() {
+                override fun init(b: Bullet?) {
+                    super.init(b)
+                    (b ?: return).time = b.lifetime
+                    rand.setSeed(b.id.toLong())
+                    val vec = Vec2()
+                        .trnsExact((rand.nextFloat() * 720f) modf 360f, (rand.nextFloat() * 160f) modf radius)
+                        .add(Vec2().trnsExact(b.vel.angle(), -90f))
+                        .add(b.x, b.y)
+                    warmupType.create(
+                        b.owner, b.team, vec.x, vec.y, b.vel.angle(), 1f,
+                        (rand.nextFloat() modf 1f) + 1f, b.mover
+                    )
+                    b.remove()
+                    b.vel.setZero()
+                }
+            }
+        }
     }
 
     open class ImagineEnergyPointDrawBulletType : BulletType() {
@@ -217,4 +428,6 @@ object SqBulletTypes {
             Draw.reset()
         }
     }
+
+    private val rand = Rand()
 }
