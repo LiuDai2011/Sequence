@@ -14,7 +14,6 @@ import mindustry.entities.bullet.BulletType
 import mindustry.gen.Building
 import mindustry.gen.Bullet
 import mindustry.gen.Teamc
-import sequence.content.SqFx
 import sequence.util.MUnit
 
 open class SnipeBulletType : BulletType() {
@@ -37,6 +36,7 @@ open class SnipeBulletType : BulletType() {
         seg1.set(b.x, b.y)
         seg2.set(seg1).add(vec)
         World.raycastEachWorld(b.x, b.y, seg2.x, seg2.y) { cx, cy ->
+            if (!b.type.collidesGround) return@raycastEachWorld false
             val bd = Vars.world.build(cx, cy)
             if (bd == null || bd.team == b.team || !bd.collide(b)) return@raycastEachWorld false
             collided.add(collidePool.obtain().set(cx * tilesize * 1f, cy * tilesize * 1f, bd))
@@ -59,22 +59,29 @@ open class SnipeBulletType : BulletType() {
 
         collided.sort { it: Collided -> b.dst2(it.x, it.y) }
         if (!collided.isEmpty) {
-            val t = collided[0]
-            if (t.target is Building) {
-                (t.target as Building).collision(b)
-                hit(b, t.x, t.y)
-            } else if (t.target is MUnit) {
-                b.collision(t.target as MUnit, t.x, t.y)
+            var pr = 0
+            for (t in collided) {
+                if (t.target is Building) {
+                    (t.target as Building).collision(b)
+                    hit(b, t.x, t.y)
+                } else if (t.target is MUnit) {
+                    b.collision(t.target as MUnit, t.x, t.y)
+                }
+                b.hit = false
+                pr++
+                if (!b.type.pierce || (b.type.pierceCap != -1 && pr >= b.type.pierceCap) || !b.type.pierceBuilding) break
             }
-            SqFx.iepsDespawn.at(t.x, t.y)
-            Geometry.iterateLine(0f, b.x, b.y, t.x, t.y, trailSpacing) { ix, iy ->
-                trailEffect.at(ix, iy, rot)
+            if (pr != 0) { // 防止 pierce == 0
+                val t = collided[pr - 1]
+                b.type.despawnEffect.at(t.x, t.y, b.rotation())
+                Geometry.iterateLine(0f, b.x, b.y, t.x, t.y, trailSpacing) { ix, iy ->
+                    trailEffect.at(ix, iy, rot)
+                }
             }
         } else {
             Geometry.iterateLine(0f, b.x, b.y, seg2.x, seg2.y, trailSpacing) { ix, iy ->
                 trailEffect.at(ix, iy, rot)
             }
-//            hit(b, seg2.x, seg2.y)
         }
 
         collidePool.freeAll(collided)

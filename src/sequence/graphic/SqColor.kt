@@ -14,4 +14,9 @@ object SqColor {
     )
     val crystallizedBeryllium = Color.valueOf("d1eeee")
     val phaseCore = Color.valueOf("ffd59e")
+
+    val brokenShield = Color.valueOf("ffd37f")
+    val corrode = Color.valueOf("ffecc0")
+    val curse = Color.valueOf("92dd7e")
+    val entropyIncreasing = Color.valueOf("cd4238")
 }

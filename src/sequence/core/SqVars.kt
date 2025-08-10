@@ -9,8 +9,6 @@ import arc.struct.Seq
 import mindustry.Vars
 import mindustry.game.EventType
 
-//import java.security.MessageDigest
-
 object SqVars {
     //    val sha3_512 = MessageDigest.getInstance("SHA3-512")
     val pow7: Interp = Interp.Pow(7)

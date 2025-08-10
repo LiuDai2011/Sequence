@@ -13,6 +13,7 @@ val modOutputDir = properties["modOutputDir"] as? String
 
 val isWindows = System.getProperty("os.name").lowercase().contains("windows")
 val sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
+val d8 = if (isWindows) "d8.bat" else "d8"
 
 val buildDir = layout.buildDirectory.get()
 
@@ -108,7 +109,7 @@ tasks {
                 if (sdkRoot == null) throw GradleException("No valid Android SDK found. Ensure that ANDROID_HOME is set to your Android SDK directory.");
 
                 val platformRoot = File("$sdkRoot/platforms/").listFiles()
-                    ?.sorted()
+                    ?.sortedBy { it.name.replace("-R", "-30") }
                     ?.reversed()
                     ?.find { f -> File(f, "android.jar").exists() }
                     ?: throw GradleException("No android.jar found. Ensure that you have an Android platform installed.")
@@ -119,8 +120,18 @@ tasks {
                                 setOf(File(platformRoot, "android.jar"))
                         ).joinToString(" ") { "--classpath $it" }
 
-                "d8 $dependencies --min-api 14 --output ${project.name}-android.jar ${project.name}-desktop.jar"
-                    .execute(File("$buildDir/libs"))
+                val buildToolRoot = File("$sdkRoot/build-tools/").listFiles()
+                    ?.sortedBy { it.name }
+                    ?.reversed()
+                    ?.find { f -> File(f, d8).exists() }
+                    ?: throw GradleException("No d8 found. Ensure that you have an Android platform installed.")
+
+                val buildTool = File(buildToolRoot, d8)
+
+//                println("Android ready. dependencies: $dependencies")
+
+                "$buildTool $dependencies --min-api 14 --output ${project.name}-android.jar ${project.name}-desktop.jar"
+                    .execute(File("$buildDir", "libs"))
             } catch (e: Throwable) {
                 if (e is Error) {
                     println(e.message)
@@ -128,6 +139,7 @@ tasks {
                 }
 
                 println("[WARNING] d8 tool or platform tools was not found, if you was installed android SDK, please check your environment variable")
+                println(e.message)
 
                 delete(
                     files("${buildDir}/libs/${project.name}-android.jar")

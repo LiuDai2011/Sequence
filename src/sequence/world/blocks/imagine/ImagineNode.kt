@@ -18,6 +18,8 @@ import sequence.graphic.dashRectBuild
 import sequence.util.component1
 import sequence.util.component2
 import sequence.world.blocks.imagine.ImagineCenter.ImagineCenterBuild
+import sequence.world.meta.imagine.ImagineLink
+import sequence.world.meta.imagine.toImagineLink
 import kotlin.math.abs
 
 class ImagineNode(name: String) : ImagineBlock(name) {
@@ -74,9 +76,8 @@ class ImagineNode(name: String) : ImagineBlock(name) {
         }
     }
 
-    inner class ImagineNodeBuild : Building() {
-        var center: ImagineCenterBuild? = null
-        private var needKill = false
+    inner class ImagineNodeBuild : Building(), ImagineLink {
+        override var center: ImagineCenterBuild? = null
 
         override fun placed() {
             super.placed()
@@ -91,25 +92,13 @@ class ImagineNode(name: String) : ImagineBlock(name) {
                     val ty = tile.y.toInt() + dy * i + (size - 1) / 2
                     val build = world.build(tx, ty) ?: continue
                     if (build is ImagineCenterBuild) {
-                        if (center != null && center !== build) {
-                            center!!.kill()
-                            center!!.tile.setAir()
-                            build.kill()
-                            build.tile.setAir()
-                            needKill = true
-                        }
                         if (center == null)
                             center = build
-                    } else if (build is ImagineNodeBuild) {
-                        if (center != null && build.center != null && center !== build.center) {
-                            center!!.kill()
-                            center!!.tile.setAir()
-                            build.center?.kill()
-                            build.center?.tile?.setAir()
-                            needKill = true
-                        }
+                    } else if (build is ImagineLink) {
                         if (center == null)
                             center = build.center
+                        else
+                            center!!.tryAdd(build.toImagineLink())
                     }
                 }
             }
@@ -119,16 +108,12 @@ class ImagineNode(name: String) : ImagineBlock(name) {
             super.updateTile()
             if (center?.tile?.build !== center) center = null
             if (center == null) checkLink()
-            center?.nodes?.add(this)
-            if (needKill) {
-                kill()
-                tile.setAir()
-            }
+            center?.links?.add(this.toImagineLink())
         }
 
         override fun onRemoved() {
             super.onRemoved()
-            center?.nodes?.remove(this)
+            center?.links?.remove(this.toImagineLink())
         }
 
         override fun drawSelect() {
